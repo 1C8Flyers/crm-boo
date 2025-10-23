@@ -6,7 +6,7 @@ import { useRouter, useSearchParams } from 'next/navigation';
 import { DashboardLayout } from '@/components/layout/DashboardLayout';
 import { customerService } from '@/lib/firebase-services';
 import type { Customer } from '@/types';
-import { Plus, Search, Edit, Trash2, Mail, Phone, Building, Users } from 'lucide-react';
+import { Plus, Search, Edit, Trash2, Mail, Phone, Building, Users, MapPin } from 'lucide-react';
 import { CustomerModal } from '@/components/customers/CustomerModal';
 
 export default function CustomersPageContent() {
@@ -64,6 +64,21 @@ export default function CustomersPageContent() {
     await loadCustomers();
     setShowModal(false);
     setEditingCustomer(null);
+  };
+
+  const formatAddress = (address: Customer['address']) => {
+    if (!address) return null;
+    
+    // Handle structured addresses
+    const parts = [
+      address.street,
+      address.city,
+      address.state,
+      address.zipCode,
+      address.country
+    ].filter(Boolean);
+    
+    return parts.length > 0 ? parts.join(', ') : null;
   };
 
   const filteredCustomers = customers.filter(customer =>
@@ -198,6 +213,12 @@ export default function CustomersPageContent() {
                     <div className="flex items-center text-sm text-gray-600">
                       <Phone className="w-4 h-4 mr-2" />
                       <span>{customer.phone}</span>
+                    </div>
+                  )}
+                  {formatAddress(customer.address) && (
+                    <div className="flex items-start text-sm text-gray-600">
+                      <MapPin className="w-4 h-4 mr-2 mt-0.5 flex-shrink-0" />
+                      <span className="line-clamp-2">{formatAddress(customer.address)}</span>
                     </div>
                   )}
                 </div>

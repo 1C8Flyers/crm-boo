@@ -24,7 +24,13 @@ export interface Customer {
   email: string;
   phone?: string;
   company?: string;
-  address?: string;
+  address?: {
+    street?: string;
+    city?: string;
+    state?: string;
+    zipCode?: string;
+    country?: string;
+  };
   createdAt: Date;
   updatedAt: Date;
 }

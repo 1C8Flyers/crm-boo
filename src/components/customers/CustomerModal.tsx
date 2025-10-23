@@ -13,7 +13,13 @@ const customerSchema = z.object({
   email: z.string().email('Invalid email address'),
   phone: z.string().optional(),
   company: z.string().optional(),
-  address: z.string().optional(),
+  address: z.object({
+    street: z.string().optional(),
+    city: z.string().optional(),
+    state: z.string().optional(),
+    zipCode: z.string().optional(),
+    country: z.string().optional(),
+  }).optional(),
 });
 
 type CustomerFormData = z.infer<typeof customerSchema>;
@@ -41,8 +47,10 @@ export function CustomerModal({ customer, onClose, onSave }: CustomerModalProps)
       email: customer.email,
       phone: customer.phone || '',
       company: customer.company || '',
-      address: customer.address || '',
-    } : undefined,
+      address: customer.address || {},
+    } : {
+      address: {},
+    },
   });
 
   useEffect(() => {
@@ -52,7 +60,7 @@ export function CustomerModal({ customer, onClose, onSave }: CustomerModalProps)
         email: customer.email,
         phone: customer.phone || '',
         company: customer.company || '',
-        address: customer.address || '',
+        address: customer.address || {},
       });
     }
   }, [customer, reset]);
@@ -60,20 +68,17 @@ export function CustomerModal({ customer, onClose, onSave }: CustomerModalProps)
   const onSubmit = async (data: CustomerFormData) => {
     setIsLoading(true);
     try {
+      const customerData = {
+        ...data,
+        phone: data.phone || undefined,
+        company: data.company || undefined,
+        address: data.address && Object.values(data.address).some(v => v) ? data.address : undefined,
+      };
+
       if (isEditing && customer) {
-        await customerService.update(customer.id, {
-          ...data,
-          phone: data.phone || undefined,
-          company: data.company || undefined,
-          address: data.address || undefined,
-        });
+        await customerService.update(customer.id, customerData);
       } else {
-        await customerService.create({
-          ...data,
-          phone: data.phone || undefined,
-          company: data.company || undefined,
-          address: data.address || undefined,
-        });
+        await customerService.create(customerData);
       }
       onSave();
     } catch (error: any) {
@@ -170,19 +175,57 @@ export function CustomerModal({ customer, onClose, onSave }: CustomerModalProps)
                   )}
                 </div>
 
+                {/* Address Section */}
                 <div>
-                  <label htmlFor="address" className="block text-sm font-medium text-gray-700">
+                  <label className="block text-sm font-medium text-gray-700 mb-3">
                     Address
                   </label>
-                  <textarea
-                    {...register('address')}
-                    rows={3}
-                    className="mt-1 block w-full px-3 py-2 border border-gray-300 rounded-md shadow-sm focus:outline-none focus:ring-blue-500 focus:border-blue-500 sm:text-sm"
-                    placeholder="Enter address"
-                  />
-                  {errors.address && (
-                    <p className="mt-1 text-sm text-red-600">{errors.address.message}</p>
-                  )}
+                  <div className="space-y-3">
+                    <div>
+                      <input
+                        {...register('address.street')}
+                        type="text"
+                        className="block w-full px-3 py-2 border border-gray-300 rounded-md shadow-sm focus:outline-none focus:ring-blue-500 focus:border-blue-500 sm:text-sm"
+                        placeholder="Street address"
+                      />
+                    </div>
+                    <div className="grid grid-cols-2 gap-3">
+                      <div>
+                        <input
+                          {...register('address.city')}
+                          type="text"
+                          className="block w-full px-3 py-2 border border-gray-300 rounded-md shadow-sm focus:outline-none focus:ring-blue-500 focus:border-blue-500 sm:text-sm"
+                          placeholder="City"
+                        />
+                      </div>
+                      <div>
+                        <input
+                          {...register('address.state')}
+                          type="text"
+                          className="block w-full px-3 py-2 border border-gray-300 rounded-md shadow-sm focus:outline-none focus:ring-blue-500 focus:border-blue-500 sm:text-sm"
+                          placeholder="State/Province"
+                        />
+                      </div>
+                    </div>
+                    <div className="grid grid-cols-2 gap-3">
+                      <div>
+                        <input
+                          {...register('address.zipCode')}
+                          type="text"
+                          className="block w-full px-3 py-2 border border-gray-300 rounded-md shadow-sm focus:outline-none focus:ring-blue-500 focus:border-blue-500 sm:text-sm"
+                          placeholder="ZIP/Postal code"
+                        />
+                      </div>
+                      <div>
+                        <input
+                          {...register('address.country')}
+                          type="text"
+                          className="block w-full px-3 py-2 border border-gray-300 rounded-md shadow-sm focus:outline-none focus:ring-blue-500 focus:border-blue-500 sm:text-sm"
+                          placeholder="Country"
+                        />
+                      </div>
+                    </div>
+                  </div>
                 </div>
               </div>
 
