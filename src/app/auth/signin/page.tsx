@@ -11,7 +11,6 @@ import { zodResolver } from '@hookform/resolvers/zod';
 import { z } from 'zod';
 import { Eye, EyeOff, Mail, AlertCircle } from 'lucide-react';
 import { SocialSignInButton } from '@/components/auth/SocialSignInButton';
-import AuthProviderConfig from '@/components/auth/AuthProviderConfig';
 
 const signInSchema = z.object({
   email: z.string().email('Invalid email address'),
@@ -245,38 +244,6 @@ export default function SignIn() {
           )}
         </div>
       </div>
-      
-      {/* Debug Information */}
-      {providersError && (
-        <div className="max-w-md w-full bg-red-50 border border-red-200 rounded-md p-3 mt-4">
-          <p className="text-sm text-red-600">Provider Detection Error: {providersError}</p>
-        </div>
-      )}
-      
-      <div className="max-w-md w-full bg-blue-50 border border-blue-200 rounded-md p-3 mt-4 text-xs">
-        <details>
-          <summary className="cursor-pointer text-blue-700 font-medium">Debug Info</summary>
-          <div className="mt-2 space-y-1 text-blue-600">
-            <p>Loading: {providersLoading ? 'Yes' : 'No'}</p>
-            <p>Manual Mode: {useManual ? 'Yes' : 'No'}</p>
-            <p>Email/Password: {activeProviders.emailPassword ? 'Enabled' : 'Disabled'}</p>
-            <p>Google: {activeProviders.google ? 'Enabled' : 'Disabled'}</p>
-            <p>Facebook: {activeProviders.facebook ? 'Enabled' : 'Disabled'}</p>
-            <p>Twitter: {activeProviders.twitter ? 'Enabled' : 'Disabled'}</p>
-            <p>GitHub: {activeProviders.github ? 'Enabled' : 'Disabled'}</p>
-            <p>Microsoft: {activeProviders.microsoft ? 'Enabled' : 'Disabled'}</p>
-          </div>
-        </details>
-      </div>
-      
-      {/* Manual Configuration Tool */}
-      <AuthProviderConfig 
-        currentProviders={manualProviders}
-        onUpdateProviders={(providers) => {
-          setManualProviders(providers);
-          setUseManual(true);
-        }}
-      />
     </div>
   );
 }
