@@ -4,7 +4,8 @@ import { useEffect, useState } from 'react';
 import { useAuth } from '@/contexts/AuthContext';
 import { useRouter } from 'next/navigation';
 import { DashboardLayout } from '@/components/layout/DashboardLayout';
-import { invoiceService, customerService } from '@/lib/firebase-services';
+import { invoiceService } from '@/lib/services/invoiceService';
+import { customerService } from '@/lib/firebase-services';
 import type { Invoice, Customer } from '@/types';
 import { Plus, Search, Eye, FileText, DollarSign, Calendar, User } from 'lucide-react';
 
@@ -31,7 +32,7 @@ export default function Invoices() {
   const loadData = async () => {
     try {
       const [invoicesData, customersData] = await Promise.all([
-        invoiceService.getAll(),
+        invoiceService.getAllInvoices(),
         customerService.getAll(),
       ]);
       setInvoices(invoicesData);
@@ -177,7 +178,11 @@ export default function Invoices() {
           <div className="bg-white shadow overflow-hidden sm:rounded-md">
             <ul className="divide-y divide-gray-200">
               {filteredInvoices.map((invoice) => (
-                <li key={invoice.id} className="px-6 py-4 hover:bg-gray-50 cursor-pointer">
+                <li 
+                  key={invoice.id} 
+                  className="px-6 py-4 hover:bg-gray-50 cursor-pointer"
+                  onClick={() => router.push(`/invoices/detail?id=${invoice.id}`)}
+                >
                   <div className="flex items-center justify-between">
                     <div className="flex items-center space-x-4">
                       <div className="w-10 h-10 bg-blue-100 rounded-lg flex items-center justify-center">

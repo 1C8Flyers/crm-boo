@@ -4,7 +4,8 @@ import { useState, useEffect } from 'react';
 import { useAuth } from '@/contexts/AuthContext';
 import { useRouter } from 'next/navigation';
 import { DashboardLayout } from '@/components/layout/DashboardLayout';
-import { invoiceService, customerService, productService } from '@/lib/firebase-services';
+import { invoiceService } from '@/lib/services/invoiceService';
+import { customerService, productService } from '@/lib/firebase-services';
 import type { Customer, Product, InvoiceItem } from '@/types';
 import { useForm, useFieldArray } from 'react-hook-form';
 import { zodResolver } from '@hookform/resolvers/zod';
@@ -83,14 +84,6 @@ export default function NewInvoice() {
     }
   };
 
-  const generateInvoiceNumber = () => {
-    const date = new Date();
-    const year = date.getFullYear();
-    const month = String(date.getMonth() + 1).padStart(2, '0');
-    const random = Math.floor(Math.random() * 1000).toString().padStart(3, '0');
-    return `INV-${year}${month}-${random}`;
-  };
-
   const calculateTotal = () => {
     return watchedItems.reduce((total, item) => {
       return total + (item.quantity * item.unitPrice);
@@ -118,8 +111,10 @@ export default function NewInvoice() {
       const tax = 0; // You can add tax calculation later
       const total = subtotal + tax;
 
-      await invoiceService.create({
-        invoiceNumber: generateInvoiceNumber(),
+      const invoiceNumber = await invoiceService.generateInvoiceNumber();
+
+      await invoiceService.createInvoice({
+        invoiceNumber,
         customerId: data.customerId,
         dueDate: new Date(data.dueDate),
         items: invoiceItems,
@@ -127,6 +122,7 @@ export default function NewInvoice() {
         tax: tax,
         total: total,
         status: 'draft',
+        notes: data.notes,
       });
 
       router.push('/invoices');

@@ -75,6 +75,7 @@ export interface Invoice {
   total: number;
   status: 'draft' | 'sent' | 'paid' | 'overdue' | 'cancelled';
   dueDate: Date;
+  notes?: string;
   createdAt: Date;
   updatedAt: Date;
 }
@@ -86,6 +87,26 @@ export interface InvoiceItem {
   quantity: number;
   price: number;
   total: number;
+}
+
+// Company Information types
+export interface Company {
+  id: string;
+  name: string;
+  address: {
+    street: string;
+    city: string;
+    state: string;
+    zipCode: string;
+    country: string;
+  };
+  email: string;
+  phone?: string;
+  website?: string;
+  logo?: string; // URL to logo image
+  taxId?: string;
+  createdAt: Date;
+  updatedAt: Date;
 }
 
 // Activity types

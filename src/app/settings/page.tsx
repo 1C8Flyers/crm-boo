@@ -5,6 +5,7 @@ import { useAuth } from '@/contexts/AuthContext';
 import { useRouter } from 'next/navigation';
 import { DashboardLayout } from '@/components/layout/DashboardLayout';
 import { dealStageService } from '@/lib/firebase-services';
+import CompanySettings from '@/components/settings/CompanySettings';
 import type { DealStage } from '@/types';
 import { useForm } from 'react-hook-form';
 import { zodResolver } from '@hookform/resolvers/zod';
@@ -317,6 +318,9 @@ export default function SettingsPage() {
             )}
           </div>
         </div>
+
+        {/* Company Settings Section */}
+        <CompanySettings />
 
         {/* Account Settings Section */}
         <div className="bg-white shadow-sm rounded-lg border border-gray-200">
