@@ -1,15 +1,18 @@
 'use client';
 
-import { useState, useEffect } from 'react';
+import { useState } from 'react';
 import { useRouter } from 'next/navigation';
 import Link from 'next/link';
 import { useAuth } from '@/contexts/AuthContext';
+import { useAuthProviders } from '@/hooks/useAuthProviders';
+import { useManualAuthProviders } from '@/hooks/useManualAuthProviders';
 import { useForm } from 'react-hook-form';
 import { zodResolver } from '@hookform/resolvers/zod';
 import { z } from 'zod';
 import { Eye, EyeOff, Mail, AlertCircle } from 'lucide-react';
 import { FirebaseAuthStatus } from '@/components/auth/FirebaseAuthStatus';
 import { SocialSignInButton } from '@/components/auth/SocialSignInButton';
+import AuthProviderConfig from '@/components/auth/AuthProviderConfig';
 
 const signInSchema = z.object({
   email: z.string().email('Invalid email address'),
@@ -21,27 +24,16 @@ type SignInFormData = z.infer<typeof signInSchema>;
 export default function SignIn() {
   const [showPassword, setShowPassword] = useState(false);
   const [isLoading, setIsLoading] = useState(false);
-  const [authProviders, setAuthProviders] = useState<{
-    emailPassword: boolean;
-    google: boolean;
-    facebook: boolean;
-    twitter: boolean;
-    github: boolean;
-    microsoft: boolean;
-    providers: string[];
-  }>({
-    emailPassword: false,
-    google: false,
-    facebook: false,
-    twitter: false,
-    github: false,
-    microsoft: false,
-    providers: [],
-  });
-  const [checkingProviders, setCheckingProviders] = useState(true);
   
-  const { signIn, checkAuthProviders } = useAuth();
+  const { signIn } = useAuth();
   const router = useRouter();
+  
+  // Use the new hooks for provider detection
+  const { providers: detectedProviders, loading: providersLoading, error: providersError } = useAuthProviders();
+  const { manualProviders, setManualProviders, useManual, setUseManual } = useManualAuthProviders();
+  
+  // Use manual providers if enabled, otherwise use detected providers
+  const activeProviders = useManual ? manualProviders : detectedProviders;
 
   const {
     register,
@@ -51,31 +43,6 @@ export default function SignIn() {
   } = useForm<SignInFormData>({
     resolver: zodResolver(signInSchema),
   });
-
-  useEffect(() => {
-    const loadAuthProviders = async () => {
-      try {
-        const providers = await checkAuthProviders();
-        setAuthProviders(providers);
-      } catch (error) {
-        console.error('Error checking auth providers:', error);
-        // Default to email/password if check fails
-        setAuthProviders({
-          emailPassword: true,
-          google: false,
-          facebook: false,
-          twitter: false,
-          github: false,
-          microsoft: false,
-          providers: ['password'],
-        });
-      } finally {
-        setCheckingProviders(false);
-      }
-    };
-
-    loadAuthProviders();
-  }, [checkAuthProviders]);
 
   const onSubmit = async (data: SignInFormData) => {
     setIsLoading(true);
@@ -102,7 +69,7 @@ export default function SignIn() {
     }
   };
 
-  if (checkingProviders) {
+  if (providersLoading) {
     return (
       <div className="min-h-screen flex items-center justify-center bg-gray-50">
         <div className="max-w-md w-full space-y-8">
@@ -116,8 +83,9 @@ export default function SignIn() {
   }
 
   // Show error if no auth providers are enabled
-  if (!authProviders.emailPassword && !authProviders.google && !authProviders.facebook && 
-      !authProviders.twitter && !authProviders.github && !authProviders.microsoft) {
+  // Check if no providers are available
+  if (!activeProviders.emailPassword && !activeProviders.google && !activeProviders.facebook &&
+      !activeProviders.twitter && !activeProviders.github && !activeProviders.microsoft) {
     return (
       <div className="min-h-screen flex items-center justify-center bg-gray-50 py-12 px-4 sm:px-6 lg:px-8">
         <div className="max-w-md w-full space-y-8">
@@ -173,25 +141,25 @@ export default function SignIn() {
 
           {/* Social Sign-In Providers */}
           <div className="space-y-3">
-            {authProviders.google && (
+            {activeProviders.google && (
               <SocialSignInButton provider="google" onError={(error) => setError('root', { message: error })} />
             )}
-            {authProviders.facebook && (
+            {activeProviders.facebook && (
               <SocialSignInButton provider="facebook" onError={(error) => setError('root', { message: error })} />
             )}
-            {authProviders.twitter && (
+            {activeProviders.twitter && (
               <SocialSignInButton provider="twitter" onError={(error) => setError('root', { message: error })} />
             )}
-            {authProviders.github && (
+            {activeProviders.github && (
               <SocialSignInButton provider="github" onError={(error) => setError('root', { message: error })} />
             )}
-            {authProviders.microsoft && (
+            {activeProviders.microsoft && (
               <SocialSignInButton provider="microsoft" onError={(error) => setError('root', { message: error })} />
             )}
           </div>
 
           {/* Divider - Only show if both email and social providers are available */}
-          {authProviders.emailPassword && (authProviders.google || authProviders.facebook || authProviders.twitter || authProviders.github || authProviders.microsoft) && (
+          {activeProviders.emailPassword && (activeProviders.google || activeProviders.facebook || activeProviders.twitter || activeProviders.github || activeProviders.microsoft) && (
             <div className="relative">
               <div className="absolute inset-0 flex items-center">
                 <div className="w-full border-t border-gray-300" />
@@ -203,7 +171,7 @@ export default function SignIn() {
           )}
 
           {/* Email/Password Form - Only show if enabled */}
-          {authProviders.emailPassword && (
+          {activeProviders.emailPassword && (
             <form className="space-y-6" onSubmit={handleSubmit(onSubmit)}>
               <div className="space-y-4">
                 <div>
@@ -281,6 +249,38 @@ export default function SignIn() {
           )}
         </div>
       </div>
+      
+      {/* Debug Information */}
+      {providersError && (
+        <div className="max-w-md w-full bg-red-50 border border-red-200 rounded-md p-3 mt-4">
+          <p className="text-sm text-red-600">Provider Detection Error: {providersError}</p>
+        </div>
+      )}
+      
+      <div className="max-w-md w-full bg-blue-50 border border-blue-200 rounded-md p-3 mt-4 text-xs">
+        <details>
+          <summary className="cursor-pointer text-blue-700 font-medium">Debug Info</summary>
+          <div className="mt-2 space-y-1 text-blue-600">
+            <p>Loading: {providersLoading ? 'Yes' : 'No'}</p>
+            <p>Manual Mode: {useManual ? 'Yes' : 'No'}</p>
+            <p>Email/Password: {activeProviders.emailPassword ? 'Enabled' : 'Disabled'}</p>
+            <p>Google: {activeProviders.google ? 'Enabled' : 'Disabled'}</p>
+            <p>Facebook: {activeProviders.facebook ? 'Enabled' : 'Disabled'}</p>
+            <p>Twitter: {activeProviders.twitter ? 'Enabled' : 'Disabled'}</p>
+            <p>GitHub: {activeProviders.github ? 'Enabled' : 'Disabled'}</p>
+            <p>Microsoft: {activeProviders.microsoft ? 'Enabled' : 'Disabled'}</p>
+          </div>
+        </details>
+      </div>
+      
+      {/* Manual Configuration Tool */}
+      <AuthProviderConfig 
+        currentProviders={manualProviders}
+        onUpdateProviders={(providers) => {
+          setManualProviders(providers);
+          setUseManual(true);
+        }}
+      />
     </div>
   );
 }
