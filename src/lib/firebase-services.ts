@@ -9,6 +9,7 @@ import {
   query,
   orderBy,
   where,
+  writeBatch,
   Timestamp,
 } from 'firebase/firestore';
 import { db } from '@/lib/firebase';
@@ -126,6 +127,10 @@ export const dealService = {
   async delete(id: string): Promise<void> {
     await deleteDoc(doc(db, 'deals', id));
   },
+
+  async moveToStage(id: string, newStageId: string): Promise<void> {
+    await this.update(id, { stageId: newStageId });
+  },
 };
 
 // Deal Stages services
@@ -152,6 +157,17 @@ export const dealStageService = {
 
   async delete(id: string): Promise<void> {
     await deleteDoc(doc(db, 'dealStages', id));
+  },
+
+  async reorder(stages: DealStage[]): Promise<void> {
+    const batch = writeBatch(db);
+    
+    stages.forEach((stage, index) => {
+      const stageRef = doc(db, 'dealStages', stage.id);
+      batch.update(stageRef, { order: index });
+    });
+    
+    await batch.commit();
   },
 
   async initializeDefaultStages(): Promise<void> {

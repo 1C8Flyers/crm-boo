@@ -10,7 +10,26 @@ import type { DealStage } from '@/types';
 import { useForm } from 'react-hook-form';
 import { zodResolver } from '@hookform/resolvers/zod';
 import { z } from 'zod';
-import { Settings, Plus, Trash2, AlertCircle, Save } from 'lucide-react';
+import { Settings, Plus, Trash2, AlertCircle, Save, GripVertical, ArrowUp, ArrowDown } from 'lucide-react';
+import {
+  DndContext,
+  closestCenter,
+  KeyboardSensor,
+  PointerSensor,
+  useSensor,
+  useSensors,
+  DragEndEvent,
+} from '@dnd-kit/core';
+import {
+  arrayMove,
+  SortableContext,
+  sortableKeyboardCoordinates,
+  verticalListSortingStrategy,
+  useSortable,
+} from '@dnd-kit/sortable';
+import {
+  CSS,
+} from '@dnd-kit/utilities';
 
 const stageSchema = z.object({
   name: z.string().min(1, 'Stage name is required'),
@@ -19,6 +38,104 @@ const stageSchema = z.object({
 
 type StageFormData = z.infer<typeof stageSchema>;
 
+interface SortableStageProps {
+  stage: DealStage;
+  onEdit: (stage: DealStage) => void;
+  onDelete: (stageId: string) => void;
+  onMoveUp: (stageId: string) => void;
+  onMoveDown: (stageId: string) => void;
+  canMoveUp: boolean;
+  canMoveDown: boolean;
+}
+
+function SortableStage({ stage, onEdit, onDelete, onMoveUp, onMoveDown, canMoveUp, canMoveDown }: SortableStageProps) {
+  const {
+    attributes,
+    listeners,
+    setNodeRef,
+    transform,
+    transition,
+  } = useSortable({ id: stage.id });
+
+  const style = {
+    transform: CSS.Transform.toString(transform),
+    transition,
+  };
+
+  return (
+    <div
+      ref={setNodeRef}
+      style={style}
+      className="flex items-center justify-between p-4 border border-gray-200 rounded-lg hover:bg-gray-50 bg-white"
+    >
+      <div className="flex items-center space-x-3">
+        <div
+          {...attributes}
+          {...listeners}
+          className="cursor-grab hover:cursor-grabbing p-1"
+        >
+          <GripVertical className="w-4 h-4 text-gray-400" />
+        </div>
+        <div
+          className="w-4 h-4 rounded-full"
+          style={{ backgroundColor: stage.color }}
+        ></div>
+        <span className="font-medium text-gray-900">{stage.name}</span>
+        {stage.isDefault && (
+          <span className="inline-flex items-center px-2.5 py-0.5 rounded-full text-xs font-medium bg-blue-100 text-blue-800">
+            Default
+          </span>
+        )}
+      </div>
+      <div className="flex items-center space-x-2">
+        {/* Arrow buttons for manual ordering */}
+        <div className="flex space-x-1">
+          <button
+            onClick={() => onMoveUp(stage.id)}
+            disabled={!canMoveUp}
+            className={`p-1 rounded ${
+              canMoveUp 
+                ? 'text-gray-400 hover:text-gray-600' 
+                : 'text-gray-200 cursor-not-allowed'
+            }`}
+            title="Move up"
+          >
+            <ArrowUp className="w-4 h-4" />
+          </button>
+          <button
+            onClick={() => onMoveDown(stage.id)}
+            disabled={!canMoveDown}
+            className={`p-1 rounded ${
+              canMoveDown 
+                ? 'text-gray-400 hover:text-gray-600' 
+                : 'text-gray-200 cursor-not-allowed'
+            }`}
+            title="Move down"
+          >
+            <ArrowDown className="w-4 h-4" />
+          </button>
+        </div>
+
+        <button
+          onClick={() => onEdit(stage)}
+          className="px-3 py-1 border border-gray-300 rounded-md text-sm font-medium text-gray-700 bg-white hover:bg-gray-50"
+        >
+          Edit
+        </button>
+        {!stage.isDefault && (
+          <button
+            onClick={() => onDelete(stage.id)}
+            className="px-3 py-1 border border-red-300 rounded-md text-sm font-medium text-red-700 bg-red-50 hover:bg-red-100"
+            title="Delete stage"
+          >
+            <Trash2 className="w-4 h-4" />
+          </button>
+        )}
+      </div>
+    </div>
+  );
+}
+
 export default function SettingsPage() {
   const { user, loading } = useAuth();
   const router = useRouter();
@@ -26,6 +143,14 @@ export default function SettingsPage() {
   const [isLoading, setIsLoading] = useState(true);
   const [isSubmitting, setIsSubmitting] = useState(false);
   const [editingStage, setEditingStage] = useState<string | null>(null);
+  const [isReordering, setIsReordering] = useState(false);
+
+  const sensors = useSensors(
+    useSensor(PointerSensor),
+    useSensor(KeyboardSensor, {
+      coordinateGetter: sortableKeyboardCoordinates,
+    })
+  );
 
   const {
     register,
@@ -65,6 +190,82 @@ export default function SettingsPage() {
       console.error('Error loading stages:', error);
     } finally {
       setIsLoading(false);
+    }
+  };
+
+  const handleDragEnd = async (event: DragEndEvent) => {
+    const { active, over } = event;
+
+    if (over && active.id !== over.id) {
+      const oldIndex = stages.findIndex((stage) => stage.id === active.id);
+      const newIndex = stages.findIndex((stage) => stage.id === over.id);
+
+      const newStages = arrayMove(stages, oldIndex, newIndex);
+      
+      // Update order property
+      const orderedStages = newStages.map((stage, index) => ({
+        ...stage,
+        order: index
+      }));
+
+      setStages(orderedStages);
+      setIsReordering(true);
+
+      try {
+        await dealStageService.reorder(orderedStages);
+      } catch (error) {
+        console.error('Error reordering stages:', error);
+        // Revert on error
+        setStages(stages);
+      } finally {
+        setIsReordering(false);
+      }
+    }
+  };
+
+  const handleMoveUp = async (stageId: string) => {
+    const currentIndex = stages.findIndex(stage => stage.id === stageId);
+    if (currentIndex > 0) {
+      const newStages = arrayMove(stages, currentIndex, currentIndex - 1);
+      const orderedStages = newStages.map((stage, index) => ({
+        ...stage,
+        order: index
+      }));
+
+      setStages(orderedStages);
+      setIsReordering(true);
+
+      try {
+        await dealStageService.reorder(orderedStages);
+      } catch (error) {
+        console.error('Error reordering stages:', error);
+        setStages(stages);
+      } finally {
+        setIsReordering(false);
+      }
+    }
+  };
+
+  const handleMoveDown = async (stageId: string) => {
+    const currentIndex = stages.findIndex(stage => stage.id === stageId);
+    if (currentIndex < stages.length - 1) {
+      const newStages = arrayMove(stages, currentIndex, currentIndex + 1);
+      const orderedStages = newStages.map((stage, index) => ({
+        ...stage,
+        order: index
+      }));
+
+      setStages(orderedStages);
+      setIsReordering(true);
+
+      try {
+        await dealStageService.reorder(orderedStages);
+      } catch (error) {
+        console.error('Error reordering stages:', error);
+        setStages(stages);
+      } finally {
+        setIsReordering(false);
+      }
     }
   };
 
@@ -110,7 +311,19 @@ export default function SettingsPage() {
   };
 
   const handleDelete = async (stageId: string) => {
-    if (!confirm('Are you sure you want to delete this stage? This cannot be undone.')) {
+    const stage = stages.find(s => s.id === stageId);
+    if (!stage) return;
+
+    const confirmMessage = stage.isDefault 
+      ? "You cannot delete default stages."
+      : `Are you sure you want to delete the "${stage.name}" stage? This action cannot be undone and may affect existing deals.`;
+
+    if (stage.isDefault) {
+      alert(confirmMessage);
+      return;
+    }
+
+    if (!confirm(confirmMessage)) {
       return;
     }
 
@@ -278,42 +491,41 @@ export default function SettingsPage() {
                 ))}
               </div>
             ) : (
-              <div className="space-y-4">
-                {stages.map((stage) => (
-                  <div
-                    key={stage.id}
-                    className="flex items-center justify-between p-4 border border-gray-200 rounded-lg hover:bg-gray-50"
-                  >
-                    <div className="flex items-center space-x-3">
-                      <div
-                        className="w-4 h-4 rounded-full"
-                        style={{ backgroundColor: stage.color }}
-                      ></div>
-                      <span className="font-medium text-gray-900">{stage.name}</span>
-                      {stage.isDefault && (
-                        <span className="inline-flex items-center px-2.5 py-0.5 rounded-full text-xs font-medium bg-blue-100 text-blue-800">
-                          Default
-                        </span>
-                      )}
+              <div>
+                <div className="flex items-center justify-between mb-4">
+                  <p className="text-sm text-gray-600">
+                    Drag stages to reorder them, or use the arrow buttons
+                  </p>
+                  {isReordering && (
+                    <div className="flex items-center text-sm text-blue-600">
+                      <div className="w-4 h-4 border-2 border-blue-600 border-t-transparent rounded-full animate-spin mr-2" />
+                      Saving order...
                     </div>
-                    <div className="flex space-x-2">
-                      <button
-                        onClick={() => handleEdit(stage)}
-                        className="px-3 py-1 border border-gray-300 rounded-md text-sm font-medium text-gray-700 bg-white hover:bg-gray-50"
-                      >
-                        Edit
-                      </button>
-                      {!stage.isDefault && (
-                        <button
-                          onClick={() => handleDelete(stage.id)}
-                          className="px-3 py-1 border border-red-300 rounded-md text-sm font-medium text-red-700 bg-red-50 hover:bg-red-100"
-                        >
-                          <Trash2 className="w-4 h-4" />
-                        </button>
-                      )}
+                  )}
+                </div>
+                
+                <DndContext
+                  sensors={sensors}
+                  collisionDetection={closestCenter}
+                  onDragEnd={handleDragEnd}
+                >
+                  <SortableContext items={stages.map(s => s.id)} strategy={verticalListSortingStrategy}>
+                    <div className="space-y-3">
+                      {stages.map((stage, index) => (
+                        <SortableStage
+                          key={stage.id}
+                          stage={stage}
+                          onEdit={handleEdit}
+                          onDelete={handleDelete}
+                          onMoveUp={handleMoveUp}
+                          onMoveDown={handleMoveDown}
+                          canMoveUp={index > 0}
+                          canMoveDown={index < stages.length - 1}
+                        />
+                      ))}
                     </div>
-                  </div>
-                ))}
+                  </SortableContext>
+                </DndContext>
               </div>
             )}
           </div>
