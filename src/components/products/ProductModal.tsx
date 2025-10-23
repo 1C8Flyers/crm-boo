@@ -125,7 +125,7 @@ export function ProductModal({ product, onClose, onSave }: ProductModalProps) {
                   <input
                     {...register('name')}
                     type="text"
-                    className="mt-1 block w-full px-3 py-2 border border-gray-300 rounded-md shadow-sm focus:outline-none focus:ring-blue-500 focus:border-blue-500 sm:text-sm"
+                    className="mt-1 block w-full px-3 py-2 border border-gray-300 rounded-md shadow-sm focus:outline-none focus:ring-blue-500 focus:border-blue-500 sm:text-sm placeholder:text-gray-500"
                     placeholder="Enter product name"
                   />
                   {errors.name && (
@@ -140,7 +140,7 @@ export function ProductModal({ product, onClose, onSave }: ProductModalProps) {
                   <textarea
                     {...register('description')}
                     rows={3}
-                    className="mt-1 block w-full px-3 py-2 border border-gray-300 rounded-md shadow-sm focus:outline-none focus:ring-blue-500 focus:border-blue-500 sm:text-sm"
+                    className="mt-1 block w-full px-3 py-2 border border-gray-300 rounded-md shadow-sm focus:outline-none focus:ring-blue-500 focus:border-blue-500 sm:text-sm placeholder:text-gray-500"
                     placeholder="Enter product description"
                   />
                   {errors.description && (
@@ -161,7 +161,7 @@ export function ProductModal({ product, onClose, onSave }: ProductModalProps) {
                       type="number"
                       step="0.01"
                       min="0"
-                      className="block w-full pl-7 pr-3 py-2 border border-gray-300 rounded-md focus:outline-none focus:ring-blue-500 focus:border-blue-500 sm:text-sm"
+                      className="block w-full pl-7 pr-3 py-2 border border-gray-300 rounded-md focus:outline-none focus:ring-blue-500 focus:border-blue-500 sm:text-sm placeholder:text-gray-500"
                       placeholder="0.00"
                     />
                   </div>

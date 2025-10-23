@@ -24,3 +24,73 @@ body {
   color: var(--foreground);
   font-family: Arial, Helvetica, sans-serif;
 }
+
+/* Enhanced placeholder visibility with highest specificity */
+input::placeholder,
+textarea::placeholder,
+select::placeholder {
+  color: #111827 !important; /* Gray-900 for maximum visibility */
+  opacity: 1 !important;
+  font-weight: 400 !important;
+}
+
+/* Ensure placeholders are visible in all browsers with highest specificity */
+*[placeholder]:not([placeholder=""])::-webkit-input-placeholder,
+*[placeholder]:not([placeholder=""])::-moz-placeholder,
+*[placeholder]:not([placeholder=""]):-ms-input-placeholder,
+*[placeholder]:not([placeholder=""]):-moz-placeholder {
+  color: #111827 !important;
+  opacity: 1 !important;
+  font-weight: 400 !important;
+}
+
+/* Additional targeting for form inputs */
+form input[type="text"]::placeholder,
+form input[type="email"]::placeholder,
+form input[type="tel"]::placeholder,
+form input[type="number"]::placeholder,
+form input[type="password"]::placeholder,
+form textarea::placeholder {
+  color: #111827 !important;
+  opacity: 1 !important;
+  font-weight: 400 !important;
+}
+
+/* Darker placeholder for better contrast */
+input:focus::placeholder,
+textarea:focus::placeholder {
+  color: #374151 !important; /* Gray-700 */
+}
+
+/* Target React Hook Form registered inputs specifically */
+.block.w-full::placeholder {
+  color: #111827 !important;
+  opacity: 1 !important;
+}
+
+/* Custom class for visible placeholders */
+.visible-placeholder::placeholder {
+  color: #111827 !important;
+  opacity: 1 !important;
+  font-weight: normal !important;
+}
+
+.visible-placeholder::-webkit-input-placeholder {
+  color: #111827 !important;
+  opacity: 1 !important;
+}
+
+.visible-placeholder::-moz-placeholder {
+  color: #111827 !important;
+  opacity: 1 !important;
+}
+
+.visible-placeholder:-ms-input-placeholder {
+  color: #111827 !important;
+  opacity: 1 !important;
+}
+
+.visible-placeholder:-moz-placeholder {
+  color: #111827 !important;
+  opacity: 1 !important;
+}

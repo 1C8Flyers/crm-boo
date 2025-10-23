@@ -10,7 +10,6 @@ import { useForm } from 'react-hook-form';
 import { zodResolver } from '@hookform/resolvers/zod';
 import { z } from 'zod';
 import { Eye, EyeOff, Mail, AlertCircle } from 'lucide-react';
-import { FirebaseAuthStatus } from '@/components/auth/FirebaseAuthStatus';
 import { SocialSignInButton } from '@/components/auth/SocialSignInButton';
 import AuthProviderConfig from '@/components/auth/AuthProviderConfig';
 
@@ -136,9 +135,6 @@ export default function SignIn() {
         </div>
 
         <div className="space-y-4">
-          {/* Firebase Auth Status - Debug Component */}
-          <FirebaseAuthStatus />
-
           {/* Social Sign-In Providers */}
           <div className="space-y-3">
             {activeProviders.google && (
@@ -183,7 +179,7 @@ export default function SignIn() {
                       {...register('email')}
                       type="email"
                       autoComplete="email"
-                      className="block w-full px-3 py-2 pl-10 border border-gray-300 rounded-md shadow-sm focus:outline-none focus:ring-blue-500 focus:border-blue-500 sm:text-sm"
+                      className="block w-full px-3 py-2 pl-10 border border-gray-300 rounded-md shadow-sm focus:outline-none focus:ring-blue-500 focus:border-blue-500 sm:text-sm placeholder:text-gray-500"
                       placeholder="Enter your email"
                     />
                     <Mail className="absolute left-3 top-2.5 h-4 w-4 text-gray-400" />
@@ -202,7 +198,7 @@ export default function SignIn() {
                       {...register('password')}
                       type={showPassword ? 'text' : 'password'}
                       autoComplete="current-password"
-                      className="block w-full px-3 py-2 pr-10 border border-gray-300 rounded-md shadow-sm focus:outline-none focus:ring-blue-500 focus:border-blue-500 sm:text-sm"
+                      className="block w-full px-3 py-2 pr-10 border border-gray-300 rounded-md shadow-sm focus:outline-none focus:ring-blue-500 focus:border-blue-500 sm:text-sm placeholder:text-gray-500"
                       placeholder="Enter your password"
                     />
                     <button
