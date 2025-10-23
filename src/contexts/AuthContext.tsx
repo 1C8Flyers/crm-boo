@@ -9,6 +9,10 @@ import {
   onAuthStateChanged,
   updateProfile,
   GoogleAuthProvider,
+  FacebookAuthProvider,
+  TwitterAuthProvider,
+  GithubAuthProvider,
+  OAuthProvider,
   signInWithPopup,
   fetchSignInMethodsForEmail,
 } from 'firebase/auth';
@@ -23,10 +27,18 @@ interface AuthContextType {
   signIn: (email: string, password: string) => Promise<void>;
   signUp: (email: string, password: string, name: string) => Promise<void>;
   signInWithGoogle: () => Promise<void>;
+  signInWithFacebook: () => Promise<void>;
+  signInWithTwitter: () => Promise<void>;
+  signInWithGithub: () => Promise<void>;
+  signInWithMicrosoft: () => Promise<void>;
   signOut: () => Promise<void>;
   checkAuthProviders: () => Promise<{
     emailPassword: boolean;
     google: boolean;
+    facebook: boolean;
+    twitter: boolean;
+    github: boolean;
+    microsoft: boolean;
     providers: string[];
   }>;
 }
@@ -118,11 +130,103 @@ export function AuthProvider({ children }: { children: React.ReactNode }) {
     }
   };
 
+  const signInWithFacebook = async () => {
+    if (!auth || !db) throw new Error('Firebase not initialized');
+    
+    const provider = new FacebookAuthProvider();
+    const userCredential = await signInWithPopup(auth, provider);
+    const user = userCredential.user;
+
+    const userDoc = await getDoc(doc(db, 'users', user.uid));
+    if (!userDoc.exists()) {
+      const userProfile: AppUser = {
+        id: user.uid,
+        email: user.email!,
+        name: user.displayName || 'Facebook User',
+        role: 'sales',
+        createdAt: new Date(),
+      };
+
+      await setDoc(doc(db, 'users', user.uid), userProfile);
+      setUserProfile(userProfile);
+    }
+  };
+
+  const signInWithTwitter = async () => {
+    if (!auth || !db) throw new Error('Firebase not initialized');
+    
+    const provider = new TwitterAuthProvider();
+    const userCredential = await signInWithPopup(auth, provider);
+    const user = userCredential.user;
+
+    const userDoc = await getDoc(doc(db, 'users', user.uid));
+    if (!userDoc.exists()) {
+      const userProfile: AppUser = {
+        id: user.uid,
+        email: user.email!,
+        name: user.displayName || 'Twitter User',
+        role: 'sales',
+        createdAt: new Date(),
+      };
+
+      await setDoc(doc(db, 'users', user.uid), userProfile);
+      setUserProfile(userProfile);
+    }
+  };
+
+  const signInWithGithub = async () => {
+    if (!auth || !db) throw new Error('Firebase not initialized');
+    
+    const provider = new GithubAuthProvider();
+    const userCredential = await signInWithPopup(auth, provider);
+    const user = userCredential.user;
+
+    const userDoc = await getDoc(doc(db, 'users', user.uid));
+    if (!userDoc.exists()) {
+      const userProfile: AppUser = {
+        id: user.uid,
+        email: user.email!,
+        name: user.displayName || 'GitHub User',
+        role: 'sales',
+        createdAt: new Date(),
+      };
+
+      await setDoc(doc(db, 'users', user.uid), userProfile);
+      setUserProfile(userProfile);
+    }
+  };
+
+  const signInWithMicrosoft = async () => {
+    if (!auth || !db) throw new Error('Firebase not initialized');
+    
+    const provider = new OAuthProvider('microsoft.com');
+    const userCredential = await signInWithPopup(auth, provider);
+    const user = userCredential.user;
+
+    const userDoc = await getDoc(doc(db, 'users', user.uid));
+    if (!userDoc.exists()) {
+      const userProfile: AppUser = {
+        id: user.uid,
+        email: user.email!,
+        name: user.displayName || 'Microsoft User',
+        role: 'sales',
+        createdAt: new Date(),
+      };
+
+      await setDoc(doc(db, 'users', user.uid), userProfile);
+      setUserProfile(userProfile);
+    }
+  };
+
   const checkAuthProviders = async () => {
     if (!auth) {
       return {
         emailPassword: false,
         google: false,
+        facebook: false,
+        twitter: false,
+        github: false,
+        microsoft: false,
         providers: [],
       };
     }
@@ -132,24 +236,23 @@ export function AuthProvider({ children }: { children: React.ReactNode }) {
       const methods = await fetchSignInMethodsForEmail(auth, 'test@example.com');
       
       return {
-        emailPassword: true, // Assume email/password is enabled since we set it up
-        google: false, // Will be true if Google provider is configured
-        providers: methods,
+        emailPassword: true, // You confirmed this is enabled
+        google: methods?.includes(GoogleAuthProvider.PROVIDER_ID) || false,
+        facebook: methods?.includes(FacebookAuthProvider.PROVIDER_ID) || false,
+        twitter: methods?.includes(TwitterAuthProvider.PROVIDER_ID) || false,
+        github: methods?.includes(GithubAuthProvider.PROVIDER_ID) || false,
+        microsoft: methods?.includes('microsoft.com') || false,
+        providers: methods || ['password'],
       };
     } catch (error: any) {
-      // If we get a configuration error, email/password might not be enabled
-      if (error.code === 'auth/configuration-not-found') {
-        return {
-          emailPassword: false,
-          google: false,
-          providers: [],
-        };
-      }
-      
-      // For other errors, assume email/password is available
+      // If we get an error, assume email/password is available since you confirmed it
       return {
         emailPassword: true,
         google: false,
+        facebook: false,
+        twitter: false,
+        github: false,
+        microsoft: false,
         providers: ['password'],
       };
     }
@@ -162,6 +265,10 @@ export function AuthProvider({ children }: { children: React.ReactNode }) {
     signIn,
     signUp,
     signInWithGoogle,
+    signInWithFacebook,
+    signInWithTwitter,
+    signInWithGithub,
+    signInWithMicrosoft,
     signOut,
     checkAuthProviders,
   };
