@@ -17,10 +17,30 @@ let app: any = null;
 let auth: any = null;
 let db: any = null;
 
-if (typeof window !== 'undefined' && process.env.NEXT_PUBLIC_FIREBASE_API_KEY) {
-  app = initializeApp(firebaseConfig);
-  auth = getAuth(app);
-  db = getFirestore(app);
+try {
+  if (typeof window !== 'undefined') {
+    // Check if we have actual Firebase config (not demo values)
+    const hasRealConfig = process.env.NEXT_PUBLIC_FIREBASE_API_KEY && 
+                          process.env.NEXT_PUBLIC_FIREBASE_API_KEY !== 'demo-api-key';
+    
+    if (hasRealConfig) {
+      console.log('Initializing Firebase with config:', {
+        projectId: firebaseConfig.projectId,
+        authDomain: firebaseConfig.authDomain,
+        hasApiKey: !!firebaseConfig.apiKey,
+      });
+      
+      app = initializeApp(firebaseConfig);
+      auth = getAuth(app);
+      db = getFirestore(app);
+      
+      console.log('Firebase initialized successfully');
+    } else {
+      console.warn('Firebase not initialized: Using demo configuration. Please set environment variables.');
+    }
+  }
+} catch (error) {
+  console.error('Firebase initialization error:', error);
 }
 
 export { auth, db };
