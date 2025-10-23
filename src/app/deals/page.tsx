@@ -17,7 +17,7 @@ import {
   useSensors,
   DragStartEvent,
   DragEndEvent,
-  DragOverEvent,
+  useDroppable,
 } from '@dnd-kit/core';
 import {
   SortableContext,
@@ -109,6 +109,56 @@ function DealCard({ deal, customerName, isDragging = false }: DealCardProps) {
   );
 }
 
+interface DroppableStageProps {
+  stage: DealStage;
+  deals: Deal[];
+  customerNames: Record<string, string>;
+  activeId: string | null;
+}
+
+function DroppableStage({ stage, deals, customerNames, activeId }: DroppableStageProps) {
+  const { setNodeRef } = useDroppable({
+    id: stage.id,
+  });
+
+  return (
+    <div
+      ref={setNodeRef}
+      className="bg-white rounded-lg shadow-sm border border-gray-200 p-4"
+    >
+      <div className="flex items-center justify-between mb-4">
+        <h3 className="font-semibold text-gray-900">{stage.name}</h3>
+        <span className="bg-gray-100 text-gray-600 px-2 py-1 rounded-full text-sm">
+          {deals.length}
+        </span>
+      </div>
+
+      <SortableContext
+        items={deals.map(deal => deal.id)}
+        strategy={verticalListSortingStrategy}
+      >
+        <div className="space-y-3 min-h-[200px]">
+          {deals.map((deal) => (
+            <DealCard
+              key={deal.id}
+              deal={deal}
+              customerName={customerNames[deal.customerId] || 'Unknown Customer'}
+              isDragging={deal.id === activeId}
+            />
+          ))}
+          
+          {/* Drop zone for empty stages */}
+          {deals.length === 0 && (
+            <div className="border-2 border-dashed border-gray-200 rounded-lg p-8 text-center text-gray-400">
+              Drop deals here
+            </div>
+          )}
+        </div>
+      </SortableContext>
+    </div>
+  );
+}
+
 export default function Deals() {
   const { user, loading } = useAuth();
   const router = useRouter();
@@ -179,42 +229,14 @@ export default function Deals() {
     return customer?.name || 'Unknown Customer';
   };
 
+  // Create a mapping for efficient customer name lookups
+  const customerNames = customers.reduce((acc, customer) => {
+    acc[customer.id] = customer.name;
+    return acc;
+  }, {} as Record<string, string>);
+
   const handleDragStart = (event: DragStartEvent) => {
     setActiveId(event.active.id as string);
-  };
-
-  const handleDragOver = (event: DragOverEvent) => {
-    const { active, over } = event;
-
-    if (!over) return;
-
-    const activeId = active.id as string;
-    const overId = over.id as string;
-
-    // Find the deal being dragged
-    const activeDeal = deals.find(deal => deal.id === activeId);
-    if (!activeDeal) return;
-
-    // Check if we're dropping over a stage or another deal
-    const overStage = stages.find(stage => stage.id === overId);
-    const overDeal = deals.find(deal => deal.id === overId);
-
-    // If we're over a stage, move the deal to that stage
-    if (overStage && activeDeal.stageId !== overStage.id) {
-      setDeals(deals => deals.map(deal => 
-        deal.id === activeId 
-          ? { ...deal, stageId: overStage.id }
-          : deal
-      ));
-    }
-    // If we're over another deal, move to that deal's stage
-    else if (overDeal && activeDeal.stageId !== overDeal.stageId) {
-      setDeals(deals => deals.map(deal => 
-        deal.id === activeId 
-          ? { ...deal, stageId: overDeal.stageId }
-          : deal
-      ));
-    }
   };
 
   const handleDragEnd = async (event: DragEndEvent) => {
@@ -230,26 +252,40 @@ export default function Deals() {
     const activeDeal = deals.find(deal => deal.id === activeId);
     if (!activeDeal) return;
 
-    // Determine the target stage
-    let targetStageId: string | null = null;
-    
+    // Check if we're dropping over a stage
     const overStage = stages.find(stage => stage.id === overId);
-    const overDeal = deals.find(deal => deal.id === overId);
     
+    let targetStageId: string | null = null;
+
     if (overStage) {
+      // Dropped directly on a stage
       targetStageId = overStage.id;
-    } else if (overDeal) {
-      targetStageId = overDeal.stageId;
+    } else {
+      // Check if dropped on another deal
+      const overDeal = deals.find(deal => deal.id === overId);
+      if (overDeal) {
+        targetStageId = overDeal.stageId;
+      }
     }
 
     // If moving to a different stage, update in Firebase
     if (targetStageId && activeDeal.stageId !== targetStageId) {
       try {
+        // Optimistically update the UI
+        setDeals(deals => deals.map(deal => 
+          deal.id === activeId 
+            ? { ...deal, stageId: targetStageId! }
+            : deal
+        ));
+
+        // Update in Firebase
         await dealService.moveToStage(activeId, targetStageId);
-        await loadData(); // Reload to ensure consistency
+        
+        // Reload to ensure consistency
+        await loadData();
       } catch (error) {
         console.error('Error moving deal:', error);
-        // Revert optimistic update
+        // Reload to revert changes on error
         await loadData();
       }
     }
@@ -299,7 +335,6 @@ export default function Deals() {
           sensors={sensors}
           collisionDetection={closestCenter}
           onDragStart={handleDragStart}
-          onDragOver={handleDragOver}
           onDragEnd={handleDragEnd}
         >
           {isLoading ? (
@@ -325,43 +360,13 @@ export default function Deals() {
           ) : (
             <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 xl:grid-cols-4 gap-6">
               {stages.map((stage) => (
-                <div
+                <DroppableStage
                   key={stage.id}
-                  className="bg-white rounded-lg shadow-sm border border-gray-200 p-4"
-                >
-                  <div className="flex items-center justify-between mb-4">
-                    <h3 className="font-semibold text-gray-900">{stage.name}</h3>
-                    <span className="bg-gray-100 text-gray-600 px-2 py-1 rounded-full text-sm">
-                      {dealsByStage[stage.id]?.length || 0}
-                    </span>
-                  </div>
-
-                  <SortableContext
-                    items={dealsByStage[stage.id]?.map(deal => deal.id) || []}
-                    strategy={verticalListSortingStrategy}
-                  >
-                    <div className="space-y-3 min-h-[200px]">
-                      {dealsByStage[stage.id]?.map((deal) => (
-                        <DealCard
-                          key={deal.id}
-                          deal={deal}
-                          customerName={getCustomerName(deal.customerId)}
-                          isDragging={deal.id === activeId}
-                        />
-                      ))}
-                      
-                      {/* Drop zone for empty stages */}
-                      {(!dealsByStage[stage.id] || dealsByStage[stage.id].length === 0) && (
-                        <div
-                          className="border-2 border-dashed border-gray-200 rounded-lg p-8 text-center text-gray-400"
-                          data-stage-id={stage.id}
-                        >
-                          Drop deals here
-                        </div>
-                      )}
-                    </div>
-                  </SortableContext>
-                </div>
+                  stage={stage}
+                  deals={dealsByStage[stage.id] || []}
+                  customerNames={customerNames}
+                  activeId={activeId}
+                />
               ))}
             </div>
           )}
