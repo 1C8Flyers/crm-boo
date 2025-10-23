@@ -95,21 +95,85 @@ function InvoiceDetailContent() {
   };
 
   const generatePDF = () => {
-    if (!invoice || !customer || !company) return;
+    console.log('generatePDF called', { 
+      hasInvoice: !!invoice, 
+      hasCustomer: !!customer, 
+      hasCompany: !!company 
+    });
 
-    // Create HTML content for PDF
-    const htmlContent = generateInvoiceHTML(invoice, customer, company);
-    
-    // Open in new window for printing/saving as PDF
-    const printWindow = window.open('', '_blank');
-    if (printWindow) {
-      printWindow.document.write(htmlContent);
-      printWindow.document.close();
-      printWindow.focus();
+    if (!invoice || !customer) {
+      console.log('Missing required data:', { invoice: !!invoice, customer: !!customer, company: !!company });
+      alert('Missing invoice or customer data. Please try refreshing the page.');
+      return;
+    }
+
+    try {
+      // Use company data if available, otherwise use default
+      const companyInfo = company || {
+        id: 'default',
+        name: 'Your Company Name',
+        email: 'email@company.com',
+        phone: '',
+        website: '',
+        taxId: '',
+        address: {
+          street: '123 Business St',
+          city: 'City',
+          state: 'State',
+          zipCode: '12345',
+          country: 'Country'
+        },
+        createdAt: new Date(),
+        updatedAt: new Date()
+      };
+
+      console.log('Generating HTML for invoice:', invoice.invoiceNumber);
+
+      // Create HTML content for PDF
+      const htmlContent = generateInvoiceHTML(invoice, customer, companyInfo);
+      
+      console.log('HTML content generated, opening window...');
+
+      // Open in new window for printing/saving as PDF
+      const printWindow = window.open('', '_blank');
+      if (printWindow) {
+        printWindow.document.write(htmlContent);
+        printWindow.document.close();
+        printWindow.focus();
+        console.log('PDF window opened successfully');
+      } else {
+        // Fallback: create downloadable HTML file
+        console.log('Popup blocked, creating downloadable file...');
+        const blob = new Blob([htmlContent], { type: 'text/html' });
+        const url = URL.createObjectURL(blob);
+        const a = document.createElement('a');
+        a.href = url;
+        a.download = `invoice-${invoice.invoiceNumber}.html`;
+        document.body.appendChild(a);
+        a.click();
+        document.body.removeChild(a);
+        URL.revokeObjectURL(url);
+        alert('PDF generation via popup was blocked. Downloaded HTML file instead. Open it in your browser and print to PDF.');
+      }
+    } catch (error) {
+      console.error('Error generating PDF:', error);
+      alert('Error generating PDF. Please check the console for details.');
     }
   };
 
   const generateInvoiceHTML = (invoice: Invoice, customer: Customer, company: Company): string => {
+    // Ensure dates are Date objects
+    const formatDate = (date: any): string => {
+      if (!date) return new Date().toLocaleDateString();
+      if (date.toDate && typeof date.toDate === 'function') {
+        return date.toDate().toLocaleDateString();
+      }
+      if (date instanceof Date) {
+        return date.toLocaleDateString();
+      }
+      return new Date(date).toLocaleDateString();
+    };
+
     return `
       <!DOCTYPE html>
       <html>
@@ -148,8 +212,8 @@ function InvoiceDetailContent() {
           <div class="invoice-info">
             <h2>INVOICE</h2>
             <p><strong>Invoice #:</strong> ${invoice.invoiceNumber}</p>
-            <p><strong>Date:</strong> ${invoice.createdAt.toLocaleDateString()}</p>
-            <p><strong>Due Date:</strong> ${invoice.dueDate.toLocaleDateString()}</p>
+            <p><strong>Date:</strong> ${formatDate(invoice.createdAt)}</p>
+            <p><strong>Due Date:</strong> ${formatDate(invoice.dueDate)}</p>
             <span class="status">${statusConfig[invoice.status].label}</span>
           </div>
         </div>
@@ -268,7 +332,10 @@ function InvoiceDetailContent() {
             </div>
             <div className="flex items-center space-x-3">
               <button
-                onClick={generatePDF}
+                onClick={() => {
+                  console.log('PDF button clicked', { invoice: !!invoice, customer: !!customer, company: !!company });
+                  generatePDF();
+                }}
                 className="inline-flex items-center px-3 py-2 border border-gray-300 shadow-sm text-sm leading-4 font-medium rounded-md text-gray-700 bg-white hover:bg-gray-50 focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-blue-500"
               >
                 <Download className="mr-2 h-4 w-4" />
