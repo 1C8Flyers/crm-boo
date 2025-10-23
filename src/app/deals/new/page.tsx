@@ -197,7 +197,7 @@ export default function NewDeal() {
                     {...register('value', { valueAsNumber: true })}
                     type="number"
                     step="0.01"
-                    className="block w-full pl-7 border border-gray-300 rounded-md shadow-sm py-2 px-3 focus:outline-none focus:ring-blue-500 focus:border-blue-500 placeholder:text-gray-500"
+                    className="block w-full pl-7 border border-gray-300 rounded-md shadow-sm py-2 px-3 focus:outline-none focus:ring-blue-500 focus:border-blue-500"
                     placeholder="0.00"
                   />
                 </div>
@@ -215,7 +215,7 @@ export default function NewDeal() {
                   type="number"
                   min="0"
                   max="100"
-                  className="mt-1 block w-full border border-gray-300 rounded-md shadow-sm py-2 px-3 focus:outline-none focus:ring-blue-500 focus:border-blue-500 placeholder:text-gray-500"
+                  className="mt-1 block w-full border border-gray-300 rounded-md shadow-sm py-2 px-3 focus:outline-none focus:ring-blue-500 focus:border-blue-500"
                   placeholder="50"
                 />
                 {errors.probability && (
@@ -264,7 +264,7 @@ export default function NewDeal() {
                 <textarea
                   {...register('description')}
                   rows={4}
-                  className="mt-1 block w-full border border-gray-300 rounded-md shadow-sm py-2 px-3 focus:outline-none focus:ring-blue-500 focus:border-blue-500 placeholder:text-gray-500"
+                  className="mt-1 block w-full border border-gray-300 rounded-md shadow-sm py-2 px-3 focus:outline-none focus:ring-blue-500 focus:border-blue-500"
                   placeholder="Enter deal description (optional)"
                 />
                 {errors.description && (

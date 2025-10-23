@@ -25,6 +25,13 @@ body {
   font-family: Arial, Helvetica, sans-serif;
 }
 
+/* Ensure input text is dark */
+input,
+textarea,
+select {
+  color: #111827 !important; /* Dark text for user input */
+}
+
 /* Enhanced placeholder visibility with highest specificity */
 input::placeholder,
 textarea::placeholder,

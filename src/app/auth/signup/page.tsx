@@ -242,7 +242,7 @@ export default function SignUp() {
                       {...register('name')}
                       type="text"
                       autoComplete="name"
-                      className="block w-full px-3 py-2 pl-10 border border-gray-300 rounded-md shadow-sm focus:outline-none focus:ring-blue-500 focus:border-blue-500 sm:text-sm placeholder:text-gray-500"
+                      className="block w-full px-3 py-2 pl-10 border border-gray-300 rounded-md shadow-sm focus:outline-none focus:ring-blue-500 focus:border-blue-500 sm:text-sm"
                       placeholder="Enter your full name"
                     />
                     <User className="absolute left-3 top-2.5 h-4 w-4 text-gray-400" />
@@ -261,7 +261,7 @@ export default function SignUp() {
                       {...register('email')}
                       type="email"
                       autoComplete="email"
-                      className="block w-full px-3 py-2 pl-10 border border-gray-300 rounded-md shadow-sm focus:outline-none focus:ring-blue-500 focus:border-blue-500 sm:text-sm placeholder:text-gray-500"
+                      className="block w-full px-3 py-2 pl-10 border border-gray-300 rounded-md shadow-sm focus:outline-none focus:ring-blue-500 focus:border-blue-500 sm:text-sm"
                       placeholder="Enter your email"
                     />
                     <Mail className="absolute left-3 top-2.5 h-4 w-4 text-gray-400" />
@@ -280,7 +280,7 @@ export default function SignUp() {
                       {...register('password')}
                       type={showPassword ? 'text' : 'password'}
                       autoComplete="new-password"
-                      className="block w-full px-3 py-2 pr-10 border border-gray-300 rounded-md shadow-sm focus:outline-none focus:ring-blue-500 focus:border-blue-500 sm:text-sm placeholder:text-gray-500"
+                      className="block w-full px-3 py-2 pr-10 border border-gray-300 rounded-md shadow-sm focus:outline-none focus:ring-blue-500 focus:border-blue-500 sm:text-sm"
                       placeholder="Enter your password"
                     />
                     <button
@@ -309,7 +309,7 @@ export default function SignUp() {
                       {...register('confirmPassword')}
                       type={showConfirmPassword ? 'text' : 'password'}
                       autoComplete="new-password"
-                      className="block w-full px-3 py-2 pr-10 border border-gray-300 rounded-md shadow-sm focus:outline-none focus:ring-blue-500 focus:border-blue-500 sm:text-sm placeholder:text-gray-500"
+                      className="block w-full px-3 py-2 pr-10 border border-gray-300 rounded-md shadow-sm focus:outline-none focus:ring-blue-500 focus:border-blue-500 sm:text-sm"
                       placeholder="Confirm your password"
                     />
                     <button
