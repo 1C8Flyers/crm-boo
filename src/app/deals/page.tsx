@@ -36,6 +36,7 @@ interface DealCardProps {
 }
 
 function DealCard({ deal, customerName, isDragging = false }: DealCardProps) {
+  const cardRouter = useRouter();
   const {
     attributes,
     listeners,
@@ -49,6 +50,14 @@ function DealCard({ deal, customerName, isDragging = false }: DealCardProps) {
     transition,
   };
 
+  const handleClick = (e: React.MouseEvent) => {
+    // Don't navigate if clicking on the drag handle
+    if ((e.target as Element).closest('[data-drag-handle]')) {
+      return;
+    }
+    cardRouter.push(`/deals/${deal.id}`);
+  };
+
   return (
     <div
       ref={setNodeRef}
@@ -57,12 +66,15 @@ function DealCard({ deal, customerName, isDragging = false }: DealCardProps) {
         isDragging ? 'opacity-50' : 'hover:bg-gray-100'
       }`}
       {...attributes}
+      onClick={handleClick}
     >
       <div className="flex items-start justify-between mb-2">
         <h4 className="font-medium text-gray-900 flex-1">{deal.title}</h4>
         <div
           {...listeners}
+          data-drag-handle
           className="cursor-grab hover:cursor-grabbing p-1 ml-2"
+          onClick={(e) => e.stopPropagation()}
         >
           <GripHorizontal className="w-4 h-4 text-gray-400" />
         </div>
@@ -73,6 +85,18 @@ function DealCard({ deal, customerName, isDragging = false }: DealCardProps) {
           <DollarSign className="w-4 h-4 mr-1" />
           <span>${deal.value.toLocaleString()}</span>
         </div>
+        
+        {/* Show subscription vs one-time breakdown if available */}
+        {(deal.subscriptionValue || deal.oneTimeValue) && (
+          <div className="text-xs text-gray-500 ml-5">
+            {deal.subscriptionValue && (
+              <div>Subscription: ${deal.subscriptionValue.toLocaleString()}</div>
+            )}
+            {deal.oneTimeValue && (
+              <div>One-time: ${deal.oneTimeValue.toLocaleString()}</div>
+            )}
+          </div>
+        )}
         
         <div className="flex items-center">
           <User className="w-4 h-4 mr-1" />

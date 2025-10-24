@@ -13,6 +13,9 @@ interface DashboardStats {
   totalProducts: number;
   totalInvoices: number;
   totalRevenue: number;
+  totalDealValue: number;
+  subscriptionDealValue: number;
+  oneTimeDealValue: number;
   upcomingTasks: number;
 }
 
@@ -25,6 +28,9 @@ export default function Dashboard() {
     totalProducts: 0,
     totalInvoices: 0,
     totalRevenue: 0,
+    totalDealValue: 0,
+    subscriptionDealValue: 0,
+    oneTimeDealValue: 0,
     upcomingTasks: 0,
   });
   const [isLoadingStats, setIsLoadingStats] = useState(true);
@@ -54,12 +60,20 @@ export default function Dashboard() {
         .filter(invoice => invoice.status === 'paid')
         .reduce((sum, invoice) => sum + invoice.total, 0);
 
+      // Calculate deal values
+      const totalDealValue = deals.reduce((sum, deal) => sum + deal.value, 0);
+      const subscriptionDealValue = deals.reduce((sum, deal) => sum + (deal.subscriptionValue || 0), 0);
+      const oneTimeDealValue = deals.reduce((sum, deal) => sum + (deal.oneTimeValue || 0), 0);
+
       setStats({
         totalCustomers: customers.length,
         totalDeals: deals.length,
         totalProducts: products.length,
         totalInvoices: invoices.length,
         totalRevenue,
+        totalDealValue,
+        subscriptionDealValue,
+        oneTimeDealValue,
         upcomingTasks: 0, // TODO: Implement tasks
       });
     } catch (error) {
@@ -93,10 +107,31 @@ export default function Dashboard() {
       href: '/deals',
     },
     {
+      name: 'Total Deal Value',
+      value: `$${stats.totalDealValue.toLocaleString()}`,
+      icon: DollarSign,
+      color: 'bg-indigo-500',
+      href: '/deals',
+    },
+    {
+      name: 'Subscription Value',
+      value: `$${stats.subscriptionDealValue.toLocaleString()}`,
+      icon: TrendingUp,
+      color: 'bg-purple-500',
+      href: '/deals',
+    },
+    {
+      name: 'One-time Value',
+      value: `$${stats.oneTimeDealValue.toLocaleString()}`,
+      icon: DollarSign,
+      color: 'bg-amber-500',
+      href: '/deals',
+    },
+    {
       name: 'Products',
       value: stats.totalProducts,
       icon: Package,
-      color: 'bg-purple-500',
+      color: 'bg-cyan-500',
       href: '/products',
     },
     {
@@ -111,12 +146,7 @@ export default function Dashboard() {
       value: `$${stats.totalRevenue.toLocaleString()}`,
       icon: DollarSign,
       color: 'bg-emerald-500',
-    },
-    {
-      name: 'Upcoming Tasks',
-      value: stats.upcomingTasks,
-      icon: Calendar,
-      color: 'bg-red-500',
+      href: '/invoices',
     },
   ];
 

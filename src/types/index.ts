@@ -36,6 +36,17 @@ export interface Customer {
 }
 
 // Deal types
+export interface DealProduct {
+  id: string;
+  productId: string;
+  productName: string;
+  quantity: number;
+  price: number;
+  total: number;
+  isSubscription: boolean;
+  subscriptionInterval?: 'monthly' | 'quarterly' | 'yearly';
+}
+
 export interface Deal {
   id: string;
   title: string;
@@ -45,6 +56,9 @@ export interface Deal {
   stageId: string;
   probability: number;
   expectedCloseDate?: Date;
+  products?: DealProduct[];
+  subscriptionValue?: number;
+  oneTimeValue?: number;
   createdAt: Date;
   updatedAt: Date;
   activities?: Activity[];

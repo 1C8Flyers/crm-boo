@@ -82,6 +82,24 @@ export const dealService = {
     })) as Deal[];
   },
 
+  async getById(id: string): Promise<Deal | null> {
+    const docRef = doc(db, 'deals', id);
+    const docSnap = await getDoc(docRef);
+    
+    if (!docSnap.exists()) {
+      return null;
+    }
+
+    const data = docSnap.data();
+    return {
+      ...data,
+      id: docSnap.id,
+      createdAt: data.createdAt.toDate(),
+      updatedAt: data.updatedAt.toDate(),
+      expectedCloseDate: data.expectedCloseDate?.toDate(),
+    } as Deal;
+  },
+
   async getByStage(stageId: string): Promise<Deal[]> {
     const querySnapshot = await getDocs(
       query(
@@ -143,6 +161,20 @@ export const dealStageService = {
       ...doc.data(),
       id: doc.id,
     })) as DealStage[];
+  },
+
+  async getById(id: string): Promise<DealStage | null> {
+    const docRef = doc(db, 'dealStages', id);
+    const docSnap = await getDoc(docRef);
+    
+    if (!docSnap.exists()) {
+      return null;
+    }
+
+    return {
+      ...docSnap.data(),
+      id: docSnap.id,
+    } as DealStage;
   },
 
   async create(stageData: Omit<DealStage, 'id'>): Promise<string> {
