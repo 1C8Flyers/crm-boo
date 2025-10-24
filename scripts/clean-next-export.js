@@ -1,3 +1,4 @@
+/* eslint-disable @typescript-eslint/no-require-imports, @typescript-eslint/no-unused-vars */
 /*
   Clean Next.js export artifacts that can break Firebase Hosting deploys on Windows.
   Removes:
