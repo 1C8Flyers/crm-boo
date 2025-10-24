@@ -96,7 +96,7 @@ export default function CompanySettings() {
     return (
       <div className="bg-white shadow rounded-lg p-6">
         <div className="flex items-center mb-6">
-          <Building2 className="h-6 w-6 text-gray-400 mr-3" />
+          <Building2 className="h-6 w-6 text-gray-700 mr-3" />
           <h2 className="text-lg font-medium text-gray-900">Company Information</h2>
         </div>
         <div className="animate-pulse">
@@ -112,10 +112,10 @@ export default function CompanySettings() {
     <div className="bg-white shadow rounded-lg p-6">
       <div className="flex items-center justify-between mb-6">
         <div className="flex items-center">
-          <Building2 className="h-6 w-6 text-gray-400 mr-3" />
+          <Building2 className="h-6 w-6 text-gray-700 mr-3" />
           <h2 className="text-lg font-medium text-gray-900">Company Information</h2>
         </div>
-        <p className="text-sm text-gray-600">
+        <p className="text-sm text-gray-900">
           This information will appear on your invoices and documents
         </p>
       </div>
@@ -278,11 +278,11 @@ export default function CompanySettings() {
           </label>
           <div className="mt-1 flex justify-center px-6 pt-5 pb-6 border-2 border-gray-300 border-dashed rounded-md">
             <div className="space-y-1 text-center">
-              <Upload className="mx-auto h-12 w-12 text-gray-400" />
-              <div className="flex text-sm text-gray-600">
+              <Upload className="mx-auto h-12 w-12 text-gray-700" />
+              <div className="flex text-sm text-gray-900">
                 <p>Logo upload coming soon</p>
               </div>
-              <p className="text-xs text-gray-500">
+              <p className="text-xs text-gray-800">
                 PNG, JPG, GIF up to 10MB
               </p>
             </div>

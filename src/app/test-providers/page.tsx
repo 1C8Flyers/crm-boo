@@ -66,7 +66,7 @@ export default function ProviderTestPage() {
             <h2 className="text-lg font-semibold mb-4 text-gray-900">Console Logs</h2>
             <div className="bg-gray-900 text-green-400 p-4 rounded text-xs font-mono max-h-96 overflow-y-auto">
               {logs.length === 0 ? (
-                <div className="text-gray-500">No logs yet...</div>
+                <div className="text-gray-900">No logs yet...</div>
               ) : (
                 logs.map((log, index) => (
                   <div key={index} className="mb-1">

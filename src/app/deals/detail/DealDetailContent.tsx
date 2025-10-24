@@ -204,7 +204,7 @@ export default function DealDetailContent() {
     return (
       <DashboardLayout>
         <div className="text-center py-8">
-          <p className="text-gray-500">Deal not found</p>
+          <p className="text-gray-800">Deal not found</p>
         </div>
       </DashboardLayout>
     );
@@ -224,7 +224,7 @@ export default function DealDetailContent() {
             </button>
             <div>
               <h1 className="text-2xl font-bold text-gray-900">{deal.title}</h1>
-              <p className="text-gray-600">Deal Details - LOCAL DEV</p>
+              <p className="text-gray-800">Deal Details - LOCAL DEV</p>
             </div>
           </div>
           <button
@@ -326,7 +326,7 @@ export default function DealDetailContent() {
                             </span>
                           )}
                         </div>
-                        <p className="text-sm text-gray-600">
+                        <p className="text-sm text-gray-800">
                           {formatCurrency(product.price)} × {product.quantity} = {formatCurrency(product.total)}
                         </p>
                       </div>
@@ -347,7 +347,7 @@ export default function DealDetailContent() {
                   </div>
                 </div>
               ) : (
-                <div className="text-center py-8 text-gray-500">
+                <div className="text-center py-8 text-gray-800">
                   <Package className="h-12 w-12 mx-auto mb-3 opacity-40" />
                   <p>No products added yet</p>
                   <p className="text-sm">Click "Add Product" to get started</p>
@@ -363,7 +363,7 @@ export default function DealDetailContent() {
               
               <div className="space-y-4">
                 <div className="flex items-center gap-3">
-                  <Building className="h-5 w-5 text-gray-400" />
+                  <Building className="h-5 w-5 text-gray-700" />
                   <div>
                     <p className="font-bold text-black">{customer.name}</p>
                     <p className="text-sm text-black font-semibold">Company</p>
@@ -372,7 +372,7 @@ export default function DealDetailContent() {
                 
                 {customer.email && (
                   <div className="flex items-center gap-3">
-                    <Mail className="h-5 w-5 text-gray-400" />
+                    <Mail className="h-5 w-5 text-gray-700" />
                     <div>
                       <p className="font-bold text-black">{customer.email}</p>
                       <p className="text-sm text-black font-semibold">Email</p>
@@ -382,7 +382,7 @@ export default function DealDetailContent() {
                 
                 {customer.phone && (
                   <div className="flex items-center gap-3">
-                    <Phone className="h-5 w-5 text-gray-400" />
+                    <Phone className="h-5 w-5 text-gray-700" />
                     <div>
                       <p className="font-bold text-black">{customer.phone}</p>
                       <p className="text-sm text-black font-semibold">Phone</p>
@@ -447,7 +447,7 @@ export default function DealDetailContent() {
                 {selectedProduct && (
                   <div className="p-3 bg-gray-50 rounded-lg">
                     <div className="flex justify-between items-center">
-                      <span className="text-sm text-gray-600">Total:</span>
+                      <span className="text-sm text-gray-800">Total:</span>
                       <span className="font-semibold text-black">
                         {formatCurrency(selectedProduct.price * quantity)}
                       </span>

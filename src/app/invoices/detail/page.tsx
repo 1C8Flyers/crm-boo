@@ -23,11 +23,11 @@ import {
 } from 'lucide-react';
 
 const statusConfig = {
-  draft: { icon: Clock, color: 'text-gray-500', bg: 'bg-gray-100', label: 'Draft' },
+  draft: { icon: Clock, color: 'text-gray-800', bg: 'bg-gray-100', label: 'Draft' },
   sent: { icon: Send, color: 'text-blue-500', bg: 'bg-blue-100', label: 'Sent' },
   paid: { icon: CheckCircle, color: 'text-green-500', bg: 'bg-green-100', label: 'Paid' },
   overdue: { icon: AlertTriangle, color: 'text-red-500', bg: 'bg-red-100', label: 'Overdue' },
-  cancelled: { icon: AlertTriangle, color: 'text-gray-500', bg: 'bg-gray-100', label: 'Cancelled' },
+  cancelled: { icon: AlertTriangle, color: 'text-gray-800', bg: 'bg-gray-100', label: 'Cancelled' },
 };
 
 function InvoiceDetailContent() {
@@ -293,9 +293,9 @@ function InvoiceDetailContent() {
       <DashboardLayout>
         <div className="max-w-4xl mx-auto py-6">
           <div className="text-center">
-            <FileText className="mx-auto h-12 w-12 text-gray-400" />
+            <FileText className="mx-auto h-12 w-12 text-gray-700" />
             <h3 className="mt-2 text-sm font-medium text-gray-900">Invoice not found</h3>
-            <p className="mt-1 text-sm text-gray-500">
+            <p className="mt-1 text-sm text-gray-900">
               The invoice you're looking for doesn't exist or has been deleted.
             </p>
             <div className="mt-6">
@@ -324,7 +324,7 @@ function InvoiceDetailContent() {
             <div className="flex items-center space-x-4">
               <button
                 onClick={() => router.push('/invoices')}
-                className="flex items-center text-sm text-gray-500 hover:text-gray-700"
+                className="flex items-center text-sm text-gray-800 hover:text-gray-900"
               >
                 <ArrowLeft className="mr-1 h-4 w-4" />
                 Back to Invoices
@@ -354,7 +354,7 @@ function InvoiceDetailContent() {
                 <h1 className="text-2xl font-bold text-gray-900">
                   Invoice {invoice.invoiceNumber}
                 </h1>
-                <p className="text-sm text-gray-500">
+                <p className="text-sm text-gray-900">
                   Created on {invoice.createdAt.toLocaleDateString()}
                 </p>
               </div>
@@ -418,7 +418,7 @@ function InvoiceDetailContent() {
                     <Building2 className="mr-2 h-5 w-5" />
                     From
                   </h3>
-                  <div className="text-sm text-gray-600">
+                  <div className="text-sm text-gray-900">
                     <p className="font-medium text-gray-900">{company.name}</p>
                     <p>{company.address.street}</p>
                     <p>{company.address.city}, {company.address.state} {company.address.zipCode}</p>
@@ -436,7 +436,7 @@ function InvoiceDetailContent() {
                     <User className="mr-2 h-5 w-5" />
                     Bill To
                   </h3>
-                  <div className="text-sm text-gray-600">
+                  <div className="text-sm text-gray-900">
                     <p className="font-medium text-gray-900">{customer.name}</p>
                     {customer.company && <p>{customer.company}</p>}
                     <p>{customer.email}</p>
@@ -456,18 +456,18 @@ function InvoiceDetailContent() {
             {/* Invoice Info */}
             <div className="grid grid-cols-1 md:grid-cols-3 gap-4 mb-8 p-4 bg-gray-50 rounded-lg">
               <div>
-                <p className="text-xs font-medium text-gray-500 uppercase tracking-wide">Due Date</p>
+                <p className="text-xs font-medium text-gray-800 uppercase tracking-wide">Due Date</p>
                 <p className="text-sm text-gray-900 flex items-center">
                   <Calendar className="mr-1 h-4 w-4" />
                   {invoice.dueDate.toLocaleDateString()}
                 </p>
               </div>
               <div>
-                <p className="text-xs font-medium text-gray-500 uppercase tracking-wide">Amount</p>
+                <p className="text-xs font-medium text-gray-800 uppercase tracking-wide">Amount</p>
                 <p className="text-lg font-semibold text-gray-900">${invoice.total.toFixed(2)}</p>
               </div>
               <div>
-                <p className="text-xs font-medium text-gray-500 uppercase tracking-wide">Status</p>
+                <p className="text-xs font-medium text-gray-800 uppercase tracking-wide">Status</p>
                 <div className={`inline-flex items-center px-2 py-1 rounded-full text-xs font-medium ${statusConfig[invoice.status].bg} ${statusConfig[invoice.status].color}`}>
                   <StatusIcon className="mr-1 h-3 w-3" />
                   {statusConfig[invoice.status].label}
@@ -482,16 +482,16 @@ function InvoiceDetailContent() {
                 <table className="min-w-full divide-y divide-gray-300">
                   <thead className="bg-gray-50">
                     <tr>
-                      <th className="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wide">
+                      <th className="px-6 py-3 text-left text-xs font-medium text-gray-800 uppercase tracking-wide">
                         Description
                       </th>
-                      <th className="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wide">
+                      <th className="px-6 py-3 text-left text-xs font-medium text-gray-800 uppercase tracking-wide">
                         Qty
                       </th>
-                      <th className="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wide">
+                      <th className="px-6 py-3 text-left text-xs font-medium text-gray-800 uppercase tracking-wide">
                         Price
                       </th>
-                      <th className="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wide">
+                      <th className="px-6 py-3 text-left text-xs font-medium text-gray-800 uppercase tracking-wide">
                         Total
                       </th>
                     </tr>
@@ -502,10 +502,10 @@ function InvoiceDetailContent() {
                         <td className="px-6 py-4 whitespace-nowrap text-sm text-gray-900">
                           {item.productName}
                         </td>
-                        <td className="px-6 py-4 whitespace-nowrap text-sm text-gray-500">
+                        <td className="px-6 py-4 whitespace-nowrap text-sm text-gray-800">
                           {item.quantity}
                         </td>
-                        <td className="px-6 py-4 whitespace-nowrap text-sm text-gray-500">
+                        <td className="px-6 py-4 whitespace-nowrap text-sm text-gray-800">
                           ${item.price.toFixed(2)}
                         </td>
                         <td className="px-6 py-4 whitespace-nowrap text-sm text-gray-900">
@@ -523,11 +523,11 @@ function InvoiceDetailContent() {
               <div className="w-64">
                 <dl className="space-y-2">
                   <div className="flex justify-between text-sm">
-                    <dt className="text-gray-600">Subtotal</dt>
+                    <dt className="text-gray-800">Subtotal</dt>
                     <dd className="text-gray-900">${invoice.subtotal.toFixed(2)}</dd>
                   </div>
                   <div className="flex justify-between text-sm">
-                    <dt className="text-gray-600">Tax</dt>
+                    <dt className="text-gray-800">Tax</dt>
                     <dd className="text-gray-900">${invoice.tax.toFixed(2)}</dd>
                   </div>
                   <div className="flex justify-between text-lg font-semibold border-t border-gray-200 pt-2">
@@ -542,7 +542,7 @@ function InvoiceDetailContent() {
             {invoice.notes && (
               <div className="mt-8 p-4 bg-gray-50 rounded-lg">
                 <h4 className="text-sm font-medium text-gray-900 mb-2">Notes</h4>
-                <p className="text-sm text-gray-600">{invoice.notes}</p>
+                <p className="text-sm text-gray-800">{invoice.notes}</p>
               </div>
             )}
           </div>

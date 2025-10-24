@@ -74,7 +74,7 @@ function SortableStage({ stage, onEdit, onDelete, onMoveUp, onMoveDown, canMoveU
           {...listeners}
           className="cursor-grab hover:cursor-grabbing p-1"
         >
-          <GripVertical className="w-4 h-4 text-gray-400" />
+          <GripVertical className="w-4 h-4 text-gray-700" />
         </div>
         <div
           className="w-4 h-4 rounded-full"
@@ -95,7 +95,7 @@ function SortableStage({ stage, onEdit, onDelete, onMoveUp, onMoveDown, canMoveU
             disabled={!canMoveUp}
             className={`p-1 rounded ${
               canMoveUp 
-                ? 'text-gray-400 hover:text-gray-600' 
+                ? 'text-gray-700 hover:text-gray-900' 
                 : 'text-gray-200 cursor-not-allowed'
             }`}
             title="Move up"
@@ -107,7 +107,7 @@ function SortableStage({ stage, onEdit, onDelete, onMoveUp, onMoveDown, canMoveU
             disabled={!canMoveDown}
             className={`p-1 rounded ${
               canMoveDown 
-                ? 'text-gray-400 hover:text-gray-600' 
+                ? 'text-gray-700 hover:text-gray-900' 
                 : 'text-gray-200 cursor-not-allowed'
             }`}
             title="Move down"
@@ -369,17 +369,17 @@ export default function SettingsPage() {
       <div className="max-w-4xl mx-auto">
         <div className="mb-6">
           <div className="flex items-center">
-            <Settings className="w-6 h-6 text-gray-400 mr-2" />
+            <Settings className="w-6 h-6 text-gray-700 mr-2" />
             <h1 className="text-2xl font-bold text-gray-900">Settings</h1>
           </div>
-          <p className="text-gray-600">Configure your CRM settings and preferences</p>
+          <p className="text-gray-900">Configure your CRM settings and preferences</p>
         </div>
 
         {/* Deal Stages Section */}
         <div className="bg-white shadow-sm rounded-lg border border-gray-200 mb-6">
           <div className="px-6 py-4 border-b border-gray-200">
             <h2 className="text-lg font-medium text-gray-900">Deal Stages</h2>
-            <p className="text-sm text-gray-600">Customize your sales pipeline stages</p>
+            <p className="text-sm text-gray-900">Customize your sales pipeline stages</p>
           </div>
 
           <div className="p-6">
@@ -493,7 +493,7 @@ export default function SettingsPage() {
             ) : (
               <div>
                 <div className="flex items-center justify-between mb-4">
-                  <p className="text-sm text-gray-600">
+                  <p className="text-sm text-gray-900">
                     Drag stages to reorder them, or use the arrow buttons
                   </p>
                   {isReordering && (
@@ -538,7 +538,7 @@ export default function SettingsPage() {
         <div className="bg-white shadow-sm rounded-lg border border-gray-200">
           <div className="px-6 py-4 border-b border-gray-200">
             <h2 className="text-lg font-medium text-gray-900">Account Settings</h2>
-            <p className="text-sm text-gray-600">Manage your account preferences</p>
+            <p className="text-sm text-gray-900">Manage your account preferences</p>
           </div>
 
           <div className="p-6">
@@ -552,13 +552,13 @@ export default function SettingsPage() {
               
               <div>
                 <label className="block text-sm font-medium text-gray-700">User ID</label>
-                <div className="mt-1 text-sm text-gray-500 bg-gray-50 p-2 rounded font-mono">
+                <div className="mt-1 text-sm text-gray-900 bg-gray-50 p-2 rounded font-mono">
                   {user?.uid}
                 </div>
               </div>
 
               <div className="pt-4 border-t border-gray-200">
-                <p className="text-sm text-gray-500">
+                <p className="text-sm text-gray-900">
                   More account settings and integrations will be available in future updates.
                 </p>
               </div>

@@ -137,7 +137,7 @@ export default function SignUp() {
             <h2 className="mt-6 text-3xl font-bold text-gray-900">
               Authentication Not Configured
             </h2>
-            <p className="mt-2 text-sm text-gray-600">
+            <p className="mt-2 text-sm text-gray-900">
               No authentication providers are currently enabled. Please contact your administrator.
             </p>
             <div className="mt-4 p-3 bg-yellow-50 border border-yellow-200 rounded-md">
@@ -167,7 +167,7 @@ export default function SignUp() {
           <h2 className="mt-6 text-center text-3xl font-bold text-gray-900">
             Create your account
           </h2>
-          <p className="mt-2 text-center text-sm text-gray-600">
+          <p className="mt-2 text-center text-sm text-gray-900">
             Or{' '}
             <Link
               href="/auth/signin"
@@ -245,7 +245,7 @@ export default function SignUp() {
                       className="block w-full px-3 py-2 pl-10 border border-gray-300 rounded-md shadow-sm focus:outline-none focus:ring-blue-500 focus:border-blue-500 sm:text-sm"
                       placeholder="Enter your full name"
                     />
-                    <User className="absolute left-3 top-2.5 h-4 w-4 text-gray-400" />
+                    <User className="absolute left-3 top-2.5 h-4 w-4 text-gray-700" />
                   </div>
                   {errors.name && (
                     <p className="mt-1 text-sm text-red-600">{errors.name.message}</p>
@@ -264,7 +264,7 @@ export default function SignUp() {
                       className="block w-full px-3 py-2 pl-10 border border-gray-300 rounded-md shadow-sm focus:outline-none focus:ring-blue-500 focus:border-blue-500 sm:text-sm"
                       placeholder="Enter your email"
                     />
-                    <Mail className="absolute left-3 top-2.5 h-4 w-4 text-gray-400" />
+                    <Mail className="absolute left-3 top-2.5 h-4 w-4 text-gray-700" />
                   </div>
                   {errors.email && (
                     <p className="mt-1 text-sm text-red-600">{errors.email.message}</p>
@@ -289,9 +289,9 @@ export default function SignUp() {
                       onClick={() => setShowPassword(!showPassword)}
                     >
                       {showPassword ? (
-                        <EyeOff className="h-4 w-4 text-gray-400" />
+                        <EyeOff className="h-4 w-4 text-gray-700" />
                       ) : (
-                        <Eye className="h-4 w-4 text-gray-400" />
+                        <Eye className="h-4 w-4 text-gray-700" />
                       )}
                     </button>
                   </div>
@@ -318,9 +318,9 @@ export default function SignUp() {
                       onClick={() => setShowConfirmPassword(!showConfirmPassword)}
                     >
                       {showConfirmPassword ? (
-                        <EyeOff className="h-4 w-4 text-gray-400" />
+                        <EyeOff className="h-4 w-4 text-gray-700" />
                       ) : (
-                        <Eye className="h-4 w-4 text-gray-400" />
+                        <Eye className="h-4 w-4 text-gray-700" />
                       )}
                     </button>
                   </div>

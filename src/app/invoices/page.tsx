@@ -197,7 +197,7 @@ export default function Invoices() {
                             {invoice.status.charAt(0).toUpperCase() + invoice.status.slice(1)}
                           </span>
                         </div>
-                        <div className="flex items-center space-x-4 text-sm text-gray-500 mt-1">
+                        <div className="flex items-center space-x-4 text-sm text-gray-900 mt-1">
                           <div className="flex items-center">
                             <User className="w-4 h-4 mr-1" />
                             <span>{getCustomerName(invoice.customerId)}</span>
@@ -214,11 +214,11 @@ export default function Invoices() {
                         <div className="text-lg font-medium text-gray-900">
                           ${invoice.total.toLocaleString()}
                         </div>
-                        <div className="text-sm text-gray-500">
+                        <div className="text-sm text-gray-900">
                           {invoice.items.length} item{invoice.items.length !== 1 ? 's' : ''}
                         </div>
                       </div>
-                      <button className="text-gray-400 hover:text-gray-600">
+                      <button className="text-gray-700 hover:text-gray-900">
                         <Eye className="w-5 h-5" />
                       </button>
                     </div>

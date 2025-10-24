@@ -19,14 +19,14 @@ export function FirebaseAuthStatus() {
           </>
         ) : (
           <>
-            <Loader className="h-4 w-4 text-gray-500 animate-spin" />
+            <Loader className="h-4 w-4 text-gray-800 animate-spin" />
             <span className="text-sm text-gray-700">Checking auth status...</span>
           </>
         )}
       </div>
       
       {!connected && (
-        <div className="mt-2 text-xs text-gray-600">
+        <div className="mt-2 text-xs text-gray-900">
           <p>If you see connection issues:</p>
           <ol className="list-decimal list-inside mt-1 space-y-1">
             <li>Go to <a href="https://console.firebase.google.com/project/crm-boo-prod/authentication/providers" target="_blank" rel="noopener noreferrer" className="text-blue-600 underline">Firebase Console</a></li>

@@ -106,7 +106,7 @@ function SidebarContent({ pathname, handleSignOut, userProfile }: {
             >
               <item.icon
                 className={`mr-3 h-5 w-5 ${
-                  isActive ? 'text-blue-500' : 'text-gray-400 group-hover:text-gray-500'
+                  isActive ? 'text-blue-500' : 'text-gray-700 group-hover:text-gray-900'
                 }`}
                 aria-hidden="true"
               />
@@ -129,11 +129,11 @@ function SidebarContent({ pathname, handleSignOut, userProfile }: {
             </div>
             <div className="ml-3 flex-1">
               <p className="text-sm font-medium text-gray-700">{userProfile?.name}</p>
-              <p className="text-xs text-gray-500">{userProfile?.email}</p>
+              <p className="text-xs text-gray-800">{userProfile?.email}</p>
             </div>
             <button
               onClick={handleSignOut}
-              className="ml-2 flex-shrink-0 text-gray-400 hover:text-gray-500"
+              className="ml-2 flex-shrink-0 text-gray-700 hover:text-gray-900"
               title="Sign out"
             >
               <LogOut className="h-5 w-5" />

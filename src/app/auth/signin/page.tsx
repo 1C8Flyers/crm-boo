@@ -181,7 +181,7 @@ export default function SignIn() {
                       className="block w-full px-3 py-2 pl-10 border border-gray-300 rounded-md shadow-sm focus:outline-none focus:ring-blue-500 focus:border-blue-500 sm:text-sm"
                       placeholder="Enter your email"
                     />
-                    <Mail className="absolute left-3 top-2.5 h-4 w-4 text-gray-400" />
+                    <Mail className="absolute left-3 top-2.5 h-4 w-4 text-gray-700" />
                   </div>
                   {errors.email && (
                     <p className="mt-1 text-sm text-red-600">{errors.email.message}</p>
@@ -206,9 +206,9 @@ export default function SignIn() {
                       onClick={() => setShowPassword(!showPassword)}
                     >
                       {showPassword ? (
-                        <EyeOff className="h-4 w-4 text-gray-400" />
+                        <EyeOff className="h-4 w-4 text-gray-700" />
                       ) : (
-                        <Eye className="h-4 w-4 text-gray-400" />
+                        <Eye className="h-4 w-4 text-gray-700" />
                       )}
                     </button>
                   </div>

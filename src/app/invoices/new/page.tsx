@@ -173,13 +173,13 @@ export default function NewInvoice() {
         <div className="mb-6">
           <button
             onClick={() => router.back()}
-            className="inline-flex items-center text-sm text-gray-500 hover:text-gray-700 mb-4"
+            className="inline-flex items-center text-sm text-gray-800 hover:text-gray-900 mb-4"
           >
             <ArrowLeft className="w-4 h-4 mr-1" />
             Back to Invoices
           </button>
           <h1 className="text-2xl font-bold text-gray-900">Create New Invoice</h1>
-          <p className="text-gray-600">Generate a new invoice for your customer</p>
+          <p className="text-gray-900">Generate a new invoice for your customer</p>
         </div>
 
         <div className="bg-white shadow-sm rounded-lg border border-gray-200">
@@ -289,7 +289,7 @@ export default function NewInvoice() {
                       </label>
                       <div className="relative">
                         <div className="absolute inset-y-0 left-0 pl-3 flex items-center pointer-events-none">
-                          <span className="text-gray-500 text-sm">$</span>
+                          <span className="text-gray-800 text-sm">$</span>
                         </div>
                         <input
                           {...register(`items.${index}.unitPrice` as const, { valueAsNumber: true })}

@@ -76,7 +76,7 @@ function DealCard({ deal, customerName, isDragging = false }: DealCardProps) {
           className="cursor-grab hover:cursor-grabbing p-1 ml-2"
           onClick={(e) => e.stopPropagation()}
         >
-          <GripHorizontal className="w-4 h-4 text-gray-400" />
+          <GripHorizontal className="w-4 h-4 text-gray-700" />
         </div>
       </div>
       

@@ -131,7 +131,7 @@ export function ProductModal({ product, onClose, onSave }: ProductModalProps) {
                 <button
                   type="button"
                   onClick={onClose}
-                  className="text-gray-400 hover:text-gray-600"
+                  className="text-gray-700 hover:text-gray-900"
                 >
                   <X className="w-6 h-6" />
                 </button>
@@ -174,7 +174,7 @@ export function ProductModal({ product, onClose, onSave }: ProductModalProps) {
                   </label>
                   <div className="mt-1 relative rounded-md shadow-sm">
                     <div className="absolute inset-y-0 left-0 pl-3 flex items-center pointer-events-none">
-                      <span className="text-gray-500 sm:text-sm">$</span>
+                      <span className="text-gray-800 sm:text-sm">$</span>
                     </div>
                     <input
                       {...register('price', { valueAsNumber: true })}

@@ -53,7 +53,7 @@ export default function AuthProviderConfig({ currentProviders, onUpdateProviders
         <h3 className="font-semibold text-sm text-gray-900">Auth Providers</h3>
         <button
           onClick={() => setIsOpen(false)}
-          className="text-gray-500 hover:text-gray-700"
+          className="text-gray-800 hover:text-gray-900"
         >
           ×
         </button>
@@ -73,7 +73,7 @@ export default function AuthProviderConfig({ currentProviders, onUpdateProviders
         ))}
       </div>
       
-      <div className="mt-3 pt-3 border-t border-gray-200 text-xs text-gray-600">
+      <div className="mt-3 pt-3 border-t border-gray-200 text-xs text-gray-900">
         This is for testing. Configure actual providers in Firebase Console.
       </div>
     </div>

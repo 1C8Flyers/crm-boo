@@ -129,13 +129,13 @@ export default function NewDeal() {
         <div className="mb-6">
           <button
             onClick={() => router.back()}
-            className="inline-flex items-center text-sm text-gray-500 hover:text-gray-700 mb-4"
+            className="inline-flex items-center text-sm text-gray-800 hover:text-gray-900 mb-4"
           >
             <ArrowLeft className="w-4 h-4 mr-1" />
             Back to Deals
           </button>
           <h1 className="text-2xl font-bold text-gray-900">Add New Deal</h1>
-          <p className="text-gray-600">Create a new sales opportunity</p>
+          <p className="text-gray-900">Create a new sales opportunity</p>
         </div>
 
         <div className="bg-white shadow-sm rounded-lg border border-gray-200">
@@ -191,7 +191,7 @@ export default function NewDeal() {
                 </label>
                 <div className="mt-1 relative rounded-md shadow-sm">
                   <div className="absolute inset-y-0 left-0 pl-3 flex items-center pointer-events-none">
-                    <span className="text-gray-500 text-sm">$</span>
+                    <span className="text-gray-800 text-sm">$</span>
                   </div>
                   <input
                     {...register('value', { valueAsNumber: true })}

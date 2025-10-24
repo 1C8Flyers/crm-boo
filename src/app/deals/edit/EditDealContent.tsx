@@ -125,7 +125,7 @@ export default function EditDealContent() {
     return (
       <DashboardLayout>
         <div className="text-center py-8">
-          <p className="text-gray-500">Deal not found</p>
+          <p className="text-gray-800">Deal not found</p>
         </div>
       </DashboardLayout>
     );
@@ -145,7 +145,7 @@ export default function EditDealContent() {
             </button>
             <div>
               <h1 className="text-2xl font-bold text-gray-900">Edit Deal</h1>
-              <p className="text-gray-600">{deal.title}</p>
+              <p className="text-gray-800">{deal.title}</p>
             </div>
           </div>
         </div>
