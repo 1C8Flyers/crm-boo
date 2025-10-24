@@ -15,6 +15,9 @@ interface DealsListTableProps {
 export default function DealsListTable({ deals, stages, customers, onLocalUpdate }: DealsListTableProps) {
   const router = useRouter();
   const [savingIds, setSavingIds] = useState<Record<string, boolean>>({});
+  const [selected, setSelected] = useState<Record<string, boolean>>({});
+  const [bulkStageId, setBulkStageId] = useState<string>('');
+  const [bulkSaving, setBulkSaving] = useState(false);
   const stagesById = useMemo(() => Object.fromEntries(stages.map(s => [s.id, s])), [stages]);
   const customerById = useMemo(() => Object.fromEntries(customers.map(c => [c.id, c])), [customers]);
 
@@ -31,11 +34,82 @@ export default function DealsListTable({ deals, stages, customers, onLocalUpdate
     }
   };
 
+  const visibleIds = useMemo(() => deals.map(d => d.id), [deals]);
+  const selectedCount = useMemo(() => visibleIds.filter(id => selected[id]).length, [visibleIds, selected]);
+  const allSelected = selectedCount > 0 && selectedCount === visibleIds.length;
+
+  const toggleSelectAll = () => {
+    if (allSelected) {
+      // clear only visible
+      setSelected(prev => {
+        const copy = { ...prev };
+        for (const id of visibleIds) delete copy[id];
+        return copy;
+      });
+    } else {
+      setSelected(prev => {
+        const copy = { ...prev };
+        for (const id of visibleIds) copy[id] = true;
+        return copy;
+      });
+    }
+  };
+
+  const bulkUpdateStage = async () => {
+    if (!bulkStageId) return;
+    const ids = visibleIds.filter(id => selected[id]);
+    if (ids.length === 0) return;
+    try {
+      setBulkSaving(true);
+      await Promise.all(ids.map(id => updateDeal(id, { stageId: bulkStageId })));
+    } finally {
+      setBulkSaving(false);
+    }
+  };
+
   return (
     <div className="bg-white rounded-lg shadow-sm border border-gray-200 overflow-x-auto">
+      {/* Bulk actions bar */}
+      <div className="flex flex-wrap items-center gap-3 px-4 py-3 border-b border-gray-200 bg-gray-50">
+        <div className="text-sm text-gray-700">Selected: {selectedCount}</div>
+        <select
+          value={bulkStageId}
+          onChange={e => setBulkStageId(e.currentTarget.value)}
+          className="border border-gray-300 rounded-md px-2 py-1 text-sm bg-white"
+        >
+          <option value="">Bulk change stage…</option>
+          {stages.map(s => (
+            <option key={s.id} value={s.id}>{s.name}</option>
+          ))}
+        </select>
+        <button
+          disabled={!bulkStageId || selectedCount === 0 || bulkSaving}
+          onClick={bulkUpdateStage}
+          className={`text-sm text-white px-3 py-1 rounded-md disabled:opacity-50 ${bulkSaving ? 'opacity-70' : ''}`}
+          style={{ backgroundColor: '#2E4A62' }}
+        >
+          {bulkSaving ? 'Updating…' : 'Update Stage'}
+        </button>
+        {selectedCount > 0 && (
+          <button
+            onClick={() => setSelected({})}
+            className="text-sm text-gray-700 px-2 py-1 rounded-md hover:bg-gray-100"
+          >
+            Clear selection
+          </button>
+        )}
+      </div>
       <table className="min-w-full divide-y divide-gray-200">
         <thead className="bg-gray-50">
           <tr>
+            <th className="px-4 py-3">
+              <input
+                type="checkbox"
+                aria-label="Select all"
+                checked={allSelected}
+                onChange={toggleSelectAll}
+              />
+            </th>
             <th className="px-4 py-3 text-left text-xs font-medium text-gray-900 uppercase tracking-wider">Title</th>
             <th className="px-4 py-3 text-left text-xs font-medium text-gray-900 uppercase tracking-wider">Customer</th>
             <th className="px-4 py-3 text-left text-xs font-medium text-gray-900 uppercase tracking-wider">Stage</th>
@@ -50,6 +124,14 @@ export default function DealsListTable({ deals, stages, customers, onLocalUpdate
             const saving = !!savingIds[deal.id];
             return (
               <tr key={deal.id} className={saving ? 'opacity-60' : ''}>
+                <td className="px-4 py-2 align-top">
+                  <input
+                    type="checkbox"
+                    aria-label={`Select ${deal.title}`}
+                    checked={!!selected[deal.id]}
+                    onChange={(e) => setSelected(prev => ({ ...prev, [deal.id]: e.currentTarget.checked }))}
+                  />
+                </td>
                 <td className="px-4 py-2 align-top">
                   <input
                     type="text"
