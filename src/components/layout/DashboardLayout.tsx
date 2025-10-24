@@ -8,8 +8,8 @@ export function DashboardLayout({ children }: { children: React.ReactNode }) {
 
   if (loading) {
     return (
-      <div className="min-h-screen flex items-center justify-center">
-        <div className="animate-spin rounded-full h-32 w-32 border-b-2 border-blue-500"></div>
+      <div className="min-h-screen flex items-center justify-center bg-gray-50" style={{ backgroundColor: '#F0F4F7' }}>
+        <div className="animate-spin rounded-full h-32 w-32 border-b-2" style={{ borderColor: '#2E4A62' }}></div>
       </div>
     );
   }
@@ -19,7 +19,7 @@ export function DashboardLayout({ children }: { children: React.ReactNode }) {
   }
 
   return (
-    <div className="min-h-screen bg-gray-50">
+    <div className="min-h-screen" style={{ backgroundColor: '#F0F4F7' }}>
       <Sidebar />
       <div className="lg:pl-64">
         <main className="py-6">

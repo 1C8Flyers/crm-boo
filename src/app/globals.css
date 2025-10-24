@@ -1,15 +1,43 @@
 @import "tailwindcss";
 
 :root {
-  --background: #ffffff;
-  --foreground: #171717;
+  --background: #F0F4F7;
+  --foreground: #2E4A62;
+  --primary: #2E4A62;
+  --accent: #A38B5C;
+  --surface: #ffffff;
+  --text-primary: #2E4A62;
+  --text-secondary: #6B7280;
+  --text-muted: #9CA3AF;
 }
 
-@theme inline {
-  --color-background: var(--background);
-  --color-foreground: var(--foreground);
-  --font-sans: var(--font-geist-sans);
-  --font-mono: var(--font-geist-mono);
+/* Custom color utilities */
+.bg-primary {
+  background-color: var(--primary);
+}
+
+.bg-accent {
+  background-color: var(--accent);
+}
+
+.bg-surface {
+  background-color: var(--surface);
+}
+
+.text-primary {
+  color: var(--primary);
+}
+
+.text-accent {
+  color: var(--accent);
+}
+
+.border-primary {
+  border-color: var(--primary);
+}
+
+.border-accent {
+  border-color: var(--accent);
 }
 
 @media (prefers-color-scheme: dark) {
@@ -22,82 +50,55 @@
 body {
   background: var(--background);
   color: var(--foreground);
-  font-family: Arial, Helvetica, sans-serif;
+  font-family: var(--font-pt-sans, sans-serif);
+}
+
+/* Typography */
+h1, h2, h3, h4, h5, h6 {
+  font-family: var(--font-poppins, sans-serif);
+  color: var(--primary);
+}
+
+/* Button styles */
+.btn-primary {
+  background-color: var(--primary);
+  color: white;
+  border: 1px solid var(--primary);
+}
+
+.btn-primary:hover {
+  background-color: #1e3a52;
+  border-color: #1e3a52;
+}
+
+.btn-accent {
+  background-color: var(--accent);
+  color: white;
+  border: 1px solid var(--accent);
+}
+
+.btn-accent:hover {
+  background-color: #8f7d52;
+  border-color: #8f7d52;
 }
 
 /* Ensure input text is dark */
 input,
 textarea,
 select {
-  color: #111827 !important; /* Dark text for user input */
+  color: #111827 !important;
 }
 
-/* Enhanced placeholder visibility with highest specificity */
+/* Enhanced placeholder visibility */
 input::placeholder,
 textarea::placeholder,
 select::placeholder {
-  color: #111827 !important; /* Gray-900 for maximum visibility */
-  opacity: 1 !important;
-  font-weight: 400 !important;
-}
-
-/* Ensure placeholders are visible in all browsers with highest specificity */
-*[placeholder]:not([placeholder=""])::-webkit-input-placeholder,
-*[placeholder]:not([placeholder=""])::-moz-placeholder,
-*[placeholder]:not([placeholder=""]):-ms-input-placeholder,
-*[placeholder]:not([placeholder=""]):-moz-placeholder {
-  color: #111827 !important;
-  opacity: 1 !important;
-  font-weight: 400 !important;
-}
-
-/* Additional targeting for form inputs */
-form input[type="text"]::placeholder,
-form input[type="email"]::placeholder,
-form input[type="tel"]::placeholder,
-form input[type="number"]::placeholder,
-form input[type="password"]::placeholder,
-form textarea::placeholder {
-  color: #111827 !important;
-  opacity: 1 !important;
-  font-weight: 400 !important;
-}
-
-/* Darker placeholder for better contrast */
-input:focus::placeholder,
-textarea:focus::placeholder {
-  color: #374151 !important; /* Gray-700 */
-}
-
-/* Target React Hook Form registered inputs specifically */
-.block.w-full::placeholder {
-  color: #111827 !important;
+  color: #6B7280 !important;
   opacity: 1 !important;
 }
 
-/* Custom class for visible placeholders */
+/* Form-specific placeholder styles */
 .visible-placeholder::placeholder {
-  color: #111827 !important;
-  opacity: 1 !important;
-  font-weight: normal !important;
-}
-
-.visible-placeholder::-webkit-input-placeholder {
-  color: #111827 !important;
-  opacity: 1 !important;
-}
-
-.visible-placeholder::-moz-placeholder {
-  color: #111827 !important;
-  opacity: 1 !important;
-}
-
-.visible-placeholder:-ms-input-placeholder {
-  color: #111827 !important;
-  opacity: 1 !important;
-}
-
-.visible-placeholder:-moz-placeholder {
-  color: #111827 !important;
+  color: #6B7280 !important;
   opacity: 1 !important;
 }

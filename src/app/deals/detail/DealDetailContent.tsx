@@ -5,6 +5,7 @@ import { useAuth } from '@/contexts/AuthContext';
 import { useRouter, useSearchParams } from 'next/navigation';
 import { DashboardLayout } from '@/components/layout/DashboardLayout';
 import { dealService, customerService, productService, dealStageService } from '@/lib/firebase-services';
+import Notes from '@/components/Notes';
 import type { Deal, Customer, Product, DealStage, DealProduct } from '@/types';
 import { 
   ArrowLeft, 
@@ -357,12 +358,28 @@ export default function DealDetailContent() {
                 </div>
               )}
             </div>
+
+            {/* Notes & Activities */}
+            <Notes deal={deal} customer={customer || undefined} />
           </div>
 
           {/* Customer Info Sidebar */}
           <div className="space-y-6">
             <div className="bg-white rounded-lg shadow p-6">
-              <h2 className="text-lg font-semibold mb-4 text-gray-900">Customer Information</h2>
+              <div className="flex items-center justify-between mb-4">
+                <h2 className="text-lg font-semibold text-gray-900">Customer Information</h2>
+                <button
+                  onClick={() => router.push(`/customers/detail?id=${customer.id}`)}
+                  className="text-sm px-3 py-1 rounded-md transition-colors"
+                  style={{ 
+                    backgroundColor: '#2E4A62',
+                    color: 'white',
+                    fontFamily: 'var(--font-pt-sans)'
+                  }}
+                >
+                  View Customer
+                </button>
+              </div>
               
               <div className="space-y-4">
                 <div className="flex items-center gap-3">

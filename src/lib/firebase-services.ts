@@ -117,6 +117,25 @@ export const dealService = {
     })) as Deal[];
   },
 
+  async getByCustomer(customerId: string): Promise<Deal[]> {
+    const querySnapshot = await getDocs(
+      query(
+        collection(db, 'deals'),
+        where('customerId', '==', customerId)
+      )
+    );
+    const deals = querySnapshot.docs.map(doc => ({
+      ...doc.data(),
+      id: doc.id,
+      createdAt: doc.data().createdAt.toDate(),
+      updatedAt: doc.data().updatedAt.toDate(),
+      expectedCloseDate: doc.data().expectedCloseDate?.toDate(),
+    })) as Deal[];
+    
+    // Sort in memory instead of using Firestore orderBy
+    return deals.sort((a, b) => b.createdAt.getTime() - a.createdAt.getTime());
+  },
+
   async create(dealData: Omit<Deal, 'id' | 'createdAt' | 'updatedAt'>): Promise<string> {
     const now = Timestamp.now();
     const docRef = await addDoc(collection(db, 'deals'), {
@@ -314,34 +333,38 @@ export const activityService = {
     const querySnapshot = await getDocs(
       query(
         collection(db, 'activities'),
-        where('customerId', '==', customerId),
-        orderBy('createdAt', 'desc')
+        where('customerId', '==', customerId)
       )
     );
-    return querySnapshot.docs.map(doc => ({
+    const activities = querySnapshot.docs.map(doc => ({
       ...doc.data(),
       id: doc.id,
       createdAt: doc.data().createdAt.toDate(),
       updatedAt: doc.data().updatedAt.toDate(),
       dueDate: doc.data().dueDate?.toDate(),
     })) as Activity[];
+    
+    // Sort in memory instead of using Firestore orderBy
+    return activities.sort((a, b) => b.createdAt.getTime() - a.createdAt.getTime());
   },
 
   async getByDeal(dealId: string): Promise<Activity[]> {
     const querySnapshot = await getDocs(
       query(
         collection(db, 'activities'),
-        where('dealId', '==', dealId),
-        orderBy('createdAt', 'desc')
+        where('dealId', '==', dealId)
       )
     );
-    return querySnapshot.docs.map(doc => ({
+    const activities = querySnapshot.docs.map(doc => ({
       ...doc.data(),
       id: doc.id,
       createdAt: doc.data().createdAt.toDate(),
       updatedAt: doc.data().updatedAt.toDate(),
       dueDate: doc.data().dueDate?.toDate(),
     })) as Activity[];
+    
+    // Sort in memory instead of using Firestore orderBy
+    return activities.sort((a, b) => b.createdAt.getTime() - a.createdAt.getTime());
   },
 
   async create(activityData: Omit<Activity, 'id' | 'createdAt' | 'updatedAt'>): Promise<string> {
@@ -367,6 +390,62 @@ export const activityService = {
     }
     
     await updateDoc(docRef, updateData);
+  },
+
+  async getByCustomerWithDeals(customerId: string): Promise<Activity[]> {
+    // Get all deals for this customer first
+    const customerDeals = await dealService.getByCustomer(customerId);
+    const dealIds = customerDeals.map(deal => deal.id);
+    
+    // Create queries for activities
+    const queries = [
+      // Activities directly linked to customer
+      query(
+        collection(db, 'activities'),
+        where('customerId', '==', customerId)
+      )
+    ];
+    
+    // Add queries for each deal
+    if (dealIds.length > 0) {
+      // Firestore 'in' operator can handle up to 10 values
+      const chunks = [];
+      for (let i = 0; i < dealIds.length; i += 10) {
+        chunks.push(dealIds.slice(i, i + 10));
+      }
+      
+      for (const chunk of chunks) {
+        queries.push(
+          query(
+            collection(db, 'activities'),
+            where('dealId', 'in', chunk)
+          )
+        );
+      }
+    }
+    
+    // Execute all queries and combine results
+    const allSnapshots = await Promise.all(queries.map(q => getDocs(q)));
+    const allActivities: Activity[] = [];
+    const seenIds = new Set<string>();
+    
+    for (const snapshot of allSnapshots) {
+      for (const doc of snapshot.docs) {
+        if (!seenIds.has(doc.id)) {
+          seenIds.add(doc.id);
+          allActivities.push({
+            ...doc.data(),
+            id: doc.id,
+            createdAt: doc.data().createdAt.toDate(),
+            updatedAt: doc.data().updatedAt.toDate(),
+            dueDate: doc.data().dueDate?.toDate(),
+          } as Activity);
+        }
+      }
+    }
+    
+    // Sort by creation date descending in memory
+    return allActivities.sort((a, b) => b.createdAt.getTime() - a.createdAt.getTime());
   },
 
   async delete(id: string): Promise<void> {

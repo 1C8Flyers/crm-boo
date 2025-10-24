@@ -133,6 +133,10 @@ export interface Activity {
   dealId?: string;
   completed: boolean;
   dueDate?: Date;
+  duration?: number; // in minutes, for calls and meetings
+  outcome?: string; // for calls and meetings
+  nextAction?: string; // follow-up action
+  priority?: 'low' | 'medium' | 'high';
   createdAt: Date;
   updatedAt: Date;
 }

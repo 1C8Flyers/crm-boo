@@ -44,7 +44,8 @@ export function Sidebar() {
       <div className="fixed top-0 left-0 z-50 lg:hidden">
         <button
           type="button"
-          className="m-4 inline-flex items-center justify-center rounded-md p-2 text-gray-700 hover:bg-gray-100 hover:text-gray-900 focus:outline-none focus:ring-2 focus:ring-inset focus:ring-blue-500"
+          className="m-4 inline-flex items-center justify-center rounded-md p-2 text-white hover:bg-white/10 focus:outline-none focus:ring-2 focus:ring-inset"
+          style={{ backgroundColor: '#2E4A62', color: 'white' }}
           onClick={() => setSidebarOpen(true)}
         >
           <Menu className="h-6 w-6" aria-hidden="true" />
@@ -55,12 +56,12 @@ export function Sidebar() {
       {sidebarOpen && (
         <div className="fixed inset-0 z-50 lg:hidden">
           <div className="fixed inset-0 bg-gray-600 bg-opacity-75" onClick={() => setSidebarOpen(false)} />
-          <div className="fixed inset-y-0 left-0 z-50 w-64 bg-white">
+          <div className="fixed inset-y-0 left-0 z-50 w-64" style={{ backgroundColor: '#2E4A62' }}>
             <div className="flex h-16 items-center justify-between px-4">
-              <h1 className="text-xl font-bold text-gray-900">CRM-BOO</h1>
+              <h1 className="text-xl font-bold text-white" style={{ fontFamily: 'Poppins, sans-serif' }}>CRM-BOO</h1>
               <button
                 type="button"
-                className="text-gray-700 hover:text-gray-900"
+                className="text-gray-200 hover:text-white"
                 onClick={() => setSidebarOpen(false)}
               >
                 <X className="h-6 w-6" />
@@ -73,9 +74,9 @@ export function Sidebar() {
 
       {/* Desktop sidebar */}
       <div className="hidden lg:fixed lg:inset-y-0 lg:flex lg:w-64 lg:flex-col">
-        <div className="flex min-h-0 flex-1 flex-col border-r border-gray-200 bg-white">
-          <div className="flex h-16 flex-shrink-0 items-center px-4 border-b border-gray-200">
-            <h1 className="text-xl font-bold text-gray-900">CRM-BOO</h1>
+        <div className="flex min-h-0 flex-1 flex-col border-r border-gray-200" style={{ backgroundColor: '#2E4A62' }}>
+          <div className="flex h-16 flex-shrink-0 items-center px-4 border-b border-white/10">
+            <h1 className="text-xl font-bold text-white" style={{ fontFamily: 'Poppins, sans-serif' }}>CRM-BOO</h1>
           </div>
           <SidebarContent pathname={pathname} handleSignOut={handleSignOut} userProfile={userProfile} />
         </div>
@@ -98,15 +99,16 @@ function SidebarContent({ pathname, handleSignOut, userProfile }: {
             <Link
               key={item.name}
               href={item.href}
-              className={`group flex items-center px-2 py-2 text-sm font-medium rounded-md ${
+              className={`group flex items-center px-2 py-2 text-sm font-medium rounded-md transition-colors ${
                 isActive
-                  ? 'bg-blue-100 text-blue-900'
-                  : 'text-gray-900 hover:bg-gray-50 hover:text-blue-600'
+                  ? 'bg-white/10 text-white'
+                  : 'text-gray-200 hover:bg-white/5 hover:text-white'
               }`}
+              style={{ fontFamily: 'PT Sans, sans-serif' }}
             >
               <item.icon
                 className={`mr-3 h-5 w-5 ${
-                  isActive ? 'text-blue-500' : 'text-gray-700 group-hover:text-gray-900'
+                  isActive ? 'text-white' : 'text-gray-300 group-hover:text-white'
                 }`}
                 aria-hidden="true"
               />
@@ -117,23 +119,23 @@ function SidebarContent({ pathname, handleSignOut, userProfile }: {
       </nav>
       
       {/* User profile and sign out */}
-      <div className="flex flex-shrink-0 border-t border-gray-200 p-4">
+      <div className="flex flex-shrink-0 border-t border-white/10 p-4">
         <div className="w-full">
           <div className="flex items-center">
             <div className="flex-shrink-0">
-              <div className="h-8 w-8 rounded-full bg-blue-500 flex items-center justify-center">
+              <div className="h-8 w-8 rounded-full flex items-center justify-center" style={{ backgroundColor: '#A38B5C' }}>
                 <span className="text-sm font-medium text-white">
                   {userProfile?.name?.charAt(0).toUpperCase() || 'U'}
                 </span>
               </div>
             </div>
             <div className="ml-3 flex-1">
-              <p className="text-sm font-medium text-gray-700">{userProfile?.name}</p>
-              <p className="text-xs text-gray-800">{userProfile?.email}</p>
+              <p className="text-sm font-medium text-white" style={{ fontFamily: 'PT Sans, sans-serif' }}>{userProfile?.name}</p>
+              <p className="text-xs text-gray-300" style={{ fontFamily: 'PT Sans, sans-serif' }}>{userProfile?.email}</p>
             </div>
             <button
               onClick={handleSignOut}
-              className="ml-2 flex-shrink-0 text-gray-700 hover:text-gray-900"
+              className="ml-2 flex-shrink-0 text-gray-300 hover:text-white transition-colors"
               title="Sign out"
             >
               <LogOut className="h-5 w-5" />

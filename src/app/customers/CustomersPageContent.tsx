@@ -6,7 +6,7 @@ import { useRouter, useSearchParams } from 'next/navigation';
 import { DashboardLayout } from '@/components/layout/DashboardLayout';
 import { customerService } from '@/lib/firebase-services';
 import type { Customer } from '@/types';
-import { Plus, Search, Edit, Trash2, Mail, Phone, Building, Users, MapPin } from 'lucide-react';
+import { Plus, Search, Edit, Trash2, Mail, Phone, Building, Users, MapPin, Eye } from 'lucide-react';
 import { CustomerModal } from '@/components/customers/CustomerModal';
 
 export default function CustomersPageContent() {
@@ -17,7 +17,6 @@ export default function CustomersPageContent() {
   const [isLoading, setIsLoading] = useState(true);
   const [searchTerm, setSearchTerm] = useState('');
   const [showModal, setShowModal] = useState(false);
-  const [editingCustomer, setEditingCustomer] = useState<Customer | null>(null);
 
   useEffect(() => {
     if (!loading && !user) {
@@ -63,7 +62,6 @@ export default function CustomersPageContent() {
   const handleSave = async () => {
     await loadCustomers();
     setShowModal(false);
-    setEditingCustomer(null);
   };
 
   const formatAddress = (address: Customer['address']) => {
@@ -174,9 +172,14 @@ export default function CustomersPageContent() {
                       </span>
                     </div>
                     <div className="flex-1 min-w-0">
-                      <h3 className="text-lg font-medium text-gray-900 truncate">
-                        {customer.name}
-                      </h3>
+                      <button
+                        onClick={() => router.push(`/customers/detail?id=${customer.id}`)}
+                        className="text-left w-full"
+                      >
+                        <h3 className="text-lg font-medium text-gray-900 truncate hover:text-blue-600 transition-colors">
+                          {customer.name}
+                        </h3>
+                      </button>
                       {customer.company && (
                         <div className="flex items-center text-sm text-gray-900 mt-1">
                           <Building className="w-4 h-4 mr-1" />
@@ -187,17 +190,23 @@ export default function CustomersPageContent() {
                   </div>
                   <div className="flex space-x-2">
                     <button
-                      onClick={() => {
-                        setEditingCustomer(customer);
-                        setShowModal(true);
-                      }}
+                      onClick={() => router.push(`/customers/detail?id=${customer.id}`)}
+                      className="text-gray-700 hover:text-blue-600"
+                      title="View customer details"
+                    >
+                      <Eye className="w-4 h-4" />
+                    </button>
+                    <button
+                      onClick={() => router.push(`/customers/detail?id=${customer.id}&edit=true`)}
                       className="text-gray-700 hover:text-gray-900"
+                      title="Edit customer"
                     >
                       <Edit className="w-4 h-4" />
                     </button>
                     <button
                       onClick={() => handleDelete(customer.id)}
                       className="text-gray-700 hover:text-red-600"
+                      title="Delete customer"
                     >
                       <Trash2 className="w-4 h-4" />
                     </button>
@@ -237,10 +246,9 @@ export default function CustomersPageContent() {
       {/* Customer Modal */}
       {showModal && (
         <CustomerModal
-          customer={editingCustomer}
+          customer={null}
           onClose={() => {
             setShowModal(false);
-            setEditingCustomer(null);
           }}
           onSave={handleSave}
         />

@@ -96,56 +96,56 @@ export default function Dashboard() {
       name: 'Total Customers',
       value: stats.totalCustomers,
       icon: Users,
-      color: 'bg-blue-500',
+      color: 'bg-primary',
       href: '/customers',
     },
     {
       name: 'Active Deals',
       value: stats.totalDeals,
       icon: TrendingUp,
-      color: 'bg-green-500',
+      color: 'bg-primary',
       href: '/deals',
     },
     {
       name: 'Total Deal Value',
       value: `$${stats.totalDealValue.toLocaleString()}`,
       icon: DollarSign,
-      color: 'bg-indigo-500',
+      color: 'bg-accent',
       href: '/deals',
     },
     {
       name: 'Subscription Value',
       value: `$${stats.subscriptionDealValue.toLocaleString()}`,
       icon: TrendingUp,
-      color: 'bg-purple-500',
+      color: 'bg-accent',
       href: '/deals',
     },
     {
       name: 'One-time Value',
       value: `$${stats.oneTimeDealValue.toLocaleString()}`,
       icon: DollarSign,
-      color: 'bg-amber-500',
+      color: 'bg-accent',
       href: '/deals',
     },
     {
       name: 'Products',
       value: stats.totalProducts,
       icon: Package,
-      color: 'bg-cyan-500',
+      color: 'bg-primary',
       href: '/products',
     },
     {
       name: 'Total Invoices',
       value: stats.totalInvoices,
       icon: FileText,
-      color: 'bg-orange-500',
+      color: 'bg-primary',
       href: '/invoices',
     },
     {
       name: 'Total Revenue',
       value: `$${stats.totalRevenue.toLocaleString()}`,
       icon: DollarSign,
-      color: 'bg-emerald-500',
+      color: 'bg-accent',
       href: '/invoices',
     },
   ];
@@ -154,8 +154,8 @@ export default function Dashboard() {
     <DashboardLayout>
       <div className="space-y-6">
         <div>
-          <h1 className="text-2xl font-bold text-gray-900">Dashboard</h1>
-          <p className="text-gray-900">Welcome back! Here's your business overview.</p>
+          <h1 className="text-2xl font-bold text-gray-900" style={{ fontFamily: 'Poppins, sans-serif' }}>Dashboard</h1>
+          <p className="text-gray-700" style={{ fontFamily: 'PT Sans, sans-serif' }}>Welcome back! Here's your business overview.</p>
         </div>
 
         {isLoadingStats ? (
@@ -185,8 +185,8 @@ export default function Dashboard() {
                     <card.icon className="w-6 h-6 text-white" />
                   </div>
                   <div>
-                    <p className="text-sm text-gray-900">{card.name}</p>
-                    <p className="text-2xl font-bold text-gray-900">{card.value}</p>
+                    <p className="text-sm text-gray-700" style={{ fontFamily: 'PT Sans, sans-serif' }}>{card.name}</p>
+                    <p className="text-2xl font-bold text-gray-900" style={{ fontFamily: 'Poppins, sans-serif' }}>{card.value}</p>
                   </div>
                 </div>
               </div>
@@ -196,52 +196,52 @@ export default function Dashboard() {
 
         <div className="grid grid-cols-1 lg:grid-cols-2 gap-6">
           {/* Recent Activity */}
-          <div className="bg-white p-6 rounded-lg shadow">
-            <h3 className="text-lg font-semibold text-gray-900 mb-4">Recent Activity</h3>
+          <div className="bg-white p-6 rounded-lg shadow border border-gray-200">
+            <h3 className="text-lg font-semibold text-gray-900 mb-4" style={{ fontFamily: 'Poppins, sans-serif' }}>Recent Activity</h3>
             <div className="space-y-4">
-              <div className="text-center text-gray-900 py-8">
-                <Calendar className="w-12 h-12 mx-auto mb-4 text-gray-300" />
-                <p>No recent activity</p>
-                <p className="text-sm">Activity will appear here as you use the CRM</p>
+              <div className="text-center text-gray-700 py-8">
+                <Calendar className="w-12 h-12 mx-auto mb-4 text-gray-400" />
+                <p style={{ fontFamily: 'PT Sans, sans-serif' }}>No recent activity</p>
+                <p className="text-sm" style={{ fontFamily: 'PT Sans, sans-serif' }}>Activity will appear here as you use the CRM</p>
               </div>
             </div>
           </div>
 
           {/* Quick Actions */}
-          <div className="bg-white p-6 rounded-lg shadow">
-            <h3 className="text-lg font-semibold text-gray-900 mb-4">Quick Actions</h3>
+          <div className="bg-white p-6 rounded-lg shadow border border-gray-200">
+            <h3 className="text-lg font-semibold text-gray-900 mb-4" style={{ fontFamily: 'Poppins, sans-serif' }}>Quick Actions</h3>
             <div className="grid grid-cols-2 gap-4">
               <button
                 onClick={() => router.push('/customers?new=true')}
-                className="p-4 border border-gray-200 rounded-lg hover:bg-gray-50 text-left"
+                className="p-4 border border-gray-200 rounded-lg hover:bg-gray-50 text-left transition-colors"
               >
-                <Users className="w-6 h-6 text-blue-500 mb-2" />
-                <p className="font-medium text-gray-900">Add Customer</p>
-                <p className="text-sm text-gray-900">Create new customer</p>
+                <Users className="w-6 h-6 mb-2" style={{ color: '#2E4A62' }} />
+                <p className="font-medium text-gray-900" style={{ fontFamily: 'Poppins, sans-serif' }}>Add Customer</p>
+                <p className="text-sm text-gray-700" style={{ fontFamily: 'PT Sans, sans-serif' }}>Create new customer</p>
               </button>
               <button
                 onClick={() => router.push('/deals?new=true')}
-                className="p-4 border border-gray-200 rounded-lg hover:bg-gray-50 text-left"
+                className="p-4 border border-gray-200 rounded-lg hover:bg-gray-50 text-left transition-colors"
               >
-                <TrendingUp className="w-6 h-6 text-green-500 mb-2" />
-                <p className="font-medium text-gray-900">New Deal</p>
-                <p className="text-sm text-gray-900">Create new deal</p>
+                <TrendingUp className="w-6 h-6 mb-2" style={{ color: '#2E4A62' }} />
+                <p className="font-medium text-gray-900" style={{ fontFamily: 'Poppins, sans-serif' }}>New Deal</p>
+                <p className="text-sm text-gray-700" style={{ fontFamily: 'PT Sans, sans-serif' }}>Create new deal</p>
               </button>
               <button
                 onClick={() => router.push('/products?new=true')}
-                className="p-4 border border-gray-200 rounded-lg hover:bg-gray-50 text-left"
+                className="p-4 border border-gray-200 rounded-lg hover:bg-gray-50 text-left transition-colors"
               >
-                <Package className="w-6 h-6 text-purple-500 mb-2" />
-                <p className="font-medium text-gray-900">Add Product</p>
-                <p className="text-sm text-gray-900">Create new product</p>
+                <Package className="w-6 h-6 mb-2" style={{ color: '#A38B5C' }} />
+                <p className="font-medium text-gray-900" style={{ fontFamily: 'Poppins, sans-serif' }}>Add Product</p>
+                <p className="text-sm text-gray-700" style={{ fontFamily: 'PT Sans, sans-serif' }}>Create new product</p>
               </button>
               <button
                 onClick={() => router.push('/invoices?new=true')}
-                className="p-4 border border-gray-200 rounded-lg hover:bg-gray-50 text-left"
+                className="p-4 border border-gray-200 rounded-lg hover:bg-gray-50 text-left transition-colors"
               >
-                <FileText className="w-6 h-6 text-orange-500 mb-2" />
-                <p className="font-medium text-gray-900">New Invoice</p>
-                <p className="text-sm text-gray-900">Create new invoice</p>
+                <FileText className="w-6 h-6 mb-2" style={{ color: '#A38B5C' }} />
+                <p className="font-medium text-gray-900" style={{ fontFamily: 'Poppins, sans-serif' }}>New Invoice</p>
+                <p className="text-sm text-gray-700" style={{ fontFamily: 'PT Sans, sans-serif' }}>Create new invoice</p>
               </button>
             </div>
           </div>

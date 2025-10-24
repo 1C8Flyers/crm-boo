@@ -69,11 +69,11 @@ export default function SignIn() {
 
   if (providersLoading) {
     return (
-      <div className="min-h-screen flex items-center justify-center bg-gray-50">
+      <div className="min-h-screen flex items-center justify-center py-12 px-4 sm:px-6 lg:px-8" style={{ backgroundColor: '#F0F4F7' }}>
         <div className="max-w-md w-full space-y-8">
           <div className="text-center">
-            <div className="w-8 h-8 border-2 border-blue-600 border-t-transparent rounded-full animate-spin mx-auto" />
-            <p className="mt-4 text-gray-900">Loading sign-in options...</p>
+            <div className="w-8 h-8 border-2 border-t-transparent rounded-full animate-spin mx-auto" style={{ borderColor: '#2E4A62', borderTopColor: 'transparent' }} />
+            <p className="mt-4 text-gray-700" style={{ fontFamily: 'PT Sans, sans-serif' }}>Loading sign-in options...</p>
           </div>
         </div>
       </div>
@@ -85,18 +85,18 @@ export default function SignIn() {
   if (!activeProviders.emailPassword && !activeProviders.google && !activeProviders.facebook &&
       !activeProviders.twitter && !activeProviders.github && !activeProviders.microsoft) {
     return (
-      <div className="min-h-screen flex items-center justify-center bg-gray-50 py-12 px-4 sm:px-6 lg:px-8">
+      <div className="min-h-screen flex items-center justify-center py-12 px-4 sm:px-6 lg:px-8" style={{ backgroundColor: '#F0F4F7' }}>
         <div className="max-w-md w-full space-y-8">
           <div className="text-center">
             <AlertCircle className="mx-auto h-12 w-12 text-red-500" />
-            <h2 className="mt-6 text-3xl font-bold text-gray-900">
+            <h2 className="mt-6 text-3xl font-bold text-gray-900" style={{ fontFamily: 'Poppins, sans-serif' }}>
               Authentication Not Configured
             </h2>
-            <p className="mt-2 text-sm text-gray-900">
+            <p className="mt-2 text-sm text-gray-700" style={{ fontFamily: 'PT Sans, sans-serif' }}>
               No authentication providers are currently enabled. Please contact your administrator.
             </p>
             <div className="mt-4 p-3 bg-yellow-50 border border-yellow-200 rounded-md">
-              <p className="text-sm text-yellow-800">
+              <p className="text-sm text-yellow-800" style={{ fontFamily: 'PT Sans, sans-serif' }}>
                 To enable authentication, go to the{' '}
                 <a
                   href="https://console.firebase.google.com/project/crm-boo-prod/authentication/providers"
@@ -116,132 +116,148 @@ export default function SignIn() {
   }
 
   return (
-    <div className="min-h-screen flex items-center justify-center bg-gray-50 py-12 px-4 sm:px-6 lg:px-8">
+    <div className="min-h-screen flex items-center justify-center py-12 px-4 sm:px-6 lg:px-8" style={{ backgroundColor: '#F0F4F7' }}>
       <div className="max-w-md w-full space-y-8">
         <div>
-          <h2 className="mt-6 text-center text-3xl font-bold text-gray-900">
+          <h2 className="mt-6 text-center text-3xl font-bold text-gray-900" style={{ fontFamily: 'Poppins, sans-serif' }}>
             Sign in to CRM-BOO
           </h2>
-          <p className="mt-2 text-center text-sm text-gray-900">
+          <p className="mt-2 text-center text-sm text-gray-700" style={{ fontFamily: 'PT Sans, sans-serif' }}>
             Or{' '}
             <Link
               href="/auth/signup"
-              className="font-medium text-blue-600 hover:text-blue-500"
+              className="font-medium hover:underline"
+              style={{ color: '#2E4A62' }}
             >
               create a new account
             </Link>
           </p>
         </div>
 
-        <div className="space-y-4">
-          {/* Social Sign-In Providers */}
-          <div className="space-y-3">
-            {activeProviders.google && (
-              <SocialSignInButton provider="google" onError={(error) => setError('root', { message: error })} />
+        <div className="bg-white p-8 rounded-lg shadow-lg border border-gray-200">
+          <div className="space-y-4">
+            {/* Social Sign-In Providers */}
+            <div className="space-y-3">
+              {activeProviders.google && (
+                <SocialSignInButton provider="google" onError={(error) => setError('root', { message: error })} />
+              )}
+              {activeProviders.facebook && (
+                <SocialSignInButton provider="facebook" onError={(error) => setError('root', { message: error })} />
+              )}
+              {activeProviders.twitter && (
+                <SocialSignInButton provider="twitter" onError={(error) => setError('root', { message: error })} />
+              )}
+              {activeProviders.github && (
+                <SocialSignInButton provider="github" onError={(error) => setError('root', { message: error })} />
+              )}
+              {activeProviders.microsoft && (
+                <SocialSignInButton provider="microsoft" onError={(error) => setError('root', { message: error })} />
+              )}
+            </div>
+
+            {/* Divider - Only show if both email and social providers are available */}
+            {activeProviders.emailPassword && (activeProviders.google || activeProviders.facebook || activeProviders.twitter || activeProviders.github || activeProviders.microsoft) && (
+              <div className="relative">
+                <div className="absolute inset-0 flex items-center">
+                  <div className="w-full border-t border-gray-300" />
+                </div>
+                <div className="relative flex justify-center text-sm">
+                  <span className="px-2 bg-white text-gray-700" style={{ fontFamily: 'PT Sans, sans-serif' }}>Or continue with email</span>
+                </div>
+              </div>
             )}
-            {activeProviders.facebook && (
-              <SocialSignInButton provider="facebook" onError={(error) => setError('root', { message: error })} />
-            )}
-            {activeProviders.twitter && (
-              <SocialSignInButton provider="twitter" onError={(error) => setError('root', { message: error })} />
-            )}
-            {activeProviders.github && (
-              <SocialSignInButton provider="github" onError={(error) => setError('root', { message: error })} />
-            )}
-            {activeProviders.microsoft && (
-              <SocialSignInButton provider="microsoft" onError={(error) => setError('root', { message: error })} />
+
+            {/* Email/Password Form - Only show if enabled */}
+            {activeProviders.emailPassword && (
+              <form className="space-y-6" onSubmit={handleSubmit(onSubmit)}>
+                <div className="space-y-4">
+                  <div>
+                    <label htmlFor="email" className="block text-sm font-medium text-gray-700" style={{ fontFamily: 'PT Sans, sans-serif' }}>
+                      Email address
+                    </label>
+                    <div className="mt-1 relative">
+                      <input
+                        {...register('email')}
+                        type="email"
+                        autoComplete="email"
+                        className="block w-full px-3 py-2 pl-10 border border-gray-300 rounded-md shadow-sm focus:outline-none focus:border-blue-500 sm:text-sm"
+                        style={{ 
+                          fontFamily: 'PT Sans, sans-serif',
+                          '--tw-ring-color': '#2E4A62',
+                          '--tw-border-opacity': '1'
+                        } as any}
+                        placeholder="Enter your email"
+                      />
+                      <Mail className="absolute left-3 top-2.5 h-4 w-4 text-gray-500" />
+                    </div>
+                    {errors.email && (
+                      <p className="mt-1 text-sm text-red-600" style={{ fontFamily: 'PT Sans, sans-serif' }}>{errors.email.message}</p>
+                    )}
+                  </div>
+
+                  <div>
+                    <label htmlFor="password" className="block text-sm font-medium text-gray-700" style={{ fontFamily: 'PT Sans, sans-serif' }}>
+                      Password
+                    </label>
+                    <div className="mt-1 relative">
+                      <input
+                        {...register('password')}
+                        type={showPassword ? 'text' : 'password'}
+                        autoComplete="current-password"
+                        className="block w-full px-3 py-2 pr-10 border border-gray-300 rounded-md shadow-sm focus:outline-none focus:border-blue-500 sm:text-sm"
+                        style={{ 
+                          fontFamily: 'PT Sans, sans-serif',
+                          '--tw-ring-color': '#2E4A62'
+                        } as any}
+                        placeholder="Enter your password"
+                      />
+                      <button
+                        type="button"
+                        className="absolute inset-y-0 right-0 pr-3 flex items-center"
+                        onClick={() => setShowPassword(!showPassword)}
+                      >
+                        {showPassword ? (
+                          <EyeOff className="h-4 w-4 text-gray-500" />
+                        ) : (
+                          <Eye className="h-4 w-4 text-gray-500" />
+                        )}
+                      </button>
+                    </div>
+                    {errors.password && (
+                      <p className="mt-1 text-sm text-red-600" style={{ fontFamily: 'PT Sans, sans-serif' }}>{errors.password.message}</p>
+                    )}
+                  </div>
+                </div>
+
+                {errors.root && (
+                  <div className="bg-red-50 border border-red-200 rounded-md p-3">
+                    <div className="flex">
+                      <AlertCircle className="h-4 w-4 text-red-400 mt-0.5 mr-2 flex-shrink-0" />
+                      <p className="text-sm text-red-600" style={{ fontFamily: 'PT Sans, sans-serif' }}>{errors.root.message}</p>
+                    </div>
+                  </div>
+                )}
+
+                <div>
+                  <button
+                    type="submit"
+                    disabled={isLoading}
+                    className="group relative w-full flex justify-center py-2 px-4 border border-transparent text-sm font-medium rounded-md text-white focus:outline-none focus:ring-2 focus:ring-offset-2 disabled:opacity-50 disabled:cursor-not-allowed transition-colors hover:opacity-90"
+                    style={{ 
+                      backgroundColor: '#2E4A62',
+                      fontFamily: 'PT Sans, sans-serif'
+                    }}
+                  >
+                    {isLoading ? (
+                      <div className="w-4 h-4 border-2 border-white border-t-transparent rounded-full animate-spin" />
+                    ) : (
+                      'Sign in'
+                    )}
+                  </button>
+                </div>
+              </form>
             )}
           </div>
-
-          {/* Divider - Only show if both email and social providers are available */}
-          {activeProviders.emailPassword && (activeProviders.google || activeProviders.facebook || activeProviders.twitter || activeProviders.github || activeProviders.microsoft) && (
-            <div className="relative">
-              <div className="absolute inset-0 flex items-center">
-                <div className="w-full border-t border-gray-300" />
-              </div>
-              <div className="relative flex justify-center text-sm">
-                <span className="px-2 bg-gray-50 text-gray-900">Or continue with email</span>
-              </div>
-            </div>
-          )}
-
-          {/* Email/Password Form - Only show if enabled */}
-          {activeProviders.emailPassword && (
-            <form className="space-y-6" onSubmit={handleSubmit(onSubmit)}>
-              <div className="space-y-4">
-                <div>
-                  <label htmlFor="email" className="block text-sm font-medium text-gray-700">
-                    Email address
-                  </label>
-                  <div className="mt-1 relative">
-                    <input
-                      {...register('email')}
-                      type="email"
-                      autoComplete="email"
-                      className="block w-full px-3 py-2 pl-10 border border-gray-300 rounded-md shadow-sm focus:outline-none focus:ring-blue-500 focus:border-blue-500 sm:text-sm"
-                      placeholder="Enter your email"
-                    />
-                    <Mail className="absolute left-3 top-2.5 h-4 w-4 text-gray-700" />
-                  </div>
-                  {errors.email && (
-                    <p className="mt-1 text-sm text-red-600">{errors.email.message}</p>
-                  )}
-                </div>
-
-                <div>
-                  <label htmlFor="password" className="block text-sm font-medium text-gray-700">
-                    Password
-                  </label>
-                  <div className="mt-1 relative">
-                    <input
-                      {...register('password')}
-                      type={showPassword ? 'text' : 'password'}
-                      autoComplete="current-password"
-                      className="block w-full px-3 py-2 pr-10 border border-gray-300 rounded-md shadow-sm focus:outline-none focus:ring-blue-500 focus:border-blue-500 sm:text-sm"
-                      placeholder="Enter your password"
-                    />
-                    <button
-                      type="button"
-                      className="absolute inset-y-0 right-0 pr-3 flex items-center"
-                      onClick={() => setShowPassword(!showPassword)}
-                    >
-                      {showPassword ? (
-                        <EyeOff className="h-4 w-4 text-gray-700" />
-                      ) : (
-                        <Eye className="h-4 w-4 text-gray-700" />
-                      )}
-                    </button>
-                  </div>
-                  {errors.password && (
-                    <p className="mt-1 text-sm text-red-600">{errors.password.message}</p>
-                  )}
-                </div>
-              </div>
-
-              {errors.root && (
-                <div className="bg-red-50 border border-red-200 rounded-md p-3">
-                  <div className="flex">
-                    <AlertCircle className="h-4 w-4 text-red-400 mt-0.5 mr-2 flex-shrink-0" />
-                    <p className="text-sm text-red-600">{errors.root.message}</p>
-                  </div>
-                </div>
-              )}
-
-              <div>
-                <button
-                  type="submit"
-                  disabled={isLoading}
-                  className="group relative w-full flex justify-center py-2 px-4 border border-transparent text-sm font-medium rounded-md text-white bg-blue-600 hover:bg-blue-700 focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-blue-500 disabled:opacity-50 disabled:cursor-not-allowed"
-                >
-                  {isLoading ? (
-                    <div className="w-4 h-4 border-2 border-white border-t-transparent rounded-full animate-spin" />
-                  ) : (
-                    'Sign in'
-                  )}
-                </button>
-              </div>
-            </form>
-          )}
         </div>
       </div>
     </div>
