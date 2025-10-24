@@ -122,15 +122,13 @@ function SortableStage({ stage, onEdit, onDelete, onMoveUp, onMoveDown, canMoveU
         >
           Edit
         </button>
-        {!stage.isDefault && (
-          <button
-            onClick={() => onDelete(stage.id)}
-            className="px-3 py-1 border border-red-300 rounded-md text-sm font-medium text-red-700 bg-red-50 hover:bg-red-100"
-            title="Delete stage"
-          >
-            <Trash2 className="w-4 h-4" />
-          </button>
-        )}
+        <button
+          onClick={() => onDelete(stage.id)}
+          className="px-3 py-1 border border-red-300 rounded-md text-sm font-medium text-red-700 bg-red-50 hover:bg-red-100"
+          title="Delete stage"
+        >
+          <Trash2 className="w-4 h-4" />
+        </button>
       </div>
     </div>
   );
@@ -314,14 +312,7 @@ export default function SettingsPage() {
     const stage = stages.find(s => s.id === stageId);
     if (!stage) return;
 
-    const confirmMessage = stage.isDefault 
-      ? "You cannot delete default stages."
-      : `Are you sure you want to delete the "${stage.name}" stage? This action cannot be undone and may affect existing deals.`;
-
-    if (stage.isDefault) {
-      alert(confirmMessage);
-      return;
-    }
+    const confirmMessage = `Are you sure you want to delete the "${stage.name}" stage? This action cannot be undone and may affect existing deals.`;
 
     if (!confirm(confirmMessage)) {
       return;
