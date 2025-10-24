@@ -224,11 +224,14 @@ export default function DealDetailContent() {
             </button>
             <div>
               <h1 className="text-2xl font-bold text-gray-900">{deal.title}</h1>
-              <p className="text-gray-600">Deal Details</p>
+              <p className="text-gray-600">Deal Details - LOCAL DEV</p>
             </div>
           </div>
           <button
-            onClick={() => router.push(`/deals/edit?id=${deal.id}`)}
+            onClick={() => {
+              console.log('Edit button clicked, deal ID:', deal.id);
+              router.push(`/deals/edit?id=${deal.id}`);
+            }}
             className="flex items-center gap-2 px-4 py-2 bg-blue-600 text-white rounded-lg hover:bg-blue-700 transition-colors"
           >
             <Edit3 className="h-4 w-4" />
@@ -249,16 +252,16 @@ export default function DealDetailContent() {
                 <div className="flex items-center gap-3">
                   <DollarSign className="h-5 w-5 text-green-500" />
                   <div>
-                    <p className="text-sm text-gray-800 font-medium">Total Value</p>
-                    <p className="font-semibold text-gray-900">{formatCurrency(deal.value)}</p>
+                    <p className="text-sm text-black font-bold">Total Value</p>
+                    <p className="font-bold text-black">{formatCurrency(deal.value)}</p>
                   </div>
                 </div>
                 
                 <div className="flex items-center gap-3">
                   <Calendar className="h-5 w-5 text-blue-500" />
                   <div>
-                    <p className="text-sm text-gray-800 font-medium">Expected Close</p>
-                    <p className="font-semibold text-gray-900">
+                    <p className="text-sm text-black font-bold">Expected Close</p>
+                    <p className="font-bold text-black">
                       {deal.expectedCloseDate ? formatDate(deal.expectedCloseDate) : 'Not set'}
                     </p>
                   </div>
@@ -267,7 +270,7 @@ export default function DealDetailContent() {
                 <div className="flex items-center gap-3">
                   <Package className="h-5 w-5 text-purple-500" />
                   <div>
-                    <p className="text-sm text-gray-800 font-medium">Stage</p>
+                    <p className="text-sm text-black font-bold">Stage</p>
                     <span 
                       className="inline-flex items-center px-2.5 py-0.5 rounded-full text-xs font-medium"
                       style={{ 
@@ -283,16 +286,16 @@ export default function DealDetailContent() {
                 <div className="flex items-center gap-3">
                   <User className="h-5 w-5 text-orange-500" />
                   <div>
-                    <p className="text-sm text-gray-800 font-medium">Probability</p>
-                    <p className="font-semibold text-gray-900">{deal.probability}%</p>
+                    <p className="text-sm text-black font-bold">Probability</p>
+                    <p className="font-bold text-black">{deal.probability}%</p>
                   </div>
                 </div>
               </div>
               
               {deal.description && (
                 <div className="mt-4 pt-4 border-t">
-                  <p className="text-sm text-gray-800 font-medium">Description</p>
-                  <p className="mt-1 text-gray-900">{deal.description}</p>
+                  <p className="text-sm text-black font-bold">Description</p>
+                  <p className="mt-1 text-black font-medium">{deal.description}</p>
                 </div>
               )}
             </div>
@@ -362,8 +365,8 @@ export default function DealDetailContent() {
                 <div className="flex items-center gap-3">
                   <Building className="h-5 w-5 text-gray-400" />
                   <div>
-                    <p className="font-medium text-gray-900">{customer.name}</p>
-                    <p className="text-sm text-gray-800">Company</p>
+                    <p className="font-bold text-black">{customer.name}</p>
+                    <p className="text-sm text-black font-semibold">Company</p>
                   </div>
                 </div>
                 
@@ -371,8 +374,8 @@ export default function DealDetailContent() {
                   <div className="flex items-center gap-3">
                     <Mail className="h-5 w-5 text-gray-400" />
                     <div>
-                      <p className="font-medium text-gray-900">{customer.email}</p>
-                      <p className="text-sm text-gray-800">Email</p>
+                      <p className="font-bold text-black">{customer.email}</p>
+                      <p className="text-sm text-black font-semibold">Email</p>
                     </div>
                   </div>
                 )}
@@ -381,8 +384,8 @@ export default function DealDetailContent() {
                   <div className="flex items-center gap-3">
                     <Phone className="h-5 w-5 text-gray-400" />
                     <div>
-                      <p className="font-medium text-gray-900">{customer.phone}</p>
-                      <p className="text-sm text-gray-800">Phone</p>
+                      <p className="font-bold text-black">{customer.phone}</p>
+                      <p className="text-sm text-black font-semibold">Phone</p>
                     </div>
                   </div>
                 )}
