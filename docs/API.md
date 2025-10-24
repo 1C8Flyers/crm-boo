@@ -275,6 +275,11 @@ The following collections are used:
 - `products` - Product catalog
 - `activities` - Activity and task records
 - `invoices` - Invoice records
+- `proposals` - Proposal/quote records
+- `companies/{companyId}/paymentConfig` - Payment provider configuration (future)
+- `companies/{companyId}/paymentTransactions` - Payment transaction log (future)
+
+For planned payment integration, see [Square Integration Plan](./SQUARE_INTEGRATION.md).
 
 ## Security Rules
 

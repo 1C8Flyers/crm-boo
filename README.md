@@ -389,12 +389,12 @@ The application includes comprehensive error handling and validation:
 - [ ] Calendar integration for meetings
 
 ### Planned 📅
+- [ ] Payment processing integration (Square) - [See Integration Plan](./docs/SQUARE_INTEGRATION.md)
 - [ ] Team collaboration features
 - [ ] Mobile app development
 - [ ] API integrations (Calendar, Email providers)
 - [ ] Advanced workflow automation
 - [ ] Document storage and management
-- [ ] Payment processing integration
 - [ ] Advanced forecasting and projections
 
 ## 🤝 Contributing
