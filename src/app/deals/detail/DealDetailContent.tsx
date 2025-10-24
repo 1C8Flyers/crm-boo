@@ -1,0 +1,432 @@
+'use client';
+
+import { useEffect, useState } from 'react';
+import { useAuth } from '@/contexts/AuthContext';
+import { useRouter, useSearchParams } from 'next/navigation';
+import { DashboardLayout } from '@/components/layout/DashboardLayout';
+import { dealService, customerService, productService, dealStageService } from '@/lib/firebase-services';
+import type { Deal, Customer, Product, DealStage, DealProduct } from '@/types';
+import { 
+  ArrowLeft, 
+  DollarSign, 
+  Calendar, 
+  User, 
+  Building, 
+  Phone, 
+  Mail,
+  Edit3,
+  Plus,
+  X,
+  Package
+} from 'lucide-react';
+
+export default function DealDetailContent() {
+  const { user } = useAuth();
+  const router = useRouter();
+  const searchParams = useSearchParams();
+
+  // State
+  const [deal, setDeal] = useState<Deal | null>(null);
+  const [customer, setCustomer] = useState<Customer | null>(null);
+  const [stage, setStage] = useState<DealStage | null>(null);
+  const [products, setProducts] = useState<Product[]>([]);
+  const [loading, setLoading] = useState(true);
+  const [showAddProduct, setShowAddProduct] = useState(false);
+  const [selectedProduct, setSelectedProduct] = useState<Product | null>(null);
+  const [quantity, setQuantity] = useState(1);
+
+  useEffect(() => {
+    const dealId = searchParams.get('id');
+    if (!dealId || !user) return;
+
+    const loadDealDetails = async () => {
+      try {
+        setLoading(true);
+        
+        // Load deal and products in parallel
+        const [dealData, productsData] = await Promise.all([
+          dealService.getById(dealId),
+          productService.getAll()
+        ]);
+        
+        if (!dealData) {
+          router.push('/deals');
+          return;
+        }
+        
+        setDeal(dealData);
+        setProducts(productsData);
+        
+        // Load customer and stage
+        const [customerData, stageData] = await Promise.all([
+          customerService.getById(dealData.customerId),
+          dealStageService.getById(dealData.stageId)
+        ]);
+        
+        setCustomer(customerData);
+        setStage(stageData);
+      } catch (error) {
+        console.error('Error loading deal details:', error);
+        router.push('/deals');
+      } finally {
+        setLoading(false);
+      }
+    };
+
+    loadDealDetails();
+  }, [searchParams, user, router]);
+
+  const handleAddProduct = async () => {
+    if (!selectedProduct || !deal || quantity <= 0) return;
+
+    try {
+      const dealProduct: DealProduct = {
+        id: `${selectedProduct.id}-${Date.now()}`, // Generate unique ID for the deal product
+        productId: selectedProduct.id!,
+        productName: selectedProduct.name,
+        price: selectedProduct.price,
+        quantity,
+        total: selectedProduct.price * quantity,
+        isSubscription: selectedProduct.isSubscription,
+        subscriptionInterval: selectedProduct.isSubscription ? selectedProduct.subscriptionInterval : undefined
+      };
+
+      const updatedProducts = [...(deal.products || []), dealProduct];
+      const newTotalValue = updatedProducts.reduce((sum, p) => sum + p.total, 0);
+
+      await dealService.update(deal.id!, {
+        products: updatedProducts,
+        value: newTotalValue
+      });
+
+      setDeal({
+        ...deal,
+        products: updatedProducts,
+        value: newTotalValue
+      });
+
+      // Reset form
+      setSelectedProduct(null);
+      setQuantity(1);
+      setShowAddProduct(false);
+    } catch (error) {
+      console.error('Error adding product to deal:', error);
+    }
+  };
+
+  const handleRemoveProduct = async (index: number) => {
+    if (!deal) return;
+
+    try {
+      const updatedProducts = deal.products?.filter((_, i) => i !== index) || [];
+      const newTotalValue = updatedProducts.reduce((sum, p) => sum + p.total, 0);
+
+      await dealService.update(deal.id!, {
+        products: updatedProducts,
+        value: newTotalValue
+      });
+
+      setDeal({
+        ...deal,
+        products: updatedProducts,
+        value: newTotalValue
+      });
+    } catch (error) {
+      console.error('Error removing product from deal:', error);
+    }
+  };
+
+  const formatCurrency = (amount: number) => {
+    return new Intl.NumberFormat('en-US', {
+      style: 'currency',
+      currency: 'USD'
+    }).format(amount);
+  };
+
+  const formatDate = (date: Date) => {
+    return new Intl.DateTimeFormat('en-US', {
+      year: 'numeric',
+      month: 'long',
+      day: 'numeric'
+    }).format(date);
+  };
+
+  if (loading) {
+    return (
+      <DashboardLayout>
+        <div className="flex items-center justify-center h-64">
+          <div className="animate-spin rounded-full h-8 w-8 border-b-2 border-blue-500"></div>
+        </div>
+      </DashboardLayout>
+    );
+  }
+
+  if (!deal || !customer || !stage) {
+    return (
+      <DashboardLayout>
+        <div className="text-center py-8">
+          <p className="text-gray-500">Deal not found</p>
+        </div>
+      </DashboardLayout>
+    );
+  }
+
+  return (
+    <DashboardLayout>
+      <div className="space-y-6">
+        {/* Header */}
+        <div className="flex items-center gap-4">
+          <button
+            onClick={() => router.push('/deals')}
+            className="p-2 hover:bg-gray-100 rounded-lg transition-colors"
+          >
+            <ArrowLeft className="h-5 w-5" />
+          </button>
+          <div>
+            <h1 className="text-2xl font-bold text-gray-900">{deal.title}</h1>
+            <p className="text-gray-600">Deal Details</p>
+          </div>
+        </div>
+
+        <div className="grid grid-cols-1 lg:grid-cols-3 gap-6">
+          {/* Main Deal Info */}
+          <div className="lg:col-span-2 space-y-6">
+            {/* Deal Overview Card */}
+            <div className="bg-white rounded-lg shadow p-6">
+              <div className="flex items-center justify-between mb-4">
+                <h2 className="text-lg font-semibold">Deal Overview</h2>
+                <button className="p-2 hover:bg-gray-100 rounded-lg">
+                  <Edit3 className="h-4 w-4" />
+                </button>
+              </div>
+              
+              <div className="grid grid-cols-2 gap-4">
+                <div className="flex items-center gap-3">
+                  <DollarSign className="h-5 w-5 text-green-500" />
+                  <div>
+                    <p className="text-sm text-gray-600">Total Value</p>
+                    <p className="font-semibold">{formatCurrency(deal.value)}</p>
+                  </div>
+                </div>
+                
+                <div className="flex items-center gap-3">
+                  <Calendar className="h-5 w-5 text-blue-500" />
+                  <div>
+                    <p className="text-sm text-gray-600">Expected Close</p>
+                    <p className="font-semibold">
+                      {deal.expectedCloseDate ? formatDate(deal.expectedCloseDate) : 'Not set'}
+                    </p>
+                  </div>
+                </div>
+                
+                <div className="flex items-center gap-3">
+                  <Package className="h-5 w-5 text-purple-500" />
+                  <div>
+                    <p className="text-sm text-gray-600">Stage</p>
+                    <span 
+                      className="inline-flex items-center px-2.5 py-0.5 rounded-full text-xs font-medium"
+                      style={{ 
+                        backgroundColor: stage.color + '20', 
+                        color: stage.color 
+                      }}
+                    >
+                      {stage.name}
+                    </span>
+                  </div>
+                </div>
+                
+                <div className="flex items-center gap-3">
+                  <User className="h-5 w-5 text-orange-500" />
+                  <div>
+                    <p className="text-sm text-gray-600">Probability</p>
+                    <p className="font-semibold">{deal.probability}%</p>
+                  </div>
+                </div>
+              </div>
+              
+              {deal.description && (
+                <div className="mt-4 pt-4 border-t">
+                  <p className="text-sm text-gray-600">Description</p>
+                  <p className="mt-1">{deal.description}</p>
+                </div>
+              )}
+            </div>
+
+            {/* Products Card */}
+            <div className="bg-white rounded-lg shadow p-6">
+              <div className="flex items-center justify-between mb-4">
+                <h2 className="text-lg font-semibold">Products & Services</h2>
+                <button
+                  onClick={() => setShowAddProduct(true)}
+                  className="flex items-center gap-2 px-3 py-2 bg-blue-600 text-white rounded-lg hover:bg-blue-700 transition-colors"
+                >
+                  <Plus className="h-4 w-4" />
+                  Add Product
+                </button>
+              </div>
+
+              {deal.products && deal.products.length > 0 ? (
+                <div className="space-y-3">
+                  {deal.products.map((product, index) => (
+                    <div key={index} className="flex items-center justify-between p-4 border rounded-lg">
+                      <div className="flex-1">
+                        <div className="flex items-center gap-3">
+                          <h3 className="font-medium">{product.productName}</h3>
+                          {product.subscriptionInterval && (
+                            <span className="px-2 py-1 bg-purple-100 text-purple-700 text-xs rounded-full">
+                              {product.subscriptionInterval}
+                            </span>
+                          )}
+                        </div>
+                        <p className="text-sm text-gray-600">
+                          {formatCurrency(product.price)} × {product.quantity} = {formatCurrency(product.total)}
+                        </p>
+                      </div>
+                      <button
+                        onClick={() => handleRemoveProduct(index)}
+                        className="p-2 hover:bg-red-50 text-red-500 rounded-lg transition-colors"
+                      >
+                        <X className="h-4 w-4" />
+                      </button>
+                    </div>
+                  ))}
+                  
+                  <div className="pt-3 border-t">
+                    <div className="flex justify-between items-center">
+                      <span className="font-semibold">Total:</span>
+                      <span className="font-semibold text-lg">{formatCurrency(deal.value)}</span>
+                    </div>
+                  </div>
+                </div>
+              ) : (
+                <div className="text-center py-8 text-gray-500">
+                  <Package className="h-12 w-12 mx-auto mb-3 opacity-40" />
+                  <p>No products added yet</p>
+                  <p className="text-sm">Click "Add Product" to get started</p>
+                </div>
+              )}
+            </div>
+          </div>
+
+          {/* Customer Info Sidebar */}
+          <div className="space-y-6">
+            <div className="bg-white rounded-lg shadow p-6">
+              <h2 className="text-lg font-semibold mb-4">Customer Information</h2>
+              
+              <div className="space-y-4">
+                <div className="flex items-center gap-3">
+                  <Building className="h-5 w-5 text-gray-400" />
+                  <div>
+                    <p className="font-medium">{customer.name}</p>
+                    <p className="text-sm text-gray-600">Company</p>
+                  </div>
+                </div>
+                
+                {customer.email && (
+                  <div className="flex items-center gap-3">
+                    <Mail className="h-5 w-5 text-gray-400" />
+                    <div>
+                      <p className="font-medium">{customer.email}</p>
+                      <p className="text-sm text-gray-600">Email</p>
+                    </div>
+                  </div>
+                )}
+                
+                {customer.phone && (
+                  <div className="flex items-center gap-3">
+                    <Phone className="h-5 w-5 text-gray-400" />
+                    <div>
+                      <p className="font-medium">{customer.phone}</p>
+                      <p className="text-sm text-gray-600">Phone</p>
+                    </div>
+                  </div>
+                )}
+              </div>
+            </div>
+          </div>
+        </div>
+
+        {/* Add Product Modal */}
+        {showAddProduct && (
+          <div className="fixed inset-0 bg-black bg-opacity-50 flex items-center justify-center z-50">
+            <div className="bg-white rounded-lg p-6 w-full max-w-md">
+              <div className="flex items-center justify-between mb-4">
+                <h3 className="text-lg font-semibold">Add Product to Deal</h3>
+                <button
+                  onClick={() => setShowAddProduct(false)}
+                  className="p-2 hover:bg-gray-100 rounded-lg"
+                >
+                  <X className="h-4 w-4" />
+                </button>
+              </div>
+
+              <div className="space-y-4">
+                <div>
+                  <label className="block text-sm font-medium text-gray-700 mb-2">
+                    Product
+                  </label>
+                  <select
+                    value={selectedProduct?.id || ''}
+                    onChange={(e) => {
+                      const product = products.find(p => p.id === e.target.value);
+                      setSelectedProduct(product || null);
+                    }}
+                    className="w-full px-3 py-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-blue-500 focus:border-transparent"
+                  >
+                    <option value="">Select a product...</option>
+                    {products.map((product) => (
+                      <option key={product.id} value={product.id}>
+                        {product.name} - {formatCurrency(product.price)}
+                        {product.isSubscription && ` (${product.subscriptionInterval})`}
+                      </option>
+                    ))}
+                  </select>
+                </div>
+
+                <div>
+                  <label className="block text-sm font-medium text-gray-700 mb-2">
+                    Quantity
+                  </label>
+                  <input
+                    type="number"
+                    min="1"
+                    value={quantity}
+                    onChange={(e) => setQuantity(parseInt(e.target.value) || 1)}
+                    className="w-full px-3 py-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-blue-500 focus:border-transparent"
+                  />
+                </div>
+
+                {selectedProduct && (
+                  <div className="p-3 bg-gray-50 rounded-lg">
+                    <div className="flex justify-between items-center">
+                      <span className="text-sm text-gray-600">Total:</span>
+                      <span className="font-semibold">
+                        {formatCurrency(selectedProduct.price * quantity)}
+                      </span>
+                    </div>
+                  </div>
+                )}
+
+                <div className="flex gap-3 pt-4">
+                  <button
+                    onClick={() => setShowAddProduct(false)}
+                    className="flex-1 px-4 py-2 border border-gray-300 text-gray-700 rounded-lg hover:bg-gray-50 transition-colors"
+                  >
+                    Cancel
+                  </button>
+                  <button
+                    onClick={handleAddProduct}
+                    disabled={!selectedProduct || quantity <= 0}
+                    className="flex-1 px-4 py-2 bg-blue-600 text-white rounded-lg hover:bg-blue-700 disabled:opacity-50 disabled:cursor-not-allowed transition-colors"
+                  >
+                    Add Product
+                  </button>
+                </div>
+              </div>
+            </div>
+          </div>
+        )}
+      </div>
+    </DashboardLayout>
+  );
+}

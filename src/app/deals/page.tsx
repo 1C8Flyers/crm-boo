@@ -55,7 +55,7 @@ function DealCard({ deal, customerName, isDragging = false }: DealCardProps) {
     if ((e.target as Element).closest('[data-drag-handle]')) {
       return;
     }
-    cardRouter.push(`/deals/${deal.id}`);
+    cardRouter.push(`/deals/detail?id=${deal.id}`);
   };
 
   return (
