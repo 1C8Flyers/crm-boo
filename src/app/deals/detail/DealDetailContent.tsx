@@ -34,6 +34,7 @@ export default function DealDetailContent() {
   const [showAddProduct, setShowAddProduct] = useState(false);
   const [selectedProduct, setSelectedProduct] = useState<Product | null>(null);
   const [quantity, setQuantity] = useState(1);
+  const [customPrice, setCustomPrice] = useState(0);
 
   useEffect(() => {
     const dealId = searchParams.get('id');
@@ -79,15 +80,17 @@ export default function DealDetailContent() {
   const handleAddProduct = async () => {
     if (!selectedProduct || !deal || quantity <= 0) return;
 
+    const priceToUse = customPrice > 0 ? customPrice : selectedProduct.price;
+
     try {
       // Create clean deal product object without undefined values
       const dealProduct: DealProduct = {
         id: `${selectedProduct.id}-${Date.now()}`, // Generate unique ID for the deal product
         productId: selectedProduct.id!,
         productName: selectedProduct.name,
-        price: selectedProduct.price,
+        price: priceToUse,
         quantity,
-        total: selectedProduct.price * quantity,
+        total: priceToUse * quantity,
         isSubscription: selectedProduct.isSubscription,
         ...(selectedProduct.isSubscription && selectedProduct.subscriptionInterval && {
           subscriptionInterval: selectedProduct.subscriptionInterval
@@ -129,6 +132,7 @@ export default function DealDetailContent() {
       // Reset form
       setSelectedProduct(null);
       setQuantity(1);
+      setCustomPrice(0);
       setShowAddProduct(false);
     } catch (error) {
       console.error('Error adding product to deal:', error);
@@ -417,6 +421,7 @@ export default function DealDetailContent() {
                     onChange={(e) => {
                       const product = products.find(p => p.id === e.target.value);
                       setSelectedProduct(product || null);
+                      setCustomPrice(product?.price || 0);
                     }}
                     className="w-full px-3 py-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-blue-500 focus:border-transparent"
                   >
@@ -444,11 +449,31 @@ export default function DealDetailContent() {
                 </div>
 
                 {selectedProduct && (
+                  <div>
+                    <label className="block text-sm font-medium text-gray-700 mb-2">
+                      Price (Default: {formatCurrency(selectedProduct.price)})
+                    </label>
+                    <input
+                      type="number"
+                      min="0"
+                      step="0.01"
+                      value={customPrice}
+                      onChange={(e) => setCustomPrice(parseFloat(e.target.value) || 0)}
+                      placeholder={selectedProduct.price.toString()}
+                      className="w-full px-3 py-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-blue-500 focus:border-transparent"
+                    />
+                    <p className="text-xs text-gray-900 mt-1">
+                      Leave as {formatCurrency(selectedProduct.price)} to use default price, or enter custom price
+                    </p>
+                  </div>
+                )}
+
+                {selectedProduct && (
                   <div className="p-3 bg-gray-50 rounded-lg">
                     <div className="flex justify-between items-center">
                       <span className="text-sm text-gray-800">Total:</span>
                       <span className="font-semibold text-black">
-                        {formatCurrency(selectedProduct.price * quantity)}
+                        {formatCurrency((customPrice > 0 ? customPrice : selectedProduct.price) * quantity)}
                       </span>
                     </div>
                   </div>
