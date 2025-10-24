@@ -1,6 +1,7 @@
 import { initializeApp } from 'firebase/app';
 import { getAuth } from 'firebase/auth';
 import { getFirestore } from 'firebase/firestore';
+import { getStorage } from 'firebase/storage';
 import type { FirebaseConfig } from '@/types';
 
 const firebaseConfig: FirebaseConfig = {
@@ -16,6 +17,7 @@ const firebaseConfig: FirebaseConfig = {
 let app: any = null;
 let auth: any = null;
 let db: any = null;
+let storage: any = null;
 
 try {
   if (typeof window !== 'undefined') {
@@ -33,6 +35,7 @@ try {
       app = initializeApp(firebaseConfig);
       auth = getAuth(app);
       db = getFirestore(app);
+      storage = getStorage(app);
       
       console.log('Firebase initialized successfully');
     } else {
@@ -43,5 +46,5 @@ try {
   console.error('Firebase initialization error:', error);
 }
 
-export { auth, db };
+export { auth, db, storage };
 export default app;

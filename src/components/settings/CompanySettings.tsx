@@ -1,10 +1,10 @@
 'use client';
 
-import { useState, useEffect } from 'react';
+import { useState, useEffect, useRef } from 'react';
 import { useForm } from 'react-hook-form';
 import { zodResolver } from '@hookform/resolvers/zod';
 import { z } from 'zod';
-import { Building2, Save, Upload } from 'lucide-react';
+import { Building2, Save, Upload, X, Image as ImageIcon } from 'lucide-react';
 import { companyService } from '@/lib/services/companyService';
 import { Company } from '@/types';
 
@@ -28,7 +28,10 @@ type CompanyFormData = z.infer<typeof companySchema>;
 export default function CompanySettings() {
   const [isLoading, setIsLoading] = useState(false);
   const [isSaving, setIsSaving] = useState(false);
+  const [isUploadingLogo, setIsUploadingLogo] = useState(false);
   const [company, setCompany] = useState<Company | null>(null);
+  const [logoPreview, setLogoPreview] = useState<string | null>(null);
+  const fileInputRef = useRef<HTMLInputElement>(null);
 
   const {
     register,
@@ -64,6 +67,7 @@ export default function CompanySettings() {
       const companyData = await companyService.getCompany();
       if (companyData) {
         setCompany(companyData);
+        setLogoPreview(companyData.logo || null);
         reset({
           name: companyData.name,
           address: companyData.address,
@@ -90,6 +94,49 @@ export default function CompanySettings() {
     } finally {
       setIsSaving(false);
     }
+  };
+
+  const handleLogoUpload = async (event: React.ChangeEvent<HTMLInputElement>) => {
+    const file = event.target.files?.[0];
+    if (!file) return;
+
+    setIsUploadingLogo(true);
+    try {
+      const logoUrl = await companyService.updateLogo(file);
+      setLogoPreview(logoUrl);
+      await loadCompany(); // Reload to get updated company data
+    } catch (error: any) {
+      console.error('Error uploading logo:', error);
+      alert(error.message || 'Failed to upload logo');
+    } finally {
+      setIsUploadingLogo(false);
+      // Reset file input
+      if (fileInputRef.current) {
+        fileInputRef.current.value = '';
+      }
+    }
+  };
+
+  const handleRemoveLogo = async () => {
+    if (!confirm('Are you sure you want to remove the company logo?')) {
+      return;
+    }
+
+    setIsUploadingLogo(true);
+    try {
+      await companyService.removeLogo();
+      setLogoPreview(null);
+      await loadCompany(); // Reload to get updated company data
+    } catch (error: any) {
+      console.error('Error removing logo:', error);
+      alert(error.message || 'Failed to remove logo');
+    } finally {
+      setIsUploadingLogo(false);
+    }
+  };
+
+  const triggerFileUpload = () => {
+    fileInputRef.current?.click();
   };
 
   if (isLoading) {
@@ -271,22 +318,86 @@ export default function CompanySettings() {
           </div>
         </div>
 
-        {/* Logo Upload - Placeholder for future implementation */}
+        {/* Logo Upload */}
         <div>
-          <label className="block text-sm font-medium text-gray-700">
+          <label className="block text-sm font-medium text-gray-700 mb-3">
             Company Logo
           </label>
-          <div className="mt-1 flex justify-center px-6 pt-5 pb-6 border-2 border-gray-300 border-dashed rounded-md">
-            <div className="space-y-1 text-center">
-              <Upload className="mx-auto h-12 w-12 text-gray-700" />
-              <div className="flex text-sm text-gray-900">
-                <p>Logo upload coming soon</p>
+          
+          {logoPreview ? (
+            <div className="flex items-start space-x-4">
+              <div className="relative">
+                <img
+                  src={logoPreview}
+                  alt="Company Logo"
+                  className="w-24 h-24 object-contain border border-gray-300 rounded-lg bg-gray-50"
+                />
+                <button
+                  type="button"
+                  onClick={handleRemoveLogo}
+                  disabled={isUploadingLogo}
+                  className="absolute -top-2 -right-2 bg-red-500 text-white rounded-full p-1 hover:bg-red-600 disabled:opacity-50"
+                  title="Remove logo"
+                >
+                  <X className="w-3 h-3" />
+                </button>
               </div>
-              <p className="text-xs text-gray-800">
-                PNG, JPG, GIF up to 10MB
-              </p>
+              <div className="flex-1">
+                <p className="text-sm text-gray-900 mb-2">Current logo</p>
+                <button
+                  type="button"
+                  onClick={triggerFileUpload}
+                  disabled={isUploadingLogo}
+                  className="inline-flex items-center px-3 py-2 border border-gray-300 shadow-sm text-sm leading-4 font-medium rounded-md text-gray-700 bg-white hover:bg-gray-50 focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-blue-500 disabled:opacity-50"
+                >
+                  {isUploadingLogo ? (
+                    <>
+                      <div className="w-4 h-4 border-2 border-gray-400 border-t-transparent rounded-full animate-spin mr-2" />
+                      Uploading...
+                    </>
+                  ) : (
+                    <>
+                      <Upload className="w-4 h-4 mr-2" />
+                      Change Logo
+                    </>
+                  )}
+                </button>
+              </div>
             </div>
-          </div>
+          ) : (
+            <div 
+              onClick={triggerFileUpload}
+              className="cursor-pointer border-2 border-gray-300 border-dashed rounded-lg p-6 text-center hover:border-gray-400 transition-colors"
+            >
+              <div className="space-y-2">
+                {isUploadingLogo ? (
+                  <>
+                    <div className="mx-auto h-12 w-12 border-4 border-blue-200 border-t-blue-600 rounded-full animate-spin" />
+                    <p className="text-sm text-gray-900">Uploading logo...</p>
+                  </>
+                ) : (
+                  <>
+                    <ImageIcon className="mx-auto h-12 w-12 text-gray-700" />
+                    <div className="text-sm text-gray-900">
+                      <span className="font-medium text-blue-600">Click to upload</span> or drag and drop
+                    </div>
+                    <p className="text-xs text-gray-800">
+                      PNG, JPG, GIF, WebP up to 10MB
+                    </p>
+                  </>
+                )}
+              </div>
+            </div>
+          )}
+          
+          <input
+            ref={fileInputRef}
+            type="file"
+            accept="image/*"
+            onChange={handleLogoUpload}
+            className="hidden"
+            disabled={isUploadingLogo}
+          />
         </div>
 
         {/* Save Button */}
