@@ -28,6 +28,7 @@ import {
 import {
   CSS,
 } from '@dnd-kit/utilities';
+import DealsListTable from './DealsListTable';
 
 interface DealCardProps {
   deal: Deal;
