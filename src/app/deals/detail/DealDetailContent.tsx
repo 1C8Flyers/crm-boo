@@ -4,9 +4,10 @@ import { useEffect, useState } from 'react';
 import { useAuth } from '@/contexts/AuthContext';
 import { useRouter, useSearchParams } from 'next/navigation';
 import { DashboardLayout } from '@/components/layout/DashboardLayout';
-import { dealService, customerService, productService, dealStageService } from '@/lib/firebase-services';
+import { dealService, customerService, dealStageService, contactService } from '@/lib/firebase-services';
 import Notes from '@/components/Notes';
-import type { Deal, Customer, Product, DealStage, DealProduct } from '@/types';
+import ProposalList from '@/components/proposals/ProposalList';
+import type { Deal, Customer, DealStage, Contact } from '@/types';
 import { 
   ArrowLeft, 
   DollarSign, 
@@ -16,9 +17,10 @@ import {
   Phone, 
   Mail,
   Edit3,
-  Plus,
-  X,
-  Package
+  Package,
+  Eye,
+  Users,
+  ClipboardList
 } from 'lucide-react';
 
 export default function DealDetailContent() {
@@ -30,12 +32,8 @@ export default function DealDetailContent() {
   const [deal, setDeal] = useState<Deal | null>(null);
   const [customer, setCustomer] = useState<Customer | null>(null);
   const [stage, setStage] = useState<DealStage | null>(null);
-  const [products, setProducts] = useState<Product[]>([]);
+  const [contacts, setContacts] = useState<Contact[]>([]);
   const [loading, setLoading] = useState(true);
-  const [showAddProduct, setShowAddProduct] = useState(false);
-  const [selectedProduct, setSelectedProduct] = useState<Product | null>(null);
-  const [quantity, setQuantity] = useState(1);
-  const [customPrice, setCustomPrice] = useState(0);
 
   useEffect(() => {
     const dealId = searchParams.get('id');
@@ -46,11 +44,8 @@ export default function DealDetailContent() {
       try {
         setLoading(true);
         
-        // Load deal and products in parallel
-        const [dealData, productsData] = await Promise.all([
-          dealService.getById(dealId),
-          productService.getAll()
-        ]);
+        // Load deal data
+        const dealData = await dealService.getById(dealId);
         
         if (!dealData) {
           router.push('/deals');
@@ -58,7 +53,6 @@ export default function DealDetailContent() {
         }
         
         setDeal(dealData);
-        setProducts(productsData);
         
         // Load customer and stage
         const [customerData, stageData] = await Promise.all([
@@ -68,6 +62,12 @@ export default function DealDetailContent() {
         
         setCustomer(customerData);
         setStage(stageData);
+
+        // Load contacts for this deal (for now, we'll show customer contacts)
+        if (customerData) {
+          const contactsData = await contactService.getByCustomer(customerData.id);
+          setContacts(contactsData);
+        }
       } catch (error) {
         console.error('Error loading deal details:', error);
         router.push('/deals');
@@ -79,105 +79,18 @@ export default function DealDetailContent() {
     loadDealDetails();
   }, [searchParams, user, router]);
 
-  const handleAddProduct = async () => {
-    if (!selectedProduct || !deal || quantity <= 0) return;
-
-    const priceToUse = customPrice > 0 ? customPrice : selectedProduct.price;
-
-    try {
-      // Create clean deal product object without undefined values
-      const dealProduct: DealProduct = {
-        id: `${selectedProduct.id}-${Date.now()}`, // Generate unique ID for the deal product
-        productId: selectedProduct.id!,
-        productName: selectedProduct.name,
-        price: priceToUse,
-        quantity,
-        total: priceToUse * quantity,
-        isSubscription: selectedProduct.isSubscription,
-        ...(selectedProduct.isSubscription && selectedProduct.subscriptionInterval && {
-          subscriptionInterval: selectedProduct.subscriptionInterval
-        })
-      };
-
-      const updatedProducts = [...(deal.products || []), dealProduct];
-      const subscriptionValue = updatedProducts
-        .filter(p => p.isSubscription)
-        .reduce((sum, p) => sum + p.total, 0);
-      const oneTimeValue = updatedProducts
-        .filter(p => !p.isSubscription)
-        .reduce((sum, p) => sum + p.total, 0);
-
-      // Create clean update object without undefined values
-      const updateData: any = {
-        products: updatedProducts,
-        value: subscriptionValue + oneTimeValue
-      };
-
-      // Only include subscription/oneTime values if they exist
-      if (subscriptionValue > 0) {
-        updateData.subscriptionValue = subscriptionValue;
-      }
-      if (oneTimeValue > 0) {
-        updateData.oneTimeValue = oneTimeValue;
-      }
-
-      await dealService.update(deal.id!, updateData);
-
-      setDeal({
-        ...deal,
-        products: updatedProducts,
-        value: subscriptionValue + oneTimeValue,
-        subscriptionValue: subscriptionValue > 0 ? subscriptionValue : undefined,
-        oneTimeValue: oneTimeValue > 0 ? oneTimeValue : undefined
-      });
-
-      // Reset form
-      setSelectedProduct(null);
-      setQuantity(1);
-      setCustomPrice(0);
-      setShowAddProduct(false);
-    } catch (error) {
-      console.error('Error adding product to deal:', error);
-    }
-  };
-
-  const handleRemoveProduct = async (index: number) => {
+  const refreshDealValues = async () => {
     if (!deal) return;
-
+    
     try {
-      const updatedProducts = deal.products?.filter((_, i) => i !== index) || [];
-      const subscriptionValue = updatedProducts
-        .filter(p => p.isSubscription)
-        .reduce((sum, p) => sum + p.total, 0);
-      const oneTimeValue = updatedProducts
-        .filter(p => !p.isSubscription)
-        .reduce((sum, p) => sum + p.total, 0);
-
-      // Create clean update object without undefined values
-      const updateData: any = {
-        products: updatedProducts,
-        value: subscriptionValue + oneTimeValue
-      };
-
-      // Only include subscription/oneTime values if they exist
-      if (subscriptionValue > 0) {
-        updateData.subscriptionValue = subscriptionValue;
+      await dealService.updateValuesFromProposals(deal.id);
+      // Reload the deal to get updated values
+      const updatedDeal = await dealService.getById(deal.id);
+      if (updatedDeal) {
+        setDeal(updatedDeal);
       }
-      if (oneTimeValue > 0) {
-        updateData.oneTimeValue = oneTimeValue;
-      }
-
-      await dealService.update(deal.id!, updateData);
-
-      setDeal({
-        ...deal,
-        products: updatedProducts,
-        value: subscriptionValue + oneTimeValue,
-        subscriptionValue: subscriptionValue > 0 ? subscriptionValue : undefined,
-        oneTimeValue: oneTimeValue > 0 ? oneTimeValue : undefined
-      });
     } catch (error) {
-      console.error('Error removing product from deal:', error);
+      console.error('Error refreshing deal values:', error);
     }
   };
 
@@ -200,17 +113,29 @@ export default function DealDetailContent() {
     return (
       <DashboardLayout>
         <div className="flex items-center justify-center h-64">
-          <div className="animate-spin rounded-full h-8 w-8 border-b-2 border-blue-500"></div>
+          <div className="animate-spin rounded-full h-8 w-8 border-b-2" style={{ borderColor: '#2E4A62' }}></div>
         </div>
       </DashboardLayout>
     );
   }
 
-  if (!deal || !customer || !stage) {
+  if (!deal) {
     return (
       <DashboardLayout>
-        <div className="text-center py-8">
-          <p className="text-gray-800">Deal not found</p>
+        <div className="text-center py-12">
+          <h3 className="mt-2 text-sm font-medium text-gray-900">Deal not found</h3>
+          <p className="mt-1 text-sm text-gray-500">
+            The deal you're looking for doesn't exist or has been deleted.
+          </p>
+          <div className="mt-6">
+            <button
+              onClick={() => router.push('/deals')}
+              className="inline-flex items-center px-4 py-2 border border-transparent shadow-sm text-sm font-medium rounded-md text-white bg-blue-600 hover:bg-blue-700 focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-blue-500"
+            >
+              <ArrowLeft className="mr-2 h-4 w-4" />
+              Back to Deals
+            </button>
+          </div>
         </div>
       </DashboardLayout>
     );
@@ -229,15 +154,18 @@ export default function DealDetailContent() {
               <ArrowLeft className="h-5 w-5 text-gray-900" />
             </button>
             <div>
-              <h1 className="text-2xl font-bold text-gray-900">{deal.title}</h1>
+              <h1 className="text-2xl font-bold text-gray-900" style={{ fontFamily: 'var(--font-poppins)' }}>
+                {deal.title}
+              </h1>
+              <p className="text-gray-600" style={{ fontFamily: 'var(--font-pt-sans)' }}>
+                {deal.description || 'Deal Details'}
+              </p>
             </div>
           </div>
           <button
-            onClick={() => {
-              console.log('Edit button clicked, deal ID:', deal.id);
-              router.push(`/deals/edit?id=${deal.id}`);
-            }}
-            className="flex items-center gap-2 px-4 py-2 bg-blue-600 text-white rounded-lg hover:bg-blue-700 transition-colors"
+            onClick={() => router.push(`/deals/edit?id=${deal.id}`)}
+            className="flex items-center gap-2 px-4 py-2 text-white rounded-lg hover:opacity-90 transition-opacity"
+            style={{ backgroundColor: '#2E4A62', fontFamily: 'var(--font-pt-sans)' }}
           >
             <Edit3 className="h-4 w-4" />
             Edit Deal
@@ -245,282 +173,245 @@ export default function DealDetailContent() {
         </div>
 
         <div className="grid grid-cols-1 lg:grid-cols-3 gap-6">
-          {/* Main Deal Info */}
-          <div className="lg:col-span-2 space-y-6">
-            {/* Deal Overview Card */}
-            <div className="bg-white rounded-lg shadow p-6">
-              <div className="mb-4">
-                <h2 className="text-lg font-semibold text-black">Deal Overview</h2>
-              </div>
-              
-              <div className="grid grid-cols-2 gap-4">
-                <div className="flex items-center gap-3">
-                  <DollarSign className="h-5 w-5 text-green-500" />
-                  <div>
-                    <p className="text-sm text-black font-bold">Total Value</p>
-                    <p className="font-bold text-black">{formatCurrency(deal.value)}</p>
+            {/* Left Column - Main Content */}
+            <div className="lg:col-span-2 space-y-6">
+              {/* Deal Overview */}
+              <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-4">
+                <div className="bg-white rounded-lg shadow p-6 border border-gray-200">
+                  <div className="flex items-center">
+                    <div className="w-12 h-12 rounded-lg flex items-center justify-center mr-4" style={{ backgroundColor: '#A38B5C' }}>
+                      <DollarSign className="w-6 h-6 text-white" />
+                    </div>
+                    <div>
+                      <p className="text-sm text-gray-700" style={{ fontFamily: 'var(--font-pt-sans)' }}>Deal Value</p>
+                      <p className="text-2xl font-bold text-gray-900" style={{ fontFamily: 'var(--font-poppins)' }}>
+                        {formatCurrency(deal.value)}
+                      </p>
+                    </div>
                   </div>
                 </div>
-                
-                <div className="flex items-center gap-3">
-                  <Calendar className="h-5 w-5 text-blue-500" />
-                  <div>
-                    <p className="text-sm text-black font-bold">Expected Close</p>
-                    <p className="font-bold text-black">
-                      {deal.expectedCloseDate ? formatDate(deal.expectedCloseDate) : 'Not set'}
+
+                <div className="bg-white rounded-lg shadow p-6 border border-gray-200">
+                  <div className="flex items-center">
+                    <div className="w-12 h-12 rounded-lg flex items-center justify-center mr-4" style={{ backgroundColor: '#2E4A62' }}>
+                      <Calendar className="w-6 h-6 text-white" />
+                    </div>
+                    <div>
+                      <p className="text-sm text-gray-700" style={{ fontFamily: 'var(--font-pt-sans)' }}>Probability</p>
+                      <p className="text-2xl font-bold text-gray-900" style={{ fontFamily: 'var(--font-poppins)' }}>
+                        {deal.probability}%
+                      </p>
+                    </div>
+                  </div>
+                </div>
+
+                <div className="bg-white rounded-lg shadow p-6 border border-gray-200">
+                  <div className="flex items-center">
+                    <div className="w-12 h-12 rounded-lg flex items-center justify-center mr-4" style={{ backgroundColor: '#2E4A62' }}>
+                      <Calendar className="w-6 h-6 text-white" />
+                    </div>
+                    <div>
+                      <p className="text-sm text-gray-700" style={{ fontFamily: 'var(--font-pt-sans)' }}>Expected Close</p>
+                      <p className="text-sm font-bold text-gray-900" style={{ fontFamily: 'var(--font-poppins)' }}>
+                        {deal.expectedCloseDate ? formatDate(deal.expectedCloseDate) : 'Not set'}
+                      </p>
+                    </div>
+                  </div>
+                </div>
+
+                <div className="bg-white rounded-lg shadow p-6 border border-gray-200">
+                  <div className="flex items-center">
+                    <div className="w-12 h-12 rounded-lg flex items-center justify-center mr-4" style={{ backgroundColor: '#2E4A62' }}>
+                      <Package className="w-6 h-6 text-white" />
+                    </div>
+                    <div>
+                      <p className="text-sm text-gray-700" style={{ fontFamily: 'var(--font-pt-sans)' }}>Stage</p>
+                      <p className="text-sm font-bold text-gray-900" style={{ fontFamily: 'var(--font-poppins)' }}>
+                        {stage?.name || 'Unknown'}
+                      </p>
+                    </div>
+                  </div>
+                </div>
+              </div>
+
+              {/* Deal Values Card */}
+              <div className="bg-white rounded-lg shadow p-6 border border-gray-200">
+                <h2 className="text-lg font-semibold text-gray-900 mb-4" style={{ fontFamily: 'var(--font-poppins)' }}>
+                  Proposal Values
+                </h2>
+
+                <div className="space-y-4">
+                  <div className="grid grid-cols-1 md:grid-cols-3 gap-4">
+                    <div className="bg-white rounded-lg shadow p-6 border border-gray-200">
+                      <div className="flex items-center">
+                        <div className="w-12 h-12 rounded-lg flex items-center justify-center mr-4" style={{ backgroundColor: '#A38B5C' }}>
+                          <DollarSign className="w-6 h-6 text-white" />
+                        </div>
+                        <div>
+                          <p className="text-sm text-gray-700" style={{ fontFamily: 'var(--font-pt-sans)' }}>Total Value</p>
+                          <p className="text-2xl font-bold text-gray-900" style={{ fontFamily: 'var(--font-poppins)' }}>
+                            {formatCurrency(deal.value)}
+                          </p>
+                        </div>
+                      </div>
+                    </div>
+                    
+                    {deal.subscriptionValue !== undefined && deal.subscriptionValue > 0 && (
+                      <div className="bg-white rounded-lg shadow p-6 border border-gray-200">
+                        <div className="flex items-center">
+                          <div className="w-12 h-12 rounded-lg flex items-center justify-center mr-4" style={{ backgroundColor: '#2E4A62' }}>
+                            <Package className="w-6 h-6 text-white" />
+                          </div>
+                          <div>
+                            <p className="text-sm text-gray-700" style={{ fontFamily: 'var(--font-pt-sans)' }}>Subscription</p>
+                            <p className="text-2xl font-bold text-gray-900" style={{ fontFamily: 'var(--font-poppins)' }}>
+                              {formatCurrency(deal.subscriptionValue)}
+                            </p>
+                          </div>
+                        </div>
+                      </div>
+                    )}
+                    
+                    {deal.oneTimeValue !== undefined && deal.oneTimeValue > 0 && (
+                      <div className="bg-white rounded-lg shadow p-6 border border-gray-200">
+                        <div className="flex items-center">
+                          <div className="w-12 h-12 rounded-lg flex items-center justify-center mr-4" style={{ backgroundColor: '#2E4A62' }}>
+                            <Package className="w-6 h-6 text-white" />
+                          </div>
+                          <div>
+                            <p className="text-sm text-gray-700" style={{ fontFamily: 'var(--font-pt-sans)' }}>One-time</p>
+                            <p className="text-2xl font-bold text-gray-900" style={{ fontFamily: 'var(--font-poppins)' }}>
+                              {formatCurrency(deal.oneTimeValue)}
+                            </p>
+                          </div>
+                        </div>
+                      </div>
+                    )}
+                  </div>
+                  
+                  <div className="pt-3 border-t border-gray-200">
+                    <p className="text-sm text-gray-600" style={{ fontFamily: 'var(--font-pt-sans)' }}>
+                      Values are automatically calculated from all proposals linked to this deal.
                     </p>
                   </div>
                 </div>
-                
-                <div className="flex items-center gap-3">
-                  <Package className="h-5 w-5 text-purple-500" />
-                  <div>
-                    <p className="text-sm text-black font-bold">Stage</p>
-                    <span 
-                      className="inline-flex items-center px-2.5 py-0.5 rounded-full text-xs font-medium"
-                      style={{ 
-                        backgroundColor: stage.color + '20', 
-                        color: stage.color 
-                      }}
-                    >
-                      {stage.name}
-                    </span>
-                  </div>
-                </div>
-                
-                <div className="flex items-center gap-3">
-                  <User className="h-5 w-5 text-orange-500" />
-                  <div>
-                    <p className="text-sm text-black font-bold">Probability</p>
-                    <p className="font-bold text-black">{deal.probability}%</p>
-                  </div>
-                </div>
               </div>
-              
-              {deal.description && (
-                <div className="mt-4 pt-4 border-t">
-                  <p className="text-sm text-black font-bold">Description</p>
-                  <p className="mt-1 text-black font-medium">{deal.description}</p>
-                </div>
-              )}
+
+              {/* Notes & Activities */}
+              <Notes 
+                deal={deal} 
+                customer={customer || undefined} 
+              />
             </div>
 
-            {/* Products Card */}
-            <div className="bg-white rounded-lg shadow p-6">
-              <div className="flex items-center justify-between mb-4">
-                <h2 className="text-lg font-semibold text-black">Products & Services</h2>
-                <button
-                  onClick={() => setShowAddProduct(true)}
-                  className="flex items-center gap-2 px-3 py-2 bg-blue-600 text-white rounded-lg hover:bg-blue-700 transition-colors"
-                >
-                  <Plus className="h-4 w-4" />
-                  Add Product
-                </button>
-              </div>
+            {/* Right Column - Sidebar */}
+            <div className="space-y-6">
+              {/* Customer Card */}
+              {customer && (
+                <div className="bg-white rounded-lg shadow p-6 border border-gray-200">
+                  <div className="flex items-center justify-between mb-4">
+                    <h2 className="text-lg font-semibold text-gray-900 flex items-center" style={{ fontFamily: 'var(--font-poppins)' }}>
+                      <Building className="mr-2 h-5 w-5" />
+                      Customer
+                    </h2>
+                    <button
+                      onClick={() => router.push(`/customers/detail?id=${customer.id}`)}
+                      className="p-2 text-gray-400 hover:text-gray-600 transition-colors"
+                      title="View customer details"
+                    >
+                      <Eye className="h-4 w-4" />
+                    </button>
+                  </div>
+                  <div className="space-y-3">
+                    <div>
+                      <h3 className="font-medium text-gray-900" style={{ fontFamily: 'var(--font-poppins)' }}>{customer.name}</h3>
+                      {customer.company && (
+                        <p className="text-sm text-gray-700" style={{ fontFamily: 'var(--font-pt-sans)' }}>{customer.company}</p>
+                      )}
+                    </div>
+                    <div className="space-y-2">
+                      <div className="flex items-center text-sm text-gray-700" style={{ fontFamily: 'var(--font-pt-sans)' }}>
+                        <Mail className="mr-2 h-4 w-4" />
+                        {customer.email}
+                      </div>
+                      {customer.phone && (
+                        <div className="flex items-center text-sm text-gray-700" style={{ fontFamily: 'var(--font-pt-sans)' }}>
+                          <Phone className="mr-2 h-4 w-4" />
+                          {customer.phone}
+                        </div>
+                      )}
+                    </div>
+                  </div>
+                </div>
+              )}
 
-              {deal.products && deal.products.length > 0 ? (
-                <div className="space-y-3">
-                  {deal.products.map((product, index) => (
-                    <div key={index} className="flex items-center justify-between p-4 border rounded-lg">
-                      <div className="flex-1">
-                        <div className="flex items-center gap-3">
-                          <h3 className="font-medium text-black">{product.productName}</h3>
-                          {product.subscriptionInterval && (
-                            <span className="px-2 py-1 bg-purple-100 text-purple-700 text-xs rounded-full">
-                              {product.subscriptionInterval}
-                            </span>
+              {/* Contacts Card */}
+              <div className="bg-white rounded-lg shadow p-6 border border-gray-200">
+                <div className="flex items-center justify-between mb-4">
+                  <h2 className="text-lg font-semibold text-gray-900 flex items-center" style={{ fontFamily: 'var(--font-poppins)' }}>
+                    <Users className="mr-2 h-5 w-5" />
+                    Contacts ({contacts.length})
+                  </h2>
+                </div>
+                {contacts.length > 0 ? (
+                  <div className="space-y-3">
+                    {contacts.map((contact) => (
+                      <div key={contact.id} className="flex items-center justify-between p-3 border border-gray-200 rounded-lg">
+                        <div className="flex-1">
+                          <div className="flex items-center gap-3">
+                            <h3 className="font-medium text-gray-900" style={{ fontFamily: 'var(--font-poppins)' }}>
+                              {contact.firstName} {contact.lastName}
+                            </h3>
+                          </div>
+                          <p className="text-sm text-gray-700" style={{ fontFamily: 'var(--font-pt-sans)' }}>{contact.email}</p>
+                          {contact.title && (
+                            <div className="flex items-center gap-2 text-sm text-gray-600" style={{ fontFamily: 'var(--font-pt-sans)' }}>
+                              <User className="h-4 w-4" />
+                              {contact.title}
+                              {contact.department && ` - ${contact.department}`}
+                            </div>
                           )}
                         </div>
-                        <p className="text-sm text-gray-800">
-                          {formatCurrency(product.price)} × {product.quantity} = {formatCurrency(product.total)}
-                        </p>
+                        <button
+                          onClick={() => router.push(`/contacts/detail?id=${contact.id}`)}
+                          className="p-2 text-gray-400 hover:text-gray-600 transition-colors"
+                          title="View contact details"
+                        >
+                          <Eye className="h-4 w-4" />
+                        </button>
                       </div>
-                      <button
-                        onClick={() => handleRemoveProduct(index)}
-                        className="p-2 hover:bg-red-50 text-red-500 rounded-lg transition-colors"
-                      >
-                        <X className="h-4 w-4" />
-                      </button>
-                    </div>
-                  ))}
-                  
-                  <div className="pt-3 border-t">
-                    <div className="flex justify-between items-center">
-                      <span className="font-semibold text-black">Total:</span>
-                      <span className="font-semibold text-lg text-black">{formatCurrency(deal.value)}</span>
-                    </div>
+                    ))}
                   </div>
-                </div>
-              ) : (
-                <div className="text-center py-8 text-gray-800">
-                  <Package className="h-12 w-12 mx-auto mb-3 opacity-40" />
-                  <p>No products added yet</p>
-                  <p className="text-sm">Click "Add Product" to get started</p>
-                </div>
-              )}
-            </div>
-
-            {/* Notes & Activities */}
-            <Notes 
-              deal={deal} 
-              customer={customer || undefined} 
-              editActivityId={searchParams.get('editActivity') || undefined}
-            />
-          </div>
-
-          {/* Customer Info Sidebar */}
-          <div className="space-y-6">
-            <div className="bg-white rounded-lg shadow p-6">
-              <div className="flex items-center justify-between mb-4">
-                <h2 className="text-lg font-semibold text-gray-900">Customer Information</h2>
-                <button
-                  onClick={() => router.push(`/customers/detail?id=${customer.id}`)}
-                  className="text-sm px-3 py-1 rounded-md transition-colors"
-                  style={{ 
-                    backgroundColor: '#2E4A62',
-                    color: 'white',
-                    fontFamily: 'var(--font-pt-sans)'
-                  }}
-                >
-                  View Customer
-                </button>
+                ) : (
+                  <div className="text-center py-6 text-gray-600">
+                    <Users className="h-8 w-8 mx-auto mb-2 opacity-40" />
+                    <p className="text-sm" style={{ fontFamily: 'var(--font-pt-sans)' }}>No contacts found</p>
+                  </div>
+                )}
               </div>
-              
-              <div className="space-y-4">
-                <div className="flex items-center gap-3">
-                  <Building className="h-5 w-5 text-gray-700" />
-                  <div>
-                    <p className="font-bold text-black">{customer.name}</p>
-                    <p className="text-sm text-black font-semibold">Company</p>
-                  </div>
+
+              {/* Proposals Card */}
+              <div className="bg-white rounded-lg shadow p-6 border border-gray-200">
+                <div className="flex items-center justify-between mb-4">
+                  <h2 className="text-lg font-semibold text-gray-900 flex items-center" style={{ fontFamily: 'var(--font-poppins)' }}>
+                    <ClipboardList className="mr-2 h-5 w-5" />
+                    Proposals
+                  </h2>
+                  <button
+                    onClick={() => router.push(`/proposals/new?dealId=${deal.id}`)}
+                    className="text-sm font-medium text-white px-3 py-1.5 rounded-lg transition-opacity hover:opacity-90"
+                    style={{ backgroundColor: '#2E4A62', fontFamily: 'var(--font-pt-sans)' }}
+                  >
+                    Create Proposal
+                  </button>
                 </div>
-                
-                {customer.email && (
-                  <div className="flex items-center gap-3">
-                    <Mail className="h-5 w-5 text-gray-700" />
-                    <div>
-                      <p className="font-bold text-black">{customer.email}</p>
-                      <p className="text-sm text-black font-semibold">Email</p>
-                    </div>
-                  </div>
-                )}
-                
-                {customer.phone && (
-                  <div className="flex items-center gap-3">
-                    <Phone className="h-5 w-5 text-gray-700" />
-                    <div>
-                      <p className="font-bold text-black">{customer.phone}</p>
-                      <p className="text-sm text-black font-semibold">Phone</p>
-                    </div>
-                  </div>
-                )}
+                <div className="max-h-96 overflow-y-auto">
+                  <ProposalList dealId={deal.id} onUpdate={refreshDealValues} />
+                </div>
               </div>
             </div>
           </div>
         </div>
-
-        {/* Add Product Modal */}
-        {showAddProduct && (
-          <div className="fixed inset-0 bg-black bg-opacity-50 flex items-center justify-center z-50">
-            <div className="bg-white rounded-lg p-6 w-full max-w-md">
-              <div className="flex items-center justify-between mb-4">
-                <h3 className="text-lg font-semibold text-black">Add Product to Deal</h3>
-                <button
-                  onClick={() => setShowAddProduct(false)}
-                  className="p-2 hover:bg-gray-100 rounded-lg"
-                >
-                  <X className="h-4 w-4" />
-                </button>
-              </div>
-
-              <div className="space-y-4">
-                <div>
-                  <label className="block text-sm font-medium text-gray-700 mb-2">
-                    Product
-                  </label>
-                  <select
-                    value={selectedProduct?.id || ''}
-                    onChange={(e) => {
-                      const product = products.find(p => p.id === e.target.value);
-                      setSelectedProduct(product || null);
-                      setCustomPrice(product?.price || 0);
-                    }}
-                    className="w-full px-3 py-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-blue-500 focus:border-transparent"
-                  >
-                    <option value="">Select a product...</option>
-                    {products.map((product) => (
-                      <option key={product.id} value={product.id}>
-                        {product.name} - {formatCurrency(product.price)}
-                        {product.isSubscription && ` (${product.subscriptionInterval})`}
-                      </option>
-                    ))}
-                  </select>
-                </div>
-
-                <div>
-                  <label className="block text-sm font-medium text-gray-700 mb-2">
-                    Quantity
-                  </label>
-                  <input
-                    type="number"
-                    min="1"
-                    value={quantity}
-                    onChange={(e) => setQuantity(parseInt(e.target.value) || 1)}
-                    className="w-full px-3 py-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-blue-500 focus:border-transparent"
-                  />
-                </div>
-
-                {selectedProduct && (
-                  <div>
-                    <label className="block text-sm font-medium text-gray-700 mb-2">
-                      Price (Default: {formatCurrency(selectedProduct.price)})
-                    </label>
-                    <input
-                      type="number"
-                      min="0"
-                      step="0.01"
-                      value={customPrice}
-                      onChange={(e) => setCustomPrice(parseFloat(e.target.value) || 0)}
-                      placeholder={selectedProduct.price.toString()}
-                      className="w-full px-3 py-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-blue-500 focus:border-transparent"
-                    />
-                    <p className="text-xs text-gray-900 mt-1">
-                      Leave as {formatCurrency(selectedProduct.price)} to use default price, or enter custom price
-                    </p>
-                  </div>
-                )}
-
-                {selectedProduct && (
-                  <div className="p-3 bg-gray-50 rounded-lg">
-                    <div className="flex justify-between items-center">
-                      <span className="text-sm text-gray-800">Total:</span>
-                      <span className="font-semibold text-black">
-                        {formatCurrency((customPrice > 0 ? customPrice : selectedProduct.price) * quantity)}
-                      </span>
-                    </div>
-                  </div>
-                )}
-
-                <div className="flex gap-3 pt-4">
-                  <button
-                    onClick={() => setShowAddProduct(false)}
-                    className="flex-1 px-4 py-2 border border-gray-300 text-gray-700 rounded-lg hover:bg-gray-50 transition-colors"
-                  >
-                    Cancel
-                  </button>
-                  <button
-                    onClick={handleAddProduct}
-                    disabled={!selectedProduct || quantity <= 0}
-                    className="flex-1 px-4 py-2 bg-blue-600 text-white rounded-lg hover:bg-blue-700 disabled:opacity-50 disabled:cursor-not-allowed transition-colors"
-                  >
-                    Add Product
-                  </button>
-                </div>
-              </div>
-            </div>
-          </div>
-        )}
-      </div>
-    </DashboardLayout>
-  );
+      </DashboardLayout>
+    );
 }

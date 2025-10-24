@@ -368,45 +368,74 @@ function InvoiceDetailContent() {
           </div>
 
           {/* Status Actions */}
-          {invoice.status === 'draft' && (
-            <div className="px-6 py-4 bg-blue-50 border-b border-gray-200">
-              <div className="flex items-center justify-between">
-                <p className="text-sm text-blue-800">
-                  This invoice is still in draft mode. Send it to make it official.
+          <div className="px-6 py-4 bg-gray-50 border-b border-gray-200">
+            <div className="flex items-center justify-between">
+              <div>
+                <p className="text-sm text-gray-700 mb-2">
+                  <strong>Current Status:</strong> {statusConfig[invoice.status].label}
                 </p>
-                <div className="flex space-x-3">
+                <p className="text-xs text-gray-600">
+                  {invoice.status === 'draft' && 'This invoice is still in draft mode. Send it to make it official.'}
+                  {invoice.status === 'sent' && 'Invoice has been sent. Mark as paid when payment is received.'}
+                  {invoice.status === 'paid' && 'This invoice has been marked as paid.'}
+                  {invoice.status === 'overdue' && 'This invoice is overdue.'}
+                  {invoice.status === 'cancelled' && 'This invoice has been cancelled.'}
+                </p>
+              </div>
+              <div className="flex flex-wrap gap-2">
+                {invoice.status !== 'draft' && (
+                  <button
+                    onClick={() => updateStatus('draft')}
+                    disabled={isUpdating}
+                    className="inline-flex items-center px-3 py-1.5 border border-gray-300 text-xs font-medium rounded text-gray-700 bg-white hover:bg-gray-50 focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-gray-500 disabled:opacity-50"
+                  >
+                    <Clock className="mr-1 h-3 w-3" />
+                    Draft
+                  </button>
+                )}
+                {invoice.status !== 'sent' && (
                   <button
                     onClick={() => updateStatus('sent')}
                     disabled={isUpdating}
                     className="inline-flex items-center px-3 py-1.5 border border-transparent text-xs font-medium rounded text-white bg-blue-600 hover:bg-blue-700 focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-blue-500 disabled:opacity-50"
                   >
                     <Send className="mr-1 h-3 w-3" />
-                    Mark as Sent
+                    Sent
                   </button>
-                </div>
-              </div>
-            </div>
-          )}
-
-          {invoice.status === 'sent' && (
-            <div className="px-6 py-4 bg-yellow-50 border-b border-gray-200">
-              <div className="flex items-center justify-between">
-                <p className="text-sm text-yellow-800">
-                  Invoice has been sent. Mark as paid when payment is received.
-                </p>
-                <div className="flex space-x-3">
+                )}
+                {invoice.status !== 'paid' && (
                   <button
                     onClick={() => updateStatus('paid')}
                     disabled={isUpdating}
                     className="inline-flex items-center px-3 py-1.5 border border-transparent text-xs font-medium rounded text-white bg-green-600 hover:bg-green-700 focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-green-500 disabled:opacity-50"
                   >
                     <CheckCircle className="mr-1 h-3 w-3" />
-                    Mark as Paid
+                    Paid
                   </button>
-                </div>
+                )}
+                {invoice.status !== 'overdue' && (
+                  <button
+                    onClick={() => updateStatus('overdue')}
+                    disabled={isUpdating}
+                    className="inline-flex items-center px-3 py-1.5 border border-transparent text-xs font-medium rounded text-white bg-red-600 hover:bg-red-700 focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-red-500 disabled:opacity-50"
+                  >
+                    <AlertTriangle className="mr-1 h-3 w-3" />
+                    Overdue
+                  </button>
+                )}
+                {invoice.status !== 'cancelled' && (
+                  <button
+                    onClick={() => updateStatus('cancelled')}
+                    disabled={isUpdating}
+                    className="inline-flex items-center px-3 py-1.5 border border-gray-300 text-xs font-medium rounded text-gray-700 bg-white hover:bg-gray-50 focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-gray-500 disabled:opacity-50"
+                  >
+                    <AlertTriangle className="mr-1 h-3 w-3" />
+                    Cancelled
+                  </button>
+                )}
               </div>
             </div>
-          )}
+          </div>
 
           {/* Rest of the component content stays the same... */}
           <div className="px-6 py-6">

@@ -161,7 +161,10 @@ function ContactsContent() {
             </p>
           </div>
           <button
-            onClick={() => setShowForm(true)}
+            onClick={() => {
+              console.log('Add Contact button clicked');
+              setShowForm(true);
+            }}
             className="inline-flex items-center px-4 py-2 border border-transparent text-sm font-medium rounded-md text-white bg-blue-600 hover:bg-blue-700 focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-blue-500"
           >
             <Plus className="w-4 h-4 mr-2" />
@@ -357,12 +360,15 @@ function ContactsContent() {
 
       {/* Contact Form Modal */}
       {showForm && (
-        <ContactFormModal
-          contact={editingContact}
-          customers={customers}
-          onClose={handleCloseForm}
-          onSuccess={handleFormSuccess}
-        />
+        <>
+          {console.log('Rendering ContactFormModal, showForm:', showForm)}
+          <ContactFormModal
+            contact={editingContact}
+            customers={customers}
+            onClose={handleCloseForm}
+            onSuccess={handleFormSuccess}
+          />
+        </>
       )}
     </DashboardLayout>
   );

@@ -13,7 +13,7 @@ import {
   Timestamp,
 } from 'firebase/firestore';
 import { db } from '@/lib/firebase';
-import type { Customer, Deal, Product, Invoice, Activity, DealStage, Contact } from '@/types';
+import type { Customer, Deal, Product, Invoice, Activity, DealStage, Contact, Proposal, ProposalItem } from '@/types';
 import { v4 as uuidv4 } from 'uuid';
 
 // Customer services
@@ -167,6 +167,97 @@ export const dealService = {
 
   async moveToStage(id: string, newStageId: string): Promise<void> {
     await this.update(id, { stageId: newStageId });
+  },
+
+  // Contact-Deal linking methods
+  async addContact(dealId: string, contactId: string): Promise<void> {
+    const deal = await this.getById(dealId);
+    if (!deal) throw new Error('Deal not found');
+    
+    const contactIds = deal.contactIds || [];
+    if (!contactIds.includes(contactId)) {
+      contactIds.push(contactId);
+      await this.update(dealId, { contactIds });
+    }
+  },
+
+  async removeContact(dealId: string, contactId: string): Promise<void> {
+    const deal = await this.getById(dealId);
+    if (!deal) throw new Error('Deal not found');
+    
+    const contactIds = (deal.contactIds || []).filter(id => id !== contactId);
+    await this.update(dealId, { contactIds });
+  },
+
+  async setContacts(dealId: string, contactIds: string[]): Promise<void> {
+    await this.update(dealId, { contactIds: contactIds.length > 0 ? contactIds : undefined });
+  },
+
+  async getByContact(contactId: string): Promise<Deal[]> {
+    const querySnapshot = await getDocs(
+      query(
+        collection(db, 'deals'),
+        where('contactIds', 'array-contains', contactId)
+      )
+    );
+    const deals = querySnapshot.docs.map(doc => ({
+      ...doc.data(),
+      id: doc.id,
+      createdAt: doc.data().createdAt.toDate(),
+      updatedAt: doc.data().updatedAt.toDate(),
+      expectedCloseDate: doc.data().expectedCloseDate?.toDate(),
+    })) as Deal[];
+    
+    return deals.sort((a, b) => b.createdAt.getTime() - a.createdAt.getTime());
+  },
+
+  // Proposal-based value calculations
+  async calculateValuesFromProposals(dealId: string): Promise<{
+    totalValue: number;
+    subscriptionValue: number;
+    oneTimeValue: number;
+  }> {
+    try {
+      // Get all accepted proposals for this deal
+      const querySnapshot = await getDocs(
+        query(
+          collection(db, 'proposals'),
+          where('dealId', '==', dealId)
+        )
+      );
+      
+      let totalValue = 0;
+      let subscriptionValue = 0;
+      let oneTimeValue = 0;
+      
+      querySnapshot.docs.forEach(doc => {
+        const proposal = doc.data() as Proposal;
+        totalValue += proposal.total;
+        
+        // Calculate subscription vs one-time values from proposal items
+        proposal.items.forEach(item => {
+          if (item.isSubscription) {
+            subscriptionValue += item.total;
+          } else {
+            oneTimeValue += item.total;
+          }
+        });
+      });
+      
+      return { totalValue, subscriptionValue, oneTimeValue };
+    } catch (error) {
+      console.error('Error calculating proposal values:', error);
+      return { totalValue: 0, subscriptionValue: 0, oneTimeValue: 0 };
+    }
+  },
+
+  async updateValuesFromProposals(dealId: string): Promise<void> {
+    const values = await this.calculateValuesFromProposals(dealId);
+    await this.update(dealId, {
+      value: values.totalValue,
+      subscriptionValue: values.subscriptionValue,
+      oneTimeValue: values.oneTimeValue,
+    });
   },
 };
 
@@ -607,6 +698,68 @@ export const activityService = {
     
     return activities.sort((a, b) => b.createdAt.getTime() - a.createdAt.getTime());
   },
+
+  async getById(id: string): Promise<Activity | null> {
+    const docRef = doc(db, 'activities', id);
+    const docSnap = await getDoc(docRef);
+    
+    if (!docSnap.exists()) {
+      return null;
+    }
+
+    const data = docSnap.data();
+    return {
+      ...data,
+      id: docSnap.id,
+      createdAt: data.createdAt.toDate(),
+      updatedAt: data.updatedAt.toDate(),
+      dueDate: data.dueDate?.toDate(),
+      meetingDate: data.meetingDate?.toDate(),
+    } as Activity;
+  },
+
+  // Contact-Activity linking methods
+  async getByContact(contactId: string): Promise<Activity[]> {
+    const querySnapshot = await getDocs(
+      query(
+        collection(db, 'activities'),
+        where('contactIds', 'array-contains', contactId)
+      )
+    );
+    const activities = querySnapshot.docs.map(doc => ({
+      ...doc.data(),
+      id: doc.id,
+      createdAt: doc.data().createdAt.toDate(),
+      updatedAt: doc.data().updatedAt.toDate(),
+      dueDate: doc.data().dueDate?.toDate(),
+      meetingDate: doc.data().meetingDate?.toDate(),
+    })) as Activity[];
+    
+    return activities.sort((a, b) => b.createdAt.getTime() - a.createdAt.getTime());
+  },
+
+  async addContact(activityId: string, contactId: string): Promise<void> {
+    const activity = await this.getById(activityId);
+    if (!activity) throw new Error('Activity not found');
+    
+    const contactIds = activity.contactIds || [];
+    if (!contactIds.includes(contactId)) {
+      contactIds.push(contactId);
+      await this.update(activityId, { contactIds });
+    }
+  },
+
+  async removeContact(activityId: string, contactId: string): Promise<void> {
+    const activity = await this.getById(activityId);
+    if (!activity) throw new Error('Activity not found');
+    
+    const contactIds = (activity.contactIds || []).filter(id => id !== contactId);
+    await this.update(activityId, { contactIds: contactIds.length > 0 ? contactIds : undefined });
+  },
+
+  async setContacts(activityId: string, contactIds: string[]): Promise<void> {
+    await this.update(activityId, { contactIds: contactIds.length > 0 ? contactIds : undefined });
+  },
 };
 
 // Contact services
@@ -747,5 +900,461 @@ export const contactService = {
     });
     
     await batch.commit();
+  },
+
+  async addActivity(contactId: string, activityId: string): Promise<void> {
+    const contact = await this.getById(contactId);
+    if (!contact) throw new Error('Contact not found');
+    
+    const activityIds = contact.activityIds || [];
+    if (!activityIds.includes(activityId)) {
+      activityIds.push(activityId);
+      await this.update(contactId, { activityIds });
+    }
+  },
+
+  async removeActivity(contactId: string, activityId: string): Promise<void> {
+    const contact = await this.getById(contactId);
+    if (!contact) throw new Error('Contact not found');
+    
+    const activityIds = (contact.activityIds || []).filter(id => id !== activityId);
+    await this.update(contactId, { activityIds: activityIds.length > 0 ? activityIds : undefined });
+  },
+};
+
+// Contact-Deal relationship helper service
+export const contactDealService = {
+  /**
+   * Link a contact to a deal (bidirectional relationship)
+   */
+  async linkContactToDeal(contactId: string, dealId: string): Promise<void> {
+    // Add contact to deal's contactIds
+    await dealService.addContact(dealId, contactId);
+    
+    // Add deal to contact's dealIds
+    await contactService.addToDeal(contactId, dealId);
+  },
+
+  /**
+   * Unlink a contact from a deal (bidirectional relationship)
+   */
+  async unlinkContactFromDeal(contactId: string, dealId: string): Promise<void> {
+    // Remove contact from deal's contactIds
+    await dealService.removeContact(dealId, contactId);
+    
+    // Remove deal from contact's dealIds
+    await contactService.removeFromDeal(contactId, dealId);
+  },
+
+  /**
+   * Set all contacts for a deal (replaces existing contacts)
+   */
+  async setDealContacts(dealId: string, contactIds: string[]): Promise<void> {
+    // Get current deal to see existing contacts
+    const deal = await dealService.getById(dealId);
+    if (!deal) throw new Error('Deal not found');
+
+    const currentContactIds = deal.contactIds || [];
+    
+    // Remove dealId from contacts that are no longer associated
+    const contactsToRemove = currentContactIds.filter(id => !contactIds.includes(id));
+    await Promise.all(contactsToRemove.map(contactId => 
+      contactService.removeFromDeal(contactId, dealId)
+    ));
+
+    // Add dealId to new contacts
+    const contactsToAdd = contactIds.filter(id => !currentContactIds.includes(id));
+    await Promise.all(contactsToAdd.map(contactId => 
+      contactService.addToDeal(contactId, dealId)
+    ));
+
+    // Update deal's contactIds
+    await dealService.setContacts(dealId, contactIds);
+  },
+
+  /**
+   * Set all deals for a contact (replaces existing deals)
+   */
+  async setContactDeals(contactId: string, dealIds: string[]): Promise<void> {
+    // Get current contact to see existing deals
+    const contact = await contactService.getById(contactId);
+    if (!contact) throw new Error('Contact not found');
+
+    const currentDealIds = contact.dealIds || [];
+    
+    // Remove contactId from deals that are no longer associated
+    const dealsToRemove = currentDealIds.filter(id => !dealIds.includes(id));
+    await Promise.all(dealsToRemove.map(dealId => 
+      dealService.removeContact(dealId, contactId)
+    ));
+
+    // Add contactId to new deals
+    const dealsToAdd = dealIds.filter(id => !currentDealIds.includes(id));
+    await Promise.all(dealsToAdd.map(dealId => 
+      dealService.addContact(dealId, contactId)
+    ));
+
+    // Update contact's dealIds
+    await contactService.update(contactId, { dealIds: dealIds.length > 0 ? dealIds : undefined });
+  },
+
+  /**
+   * Get all contacts associated with a deal
+   */
+  async getDealContacts(dealId: string): Promise<Contact[]> {
+    return await contactService.getByDeal(dealId);
+  },
+
+  /**
+   * Get all deals associated with a contact
+   */
+  async getContactDeals(contactId: string): Promise<Deal[]> {
+    return await dealService.getByContact(contactId);
+  },
+
+  /**
+   * Bulk link multiple contacts to a deal
+   */
+  async linkMultipleContactsToDeal(contactIds: string[], dealId: string): Promise<void> {
+    await Promise.all(contactIds.map(contactId => 
+      this.linkContactToDeal(contactId, dealId)
+    ));
+  },
+
+  /**
+   * Bulk link a contact to multiple deals
+   */
+  async linkContactToMultipleDeals(contactId: string, dealIds: string[]): Promise<void> {
+    await Promise.all(dealIds.map(dealId => 
+      this.linkContactToDeal(contactId, dealId)
+    ));
+  },
+
+  /**
+   * Remove all contact-deal relationships for a contact (useful when deleting a contact)
+   */
+  async removeAllContactRelationships(contactId: string): Promise<void> {
+    const deals = await this.getContactDeals(contactId);
+    await Promise.all(deals.map(deal => 
+      this.unlinkContactFromDeal(contactId, deal.id)
+    ));
+  },
+
+  /**
+   * Remove all contact-deal relationships for a deal (useful when deleting a deal)
+   */
+  async removeAllDealRelationships(dealId: string): Promise<void> {
+    const contacts = await this.getDealContacts(dealId);
+    await Promise.all(contacts.map(contact => 
+      this.unlinkContactFromDeal(contact.id, dealId)
+    ));
+  },
+};
+
+/**
+ * Service for managing contact-activity relationships
+ */
+export const contactActivityService = {
+  /**
+   * Link a contact to an activity
+   */
+  async linkContactToActivity(contactId: string, activityId: string): Promise<void> {
+    await Promise.all([
+      activityService.addContact(activityId, contactId),
+      contactService.addActivity(contactId, activityId)
+    ]);
+  },
+
+  /**
+   * Unlink a contact from an activity
+   */
+  async unlinkContactFromActivity(contactId: string, activityId: string): Promise<void> {
+    await Promise.all([
+      activityService.removeContact(activityId, contactId),
+      contactService.removeActivity(contactId, activityId)
+    ]);
+  },
+
+  /**
+   * Get all contacts associated with an activity
+   */
+  async getActivityContacts(activityId: string): Promise<Contact[]> {
+    const activity = await activityService.getById(activityId);
+    if (!activity || !activity.contactIds || activity.contactIds.length === 0) {
+      return [];
+    }
+
+    const contacts = await Promise.all(
+      activity.contactIds.map(contactId => contactService.getById(contactId))
+    );
+
+    return contacts.filter((contact): contact is Contact => contact !== null);
+  },
+
+  /**
+   * Get all activities associated with a contact
+   */
+  async getContactActivities(contactId: string): Promise<Activity[]> {
+    return activityService.getByContact(contactId);
+  },
+
+  /**
+   * Set all contacts for an activity (replaces existing relationships)
+   */
+  async setActivityContacts(activityId: string, contactIds: string[]): Promise<void> {
+    // Get current contacts for this activity
+    const currentContacts = await this.getActivityContacts(activityId);
+    const currentContactIds = currentContacts.map(c => c.id);
+
+    // Remove contacts that are no longer associated
+    const contactsToRemove = currentContactIds.filter(id => !contactIds.includes(id));
+    await Promise.all(contactsToRemove.map(contactId => 
+      this.unlinkContactFromActivity(contactId, activityId)
+    ));
+
+    // Add new contacts
+    const contactsToAdd = contactIds.filter(id => !currentContactIds.includes(id));
+    await Promise.all(contactsToAdd.map(contactId => 
+      this.linkContactToActivity(contactId, activityId)
+    ));
+  },
+
+  /**
+   * Remove all contact-activity relationships for an activity (useful when deleting an activity)
+   */
+  async removeAllActivityRelationships(activityId: string): Promise<void> {
+    const contacts = await this.getActivityContacts(activityId);
+    await Promise.all(contacts.map(contact => 
+      this.unlinkContactFromActivity(contact.id, activityId)
+    ));
+  },
+};
+
+// Proposal services
+export const proposalService = {
+  // Helper function to remove undefined fields for Firebase
+  cleanDataForFirebase(obj: any): any {
+    const cleaned: any = {};
+    Object.keys(obj).forEach(key => {
+      if (obj[key] !== undefined && obj[key] !== null && obj[key] !== '') {
+        cleaned[key] = obj[key];
+      }
+    });
+    return cleaned;
+  },
+
+  async getAll(): Promise<Proposal[]> {
+    const querySnapshot = await getDocs(
+      query(collection(db, 'proposals'), orderBy('createdAt', 'desc'))
+    );
+    return querySnapshot.docs.map(doc => ({
+      ...doc.data(),
+      id: doc.id,
+      createdAt: doc.data().createdAt.toDate(),
+      updatedAt: doc.data().updatedAt.toDate(),
+      validUntil: doc.data().validUntil?.toDate(),
+      sentAt: doc.data().sentAt?.toDate(),
+      viewedAt: doc.data().viewedAt?.toDate(),
+      respondedAt: doc.data().respondedAt?.toDate(),
+    })) as Proposal[];
+  },
+
+  async getById(id: string): Promise<Proposal | null> {
+    const docRef = doc(db, 'proposals', id);
+    const docSnap = await getDoc(docRef);
+    
+    if (!docSnap.exists()) {
+      return null;
+    }
+
+    const data = docSnap.data();
+    return {
+      ...data,
+      id: docSnap.id,
+      createdAt: data.createdAt.toDate(),
+      updatedAt: data.updatedAt.toDate(),
+      validUntil: data.validUntil?.toDate(),
+      sentAt: data.sentAt?.toDate(),
+      viewedAt: data.viewedAt?.toDate(),
+      respondedAt: data.respondedAt?.toDate(),
+    } as Proposal;
+  },
+
+  async getByCustomer(customerId: string): Promise<Proposal[]> {
+    const querySnapshot = await getDocs(
+      query(
+        collection(db, 'proposals'),
+        where('customerId', '==', customerId),
+        orderBy('createdAt', 'desc')
+      )
+    );
+    return querySnapshot.docs.map(doc => ({
+      ...doc.data(),
+      id: doc.id,
+      createdAt: doc.data().createdAt.toDate(),
+      updatedAt: doc.data().updatedAt.toDate(),
+      validUntil: doc.data().validUntil?.toDate(),
+      sentAt: doc.data().sentAt?.toDate(),
+      viewedAt: doc.data().viewedAt?.toDate(),
+      respondedAt: doc.data().respondedAt?.toDate(),
+    })) as Proposal[];
+  },
+
+  async getByDeal(dealId: string): Promise<Proposal[]> {
+    const querySnapshot = await getDocs(
+      query(
+        collection(db, 'proposals'),
+        where('dealId', '==', dealId),
+        orderBy('createdAt', 'desc')
+      )
+    );
+    return querySnapshot.docs.map(doc => ({
+      ...doc.data(),
+      id: doc.id,
+      createdAt: doc.data().createdAt.toDate(),
+      updatedAt: doc.data().updatedAt.toDate(),
+      validUntil: doc.data().validUntil?.toDate(),
+      sentAt: doc.data().sentAt?.toDate(),
+      viewedAt: doc.data().viewedAt?.toDate(),
+      respondedAt: doc.data().respondedAt?.toDate(),
+    })) as Proposal[];
+  },
+
+  async create(proposalData: Omit<Proposal, 'id' | 'createdAt' | 'updatedAt'>): Promise<string> {
+    const now = Timestamp.now();
+    
+    // Clean the data and convert dates
+    const cleanedData = this.cleanDataForFirebase({
+      ...proposalData,
+      validUntil: proposalData.validUntil ? Timestamp.fromDate(proposalData.validUntil) : null,
+      sentAt: proposalData.sentAt ? Timestamp.fromDate(proposalData.sentAt) : null,
+      viewedAt: proposalData.viewedAt ? Timestamp.fromDate(proposalData.viewedAt) : null,
+      respondedAt: proposalData.respondedAt ? Timestamp.fromDate(proposalData.respondedAt) : null,
+      createdAt: now,
+      updatedAt: now,
+    });
+
+    const docRef = await addDoc(collection(db, 'proposals'), cleanedData);
+    
+    // Update deal values if proposal is linked to a deal
+    if (proposalData.dealId) {
+      await dealService.updateValuesFromProposals(proposalData.dealId);
+    }
+    
+    return docRef.id;
+  },
+
+  async update(id: string, proposalData: Partial<Proposal>): Promise<void> {
+    const docRef = doc(db, 'proposals', id);
+    
+    // Get current proposal to check dealId
+    const currentProposal = await this.getById(id);
+    
+    // Prepare update data with proper date conversion
+    const baseUpdateData: any = {
+      ...proposalData,
+      updatedAt: Timestamp.now(),
+    };
+    
+    if (proposalData.validUntil) {
+      baseUpdateData.validUntil = Timestamp.fromDate(proposalData.validUntil);
+    }
+    if (proposalData.sentAt) {
+      baseUpdateData.sentAt = Timestamp.fromDate(proposalData.sentAt);
+    }
+    if (proposalData.viewedAt) {
+      baseUpdateData.viewedAt = Timestamp.fromDate(proposalData.viewedAt);
+    }
+    if (proposalData.respondedAt) {
+      baseUpdateData.respondedAt = Timestamp.fromDate(proposalData.respondedAt);
+    }
+    
+    // Clean the data before updating
+    const cleanedUpdateData = this.cleanDataForFirebase(baseUpdateData);
+    
+    await updateDoc(docRef, cleanedUpdateData);
+    
+    // Update deal values if proposal is linked to a deal
+    const dealId = proposalData.dealId || currentProposal?.dealId;
+    if (dealId) {
+      await dealService.updateValuesFromProposals(dealId);
+    }
+  },
+
+  async delete(id: string): Promise<void> {
+    // Get the proposal before deleting to check if it has a dealId
+    const proposal = await this.getById(id);
+    
+    await deleteDoc(doc(db, 'proposals', id));
+    
+    // Update deal values if proposal was linked to a deal
+    if (proposal && proposal.dealId) {
+      await dealService.updateValuesFromProposals(proposal.dealId);
+    }
+  },
+
+  // Status management methods
+  async markAsSent(id: string): Promise<void> {
+    await this.update(id, { 
+      status: 'sent', 
+      sentAt: new Date() 
+    });
+  },
+
+  async markAsViewed(id: string): Promise<void> {
+    const proposal = await this.getById(id);
+    if (proposal && proposal.status === 'sent') {
+      await this.update(id, { 
+        status: 'viewed', 
+        viewedAt: new Date() 
+      });
+    }
+  },
+
+  async markAsAccepted(id: string): Promise<void> {
+    // Get the proposal to check if it has a dealId
+    const proposal = await this.getById(id);
+    
+    await this.update(id, { 
+      status: 'accepted', 
+      respondedAt: new Date() 
+    });
+
+    // Update deal values if proposal is linked to a deal
+    if (proposal && proposal.dealId) {
+      await dealService.updateValuesFromProposals(proposal.dealId);
+    }
+  },
+
+  async markAsRejected(id: string): Promise<void> {
+    // Get the proposal to check if it has a dealId
+    const proposal = await this.getById(id);
+    
+    await this.update(id, { 
+      status: 'rejected', 
+      respondedAt: new Date() 
+    });
+
+    // Update deal values if proposal is linked to a deal (removing this proposal's contribution)
+    if (proposal && proposal.dealId) {
+      await dealService.updateValuesFromProposals(proposal.dealId);
+    }
+  },
+
+  // Helper methods for calculations
+  calculateSubtotal(items: ProposalItem[]): number {
+    return items.reduce((sum, item) => sum + item.total, 0);
+  },
+
+  calculateTotal(subtotal: number, discountAmount: number = 0, taxAmount: number = 0): number {
+    return subtotal - discountAmount + taxAmount;
+  },
+
+  calculateDiscountAmount(subtotal: number, discountPercentage: number): number {
+    return (subtotal * discountPercentage) / 100;
+  },
+
+  calculateTaxAmount(subtotal: number, discountAmount: number, taxPercentage: number): number {
+    return ((subtotal - discountAmount) * taxPercentage) / 100;
   },
 };

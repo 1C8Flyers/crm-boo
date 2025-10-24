@@ -5,8 +5,10 @@ import { useForm } from 'react-hook-form';
 import { zodResolver } from '@hookform/resolvers/zod';
 import { z } from 'zod';
 import { X } from 'lucide-react';
-import { customerService } from '@/lib/firebase-services';
-import type { Customer } from '@/types';
+import { customerService, contactService } from '@/lib/firebase-services';
+import { ContactSelector } from '@/components/contacts/ContactSelector';
+import { ContactFormModal } from '@/components/contacts/ContactFormModal';
+import type { Customer, Contact } from '@/types';
 
 const customerSchema = z.object({
   name: z.string().min(2, 'Name must be at least 2 characters'),
@@ -32,6 +34,9 @@ interface CustomerModalProps {
 
 export function CustomerModal({ customer, onClose, onSave }: CustomerModalProps) {
   const [isLoading, setIsLoading] = useState(false);
+  const [selectedContactIds, setSelectedContactIds] = useState<string[]>([]);
+  const [showContactForm, setShowContactForm] = useState(false);
+  const [allContacts, setAllContacts] = useState<Contact[]>([]);
   const isEditing = !!customer;
 
   const {
@@ -62,8 +67,29 @@ export function CustomerModal({ customer, onClose, onSave }: CustomerModalProps)
         company: customer.company || '',
         address: customer.address || {},
       });
+      setSelectedContactIds(customer.contactIds || []);
     }
   }, [customer, reset]);
+
+  useEffect(() => {
+    loadContacts();
+  }, []);
+
+  const loadContacts = async () => {
+    try {
+      const contacts = await contactService.getAll();
+      setAllContacts(contacts);
+    } catch (error) {
+      console.error('Error loading contacts:', error);
+    }
+  };
+
+  const handleContactFormSuccess = async () => {
+    setShowContactForm(false);
+    await loadContacts(); // Reload contacts after adding new one
+    // Note: We don't automatically select the new contact here since we don't know its ID
+    // The user can manually select it from the refreshed list
+  };
 
   const onSubmit = async (data: CustomerFormData) => {
     setIsLoading(true);
@@ -73,13 +99,32 @@ export function CustomerModal({ customer, onClose, onSave }: CustomerModalProps)
         phone: data.phone || undefined,
         company: data.company || undefined,
         address: data.address && Object.values(data.address).some(v => v) ? data.address : undefined,
+        contactIds: selectedContactIds.length > 0 ? selectedContactIds : undefined,
       };
 
+      let customerId: string;
       if (isEditing && customer) {
         await customerService.update(customer.id, customerData);
+        customerId = customer.id;
       } else {
-        await customerService.create(customerData);
+        customerId = await customerService.create(customerData);
       }
+
+      // Update contact relationships
+      if (selectedContactIds.length > 0) {
+        await Promise.all(selectedContactIds.map(contactId => 
+          contactService.update(contactId, { customerId })
+        ));
+      }
+
+      // Remove customer relationship from contacts that were deselected
+      if (isEditing && customer?.contactIds) {
+        const removedContactIds = customer.contactIds.filter(id => !selectedContactIds.includes(id));
+        await Promise.all(removedContactIds.map(contactId => 
+          contactService.update(contactId, { customerId: undefined })
+        ));
+      }
+
       onSave();
     } catch (error: any) {
       console.error('Error saving customer:', error);
@@ -227,6 +272,25 @@ export function CustomerModal({ customer, onClose, onSave }: CustomerModalProps)
                     </div>
                   </div>
                 </div>
+
+                {/* Contact Selection */}
+                <div>
+                  <label className="block text-sm font-medium text-gray-700 mb-3">
+                    Associated Contacts
+                  </label>
+                  <ContactSelector
+                    selectedContacts={selectedContactIds}
+                    onSelectionChange={setSelectedContactIds}
+                    multiSelect={true}
+                    placeholder="Search and select contacts..."
+                    showAddButton={true}
+                    onAddContact={() => setShowContactForm(true)}
+                    className="mb-2"
+                  />
+                  <p className="text-xs text-gray-500">
+                    Select existing contacts to associate with this customer, or add new contacts.
+                  </p>
+                </div>
               </div>
 
               {errors.root && (
@@ -259,6 +323,16 @@ export function CustomerModal({ customer, onClose, onSave }: CustomerModalProps)
           </form>
         </div>
       </div>
+
+      {/* Contact Form Modal */}
+      {showContactForm && (
+        <ContactFormModal
+          contact={null}
+          customers={[]}
+          onClose={() => setShowContactForm(false)}
+          onSuccess={handleContactFormSuccess}
+        />
+      )}
     </div>
   );
 }

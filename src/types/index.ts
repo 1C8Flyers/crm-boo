@@ -24,6 +24,7 @@ export interface Customer {
   email: string;
   phone?: string;
   company?: string;
+  contactIds?: string[]; // Associated contacts
   address?: {
     street?: string;
     city?: string;
@@ -47,6 +48,7 @@ export interface Contact {
   department?: string;
   customerId?: string; // Primary customer/company
   dealIds?: string[]; // Associated deals
+  activityIds?: string[]; // Associated activities
   isPrimary?: boolean; // Is this the primary contact for the customer?
   notes?: string;
   socialMedia?: {
@@ -65,17 +67,6 @@ export interface Contact {
 }
 
 // Deal types
-export interface DealProduct {
-  id: string;
-  productId: string;
-  productName: string;
-  quantity: number;
-  price: number;
-  total: number;
-  isSubscription: boolean;
-  subscriptionInterval?: 'monthly' | 'quarterly' | 'yearly';
-}
-
 export interface Deal {
   id: string;
   title: string;
@@ -85,9 +76,9 @@ export interface Deal {
   stageId: string;
   probability: number;
   expectedCloseDate?: Date;
-  products?: DealProduct[];
   subscriptionValue?: number;
   oneTimeValue?: number;
+  contactIds?: string[]; // Associated contacts
   createdAt: Date;
   updatedAt: Date;
   activities?: Activity[];
@@ -160,6 +151,7 @@ export interface Activity {
   description?: string;
   customerId?: string;
   dealId?: string;
+  contactIds?: string[]; // Associated contacts
   completed: boolean;
   dueDate?: Date; // Follow-up due date for all activity types
   meetingDate?: Date; // Actual meeting date for meetings (when it happened/will happen)
@@ -179,4 +171,47 @@ export interface User {
   role: 'admin' | 'sales' | 'manager';
   createdAt: Date;
   lastLogin?: Date;
+}
+
+// Proposal types
+export interface ProposalItem {
+  id: string;
+  type: 'product' | 'custom';
+  // For product items
+  productId?: string;
+  productName: string;
+  description?: string;
+  quantity: number;
+  unitPrice: number;
+  total: number;
+  // For subscription products
+  isSubscription?: boolean;
+  subscriptionInterval?: 'monthly' | 'quarterly' | 'yearly';
+  // For custom items
+  customDescription?: string;
+}
+
+export interface Proposal {
+  id: string;
+  title: string;
+  description?: string;
+  customerId: string;
+  dealId?: string; // Optional link to deal
+  contactIds?: string[]; // Contacts who will receive the proposal
+  items: ProposalItem[];
+  subtotal: number;
+  discountPercentage?: number;
+  discountAmount?: number;
+  taxPercentage?: number;
+  taxAmount?: number;
+  total: number;
+  status: 'draft' | 'sent' | 'viewed' | 'accepted' | 'rejected' | 'expired';
+  validUntil?: Date; // Expiration date
+  notes?: string;
+  terms?: string; // Terms and conditions
+  createdAt: Date;
+  updatedAt: Date;
+  sentAt?: Date;
+  viewedAt?: Date;
+  respondedAt?: Date;
 }

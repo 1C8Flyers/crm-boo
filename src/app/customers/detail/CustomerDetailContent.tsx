@@ -4,8 +4,8 @@ import { useEffect, useState } from 'react';
 import { useAuth } from '@/contexts/AuthContext';
 import { useRouter, useSearchParams } from 'next/navigation';
 import { DashboardLayout } from '@/components/layout/DashboardLayout';
-import { customerService, dealService, activityService, dealStageService } from '@/lib/firebase-services';
-import type { Customer, Deal, Activity, DealStage } from '@/types';
+import { customerService, dealService, activityService, dealStageService, contactService } from '@/lib/firebase-services';
+import type { Customer, Deal, Activity, DealStage, Contact } from '@/types';
 import { useForm } from 'react-hook-form';
 import { zodResolver } from '@hookform/resolvers/zod';
 import { z } from 'zod';
@@ -26,8 +26,10 @@ import {
   Edit,
   Save,
   X,
-  Trash2
+  Trash2,
+  Users
 } from 'lucide-react';
+import { ContactFormModal } from '@/components/contacts/ContactFormModal';
 
 const customerSchema = z.object({
   name: z.string().min(2, 'Name must be at least 2 characters'),
@@ -70,6 +72,8 @@ export default function CustomerDetailContent() {
   const [deals, setDeals] = useState<Deal[]>([]);
   const [activities, setActivities] = useState<Activity[]>([]);
   const [stages, setStages] = useState<DealStage[]>([]);
+  const [contacts, setContacts] = useState<Contact[]>([]);
+  const [showContactForm, setShowContactForm] = useState(false);
   const [loading, setLoading] = useState(true);
   const [isEditing, setIsEditing] = useState(false);
   const [isSaving, setIsSaving] = useState(false);
@@ -98,11 +102,12 @@ export default function CustomerDetailContent() {
     try {
       setLoading(true);
       
-      const [customerData, dealsData, activitiesData, stagesData] = await Promise.all([
+      const [customerData, dealsData, activitiesData, stagesData, contactsData] = await Promise.all([
         customerService.getById(customerId),
         dealService.getByCustomer(customerId),
         activityService.getByCustomerWithDeals(customerId),
-        dealStageService.getAll()
+        dealStageService.getAll(),
+        contactService.getByCustomer(customerId)
       ]);
 
       if (!customerData) {
@@ -114,6 +119,7 @@ export default function CustomerDetailContent() {
       setDeals(dealsData);
       setActivities(activitiesData);
       setStages(stagesData);
+      setContacts(contactsData);
 
       // Reset form with customer data
       reset({
@@ -193,6 +199,15 @@ export default function CustomerDetailContent() {
         console.error('Error deleting customer:', error);
         alert('Failed to delete customer. Please try again.');
       }
+    }
+  };
+
+  const handleContactFormSuccess = async () => {
+    setShowContactForm(false);
+    // Reload contacts
+    if (customer) {
+      const contactsData = await contactService.getByCustomer(customer.id);
+      setContacts(contactsData);
     }
   };
 
@@ -415,6 +430,95 @@ export default function CustomerDetailContent() {
                           onClick={() => router.push(`/deals/detail?id=${deal.id}`)}
                           className="p-2 text-gray-400 hover:text-gray-600 transition-colors"
                           title="View deal details"
+                        >
+                          <Eye className="h-5 w-5" />
+                        </button>
+                      </div>
+                    </div>
+                  ))}
+                </div>
+              )}
+            </div>
+
+            {/* Contacts */}
+            <div className="bg-white rounded-lg shadow p-6 border border-gray-200">
+              <div className="flex items-center justify-between mb-6">
+                <h3 className="text-lg font-semibold text-gray-900" style={{ fontFamily: 'var(--font-poppins)' }}>
+                  Contacts ({contacts.length})
+                </h3>
+                <button
+                  onClick={() => setShowContactForm(true)}
+                  className="flex items-center gap-2 px-4 py-2 text-white rounded-lg hover:opacity-90 transition-opacity"
+                  style={{ backgroundColor: '#2E4A62', fontFamily: 'var(--font-pt-sans)' }}
+                >
+                  <Plus className="h-4 w-4" />
+                  Add Contact
+                </button>
+              </div>
+              
+              {contacts.length === 0 ? (
+                <div className="text-center py-8">
+                  <Users className="h-12 w-12 text-gray-400 mx-auto mb-4" />
+                  <p className="text-gray-500 mb-4" style={{ fontFamily: 'var(--font-pt-sans)' }}>
+                    No contacts found for this customer
+                  </p>
+                  <button
+                    onClick={() => setShowContactForm(true)}
+                    className="inline-flex items-center gap-2 px-4 py-2 text-white rounded-lg hover:opacity-90 transition-opacity"
+                    style={{ backgroundColor: '#2E4A62', fontFamily: 'var(--font-pt-sans)' }}
+                  >
+                    <Plus className="h-4 w-4" />
+                    Add First Contact
+                  </button>
+                </div>
+              ) : (
+                <div className="space-y-4">
+                  {contacts.map((contact) => (
+                    <div key={contact.id} className="border border-gray-200 rounded-lg p-4 hover:bg-gray-50 transition-colors">
+                      <div className="flex items-center justify-between">
+                        <div className="flex-1">
+                          <div className="flex items-center gap-3 mb-2">
+                            <div className="flex items-center gap-2">
+                              <h4 className="font-medium text-gray-900" style={{ fontFamily: 'var(--font-poppins)' }}>
+                                {contact.firstName} {contact.lastName}
+                              </h4>
+                              {contact.isPrimary && (
+                                <span 
+                                  className="px-2 py-1 text-xs rounded-full text-white"
+                                  style={{ 
+                                    backgroundColor: '#2E4A62',
+                                    fontFamily: 'var(--font-pt-sans)'
+                                  }}
+                                >
+                                  Primary
+                                </span>
+                              )}
+                            </div>
+                          </div>
+                          <div className="text-sm text-gray-600 space-y-1" style={{ fontFamily: 'var(--font-pt-sans)' }}>
+                            <div className="flex items-center gap-2">
+                              <Mail className="h-4 w-4" />
+                              {contact.email}
+                            </div>
+                            {contact.phone && (
+                              <div className="flex items-center gap-2">
+                                <Phone className="h-4 w-4" />
+                                {contact.phone}
+                              </div>
+                            )}
+                            {contact.title && (
+                              <div className="flex items-center gap-2">
+                                <User className="h-4 w-4" />
+                                {contact.title}
+                                {contact.department && ` - ${contact.department}`}
+                              </div>
+                            )}
+                          </div>
+                        </div>
+                        <button
+                          onClick={() => router.push(`/contacts/detail?id=${contact.id}`)}
+                          className="p-2 text-gray-400 hover:text-gray-600 transition-colors"
+                          title="View contact details"
                         >
                           <Eye className="h-5 w-5" />
                         </button>
@@ -702,6 +806,17 @@ export default function CustomerDetailContent() {
           </div>
         </div>
       </div>
+
+      {/* Contact Form Modal */}
+      {showContactForm && customer && (
+        <ContactFormModal
+          contact={null}
+          customers={[customer]}
+          defaultCustomerId={customer.id}
+          onClose={() => setShowContactForm(false)}
+          onSuccess={handleContactFormSuccess}
+        />
+      )}
     </DashboardLayout>
   );
 }

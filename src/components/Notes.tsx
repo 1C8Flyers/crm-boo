@@ -1,8 +1,9 @@
 'use client';
 
 import { useState, useEffect } from 'react';
-import { activityService } from '@/lib/firebase-services';
-import type { Activity, Deal, Customer } from '@/types';
+import { activityService, contactService } from '@/lib/firebase-services';
+import { ContactSelector } from '@/components/contacts/ContactSelector';
+import type { Activity, Deal, Customer, Contact } from '@/types';
 import { 
   Plus,
   MessageSquare,
@@ -63,6 +64,8 @@ export default function Notes({ deal, customer, editActivityId }: NotesProps) {
   const [showAddForm, setShowAddForm] = useState(false);
   const [editingActivity, setEditingActivity] = useState<Activity | null>(null);
   const [completingItems, setCompletingItems] = useState<Set<string>>(new Set());
+  const [selectedContactIds, setSelectedContactIds] = useState<string[]>([]);
+  const [availableContacts, setAvailableContacts] = useState<Contact[]>([]);
 
   const {
     register,
@@ -84,6 +87,7 @@ export default function Notes({ deal, customer, editActivityId }: NotesProps) {
 
   useEffect(() => {
     loadActivities();
+    loadContacts();
   }, [deal.id]);
 
   // Handle editing activity from URL parameter
@@ -95,6 +99,26 @@ export default function Notes({ deal, customer, editActivityId }: NotesProps) {
       }
     }
   }, [editActivityId, activities]);
+
+  const loadContacts = async () => {
+    try {
+      // Load customer contacts and any additional contacts associated with the deal
+      const customerContacts = customer ? await contactService.getByCustomer(customer.id) : [];
+      const dealContacts = await contactService.getByDeal(deal.id);
+      
+      // Combine and deduplicate contacts
+      const allContacts = [...customerContacts];
+      dealContacts.forEach(contact => {
+        if (!allContacts.find(c => c.id === contact.id)) {
+          allContacts.push(contact);
+        }
+      });
+      
+      setAvailableContacts(allContacts);
+    } catch (error) {
+      console.error('Error loading contacts:', error);
+    }
+  };
 
   const loadActivities = async () => {
     try {
@@ -131,6 +155,7 @@ export default function Notes({ deal, customer, editActivityId }: NotesProps) {
         description: data.description,
         dealId: deal.id,
         customerId: deal.customerId,
+        contactIds: selectedContactIds.length > 0 ? selectedContactIds : undefined,
         completed: data.completed ?? (data.type === 'task' ? false : true),
         outcome: data.outcome,
         nextAction: data.nextAction,
@@ -143,15 +168,16 @@ export default function Notes({ deal, customer, editActivityId }: NotesProps) {
       // Filter out undefined values to prevent Firebase errors
       const activityData = Object.fromEntries(
         Object.entries(rawActivityData).filter(([_, value]) => value !== undefined)
-      ) as Omit<Activity, 'id' | 'createdAt' | 'updatedAt'>;
+      ) as Partial<Activity>;
 
       if (editingActivity) {
         await activityService.update(editingActivity.id, activityData);
       } else {
-        await activityService.create(activityData);
+        await activityService.create(activityData as Omit<Activity, 'id' | 'createdAt' | 'updatedAt'>);
       }
 
       reset();
+      setSelectedContactIds([]);
       setShowAddForm(false);
       setEditingActivity(null);
       await loadActivities();
@@ -180,6 +206,7 @@ export default function Notes({ deal, customer, editActivityId }: NotesProps) {
     };
 
     setEditingActivity(activity);
+    setSelectedContactIds(activity.contactIds || []);
     setValue('type', activity.type);
     setValue('title', activity.title);
     setValue('description', activity.description || '');
@@ -405,6 +432,24 @@ export default function Notes({ deal, customer, editActivityId }: NotesProps) {
               />
             </div>
 
+            {/* Contact Selection */}
+            <div>
+              <label className="block text-sm font-medium text-gray-700 mb-3" style={{ fontFamily: 'var(--font-pt-sans)' }}>
+                Related Contacts
+              </label>
+              <ContactSelector
+                selectedContacts={selectedContactIds}
+                onSelectionChange={setSelectedContactIds}
+                customers={customer ? [customer] : []}
+                multiSelect={true}
+                placeholder="Select contacts involved in this activity..."
+                className="mb-2"
+              />
+              <p className="text-xs text-gray-500" style={{ fontFamily: 'var(--font-pt-sans)' }}>
+                Select contacts who are involved in or relevant to this activity.
+              </p>
+            </div>
+
             {/* Date fields based on activity type */}
             <div>
               <label className="block text-sm font-medium text-gray-700 mb-1" style={{ fontFamily: 'var(--font-pt-sans)' }}>
@@ -446,6 +491,7 @@ export default function Notes({ deal, customer, editActivityId }: NotesProps) {
                 onClick={() => {
                   setShowAddForm(false);
                   setEditingActivity(null);
+                  setSelectedContactIds([]);
                   reset();
                 }}
                 className="px-4 py-2 text-gray-700 border border-gray-300 rounded-md hover:bg-gray-50 transition-colors"
@@ -519,6 +565,27 @@ export default function Notes({ deal, customer, editActivityId }: NotesProps) {
                               <span className="text-gray-700">{activity.duration} minutes</span>
                             </p>
                           )}
+                        </div>
+                      )}
+                      
+                      {/* Display related contacts */}
+                      {activity.contactIds && activity.contactIds.length > 0 && (
+                        <div className="mt-2">
+                          <div className="flex flex-wrap gap-1">
+                            {activity.contactIds.map(contactId => {
+                              const contact = availableContacts.find(c => c.id === contactId);
+                              return contact ? (
+                                <span
+                                  key={contactId}
+                                  className="inline-flex items-center px-2 py-1 bg-blue-100 text-blue-800 text-xs rounded-full"
+                                  style={{ fontFamily: 'var(--font-pt-sans)' }}
+                                >
+                                  <User className="h-3 w-3 mr-1" />
+                                  {contact.firstName} {contact.lastName}
+                                </span>
+                              ) : null;
+                            })}
+                          </div>
                         </div>
                       )}
                       

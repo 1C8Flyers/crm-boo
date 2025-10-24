@@ -16,6 +16,7 @@ import {
   BarChart3,
   CheckSquare,
   UserCheck,
+  ClipboardList,
 } from 'lucide-react';
 
 const navigation = [
@@ -23,6 +24,7 @@ const navigation = [
   { name: 'Customers', href: '/customers', icon: Users },
   { name: 'Contacts', href: '/contacts', icon: UserCheck },
   { name: 'Deals', href: '/deals', icon: TrendingUp },
+  { name: 'Proposals', href: '/proposals', icon: ClipboardList },
   { name: 'Products', href: '/products', icon: Package },
   { name: 'Invoices', href: '/invoices', icon: FileText },
   { name: 'Activities', href: '/activities', icon: CheckSquare },
