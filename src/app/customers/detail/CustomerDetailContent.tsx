@@ -267,6 +267,14 @@ export default function CustomerDetailContent() {
                   Cancel
                 </button>
                 <button
+                  onClick={handleDelete}
+                  className="flex items-center gap-2 px-4 py-2 text-red-600 border border-red-300 rounded-lg hover:bg-red-50 transition-colors"
+                  style={{ fontFamily: 'var(--font-pt-sans)' }}
+                >
+                  <Trash2 className="h-4 w-4" />
+                  Delete
+                </button>
+                <button
                   onClick={handleSubmit(onSubmit)}
                   disabled={isSaving}
                   className="flex items-center gap-2 px-4 py-2 text-white rounded-lg hover:opacity-90 transition-opacity disabled:opacity-50"
@@ -289,14 +297,6 @@ export default function CustomerDetailContent() {
                 >
                   <Edit className="h-4 w-4" />
                   Edit Customer
-                </button>
-                <button
-                  onClick={handleDelete}
-                  className="flex items-center gap-2 px-4 py-2 text-red-600 border border-red-300 rounded-lg hover:bg-red-50 transition-colors"
-                  style={{ fontFamily: 'var(--font-pt-sans)' }}
-                >
-                  <Trash2 className="h-4 w-4" />
-                  Delete
                 </button>
                 <button
                   onClick={() => router.push(`/deals/new?customerId=${customer.id}`)}
