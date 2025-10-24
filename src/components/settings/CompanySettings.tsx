@@ -4,7 +4,7 @@ import { useState, useEffect, useRef } from 'react';
 import { useForm } from 'react-hook-form';
 import { zodResolver } from '@hookform/resolvers/zod';
 import { z } from 'zod';
-import { Building2, Save, Upload, X, Image as ImageIcon } from 'lucide-react';
+import { Building2, Save, Upload, X, Image as ImageIcon, ChevronDown, ChevronUp } from 'lucide-react';
 import { companyService } from '@/lib/services/companyService';
 import { Company } from '@/types';
 
@@ -25,7 +25,12 @@ const companySchema = z.object({
 
 type CompanyFormData = z.infer<typeof companySchema>;
 
-export default function CompanySettings() {
+interface CompanySettingsProps {
+  isCollapsed: boolean;
+  onToggleCollapse: () => void;
+}
+
+export default function CompanySettings({ isCollapsed, onToggleCollapse }: CompanySettingsProps) {
   const [isLoading, setIsLoading] = useState(false);
   const [isSaving, setIsSaving] = useState(false);
   const [isUploadingLogo, setIsUploadingLogo] = useState(false);
@@ -156,18 +161,27 @@ export default function CompanySettings() {
   }
 
   return (
-    <div className="bg-white shadow rounded-lg p-6">
-      <div className="flex items-center justify-between mb-6">
-        <div className="flex items-center">
-          <Building2 className="h-6 w-6 text-gray-700 mr-3" />
-          <h2 className="text-lg font-medium text-gray-900">Company Information</h2>
+    <div className="bg-white shadow-sm rounded-lg border border-gray-200 mb-6">
+      <div 
+        className="px-6 py-4 border-b border-gray-200 cursor-pointer hover:bg-gray-50 transition-colors"
+        onClick={onToggleCollapse}
+      >
+        <div className="flex items-center justify-between">
+          <div>
+            <h2 className="text-lg font-medium text-gray-900">Company Settings</h2>
+            <p className="text-sm text-gray-900">This information will appear on your invoices and documents</p>
+          </div>
+          {isCollapsed ? (
+            <ChevronDown className="w-5 h-5 text-gray-500" />
+          ) : (
+            <ChevronUp className="w-5 h-5 text-gray-500" />
+          )}
         </div>
-        <p className="text-sm text-gray-900">
-          This information will appear on your invoices and documents
-        </p>
       </div>
 
-      <form onSubmit={handleSubmit(onSubmit)} className="space-y-6">
+      {!isCollapsed && (
+        <div className="p-6">
+          <form onSubmit={handleSubmit(onSubmit)} className="space-y-6">
         {/* Company Name */}
         <div>
           <label htmlFor="name" className="block text-sm font-medium text-gray-700">
@@ -421,6 +435,8 @@ export default function CompanySettings() {
           </button>
         </div>
       </form>
+        </div>
+      )}
     </div>
   );
 }

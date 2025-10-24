@@ -10,7 +10,7 @@ import type { DealStage } from '@/types';
 import { useForm } from 'react-hook-form';
 import { zodResolver } from '@hookform/resolvers/zod';
 import { z } from 'zod';
-import { Settings, Plus, Trash2, AlertCircle, Save, GripVertical, ArrowUp, ArrowDown } from 'lucide-react';
+import { Settings, Plus, Trash2, AlertCircle, Save, GripVertical, ArrowUp, ArrowDown, ChevronDown, ChevronUp } from 'lucide-react';
 import {
   DndContext,
   closestCenter,
@@ -142,6 +142,11 @@ export default function SettingsPage() {
   const [isSubmitting, setIsSubmitting] = useState(false);
   const [editingStage, setEditingStage] = useState<string | null>(null);
   const [isReordering, setIsReordering] = useState(false);
+
+  // Collapsible section states
+  const [isDealStagesCollapsed, setIsDealStagesCollapsed] = useState(true);
+  const [isCompanySettingsCollapsed, setIsCompanySettingsCollapsed] = useState(true);
+  const [isAccountSettingsCollapsed, setIsAccountSettingsCollapsed] = useState(true);
 
   const sensors = useSensors(
     useSensor(PointerSensor),
@@ -368,12 +373,25 @@ export default function SettingsPage() {
 
         {/* Deal Stages Section */}
         <div className="bg-white shadow-sm rounded-lg border border-gray-200 mb-6">
-          <div className="px-6 py-4 border-b border-gray-200">
-            <h2 className="text-lg font-medium text-gray-900">Deal Stages</h2>
-            <p className="text-sm text-gray-900">Customize your sales pipeline stages</p>
+          <div 
+            className="px-6 py-4 border-b border-gray-200 cursor-pointer hover:bg-gray-50 transition-colors"
+            onClick={() => setIsDealStagesCollapsed(!isDealStagesCollapsed)}
+          >
+            <div className="flex items-center justify-between">
+              <div>
+                <h2 className="text-lg font-medium text-gray-900">Deal Stages</h2>
+                <p className="text-sm text-gray-900">Customize your sales pipeline stages</p>
+              </div>
+              {isDealStagesCollapsed ? (
+                <ChevronDown className="w-5 h-5 text-gray-500" />
+              ) : (
+                <ChevronUp className="w-5 h-5 text-gray-500" />
+              )}
+            </div>
           </div>
 
-          <div className="p-6">
+          {!isDealStagesCollapsed && (
+            <div className="p-6">
             {errors.root && (
               <div className="bg-red-50 border border-red-200 rounded-md p-3 mb-6">
                 <div className="flex">
@@ -520,19 +538,36 @@ export default function SettingsPage() {
               </div>
             )}
           </div>
+          )}
         </div>
 
         {/* Company Settings Section */}
-        <CompanySettings />
+        <CompanySettings 
+          isCollapsed={isCompanySettingsCollapsed}
+          onToggleCollapse={() => setIsCompanySettingsCollapsed(!isCompanySettingsCollapsed)}
+        />
 
         {/* Account Settings Section */}
         <div className="bg-white shadow-sm rounded-lg border border-gray-200">
-          <div className="px-6 py-4 border-b border-gray-200">
-            <h2 className="text-lg font-medium text-gray-900">Account Settings</h2>
-            <p className="text-sm text-gray-900">Manage your account preferences</p>
+          <div 
+            className="px-6 py-4 border-b border-gray-200 cursor-pointer hover:bg-gray-50 transition-colors"
+            onClick={() => setIsAccountSettingsCollapsed(!isAccountSettingsCollapsed)}
+          >
+            <div className="flex items-center justify-between">
+              <div>
+                <h2 className="text-lg font-medium text-gray-900">Account Settings</h2>
+                <p className="text-sm text-gray-900">Manage your account preferences</p>
+              </div>
+              {isAccountSettingsCollapsed ? (
+                <ChevronDown className="w-5 h-5 text-gray-500" />
+              ) : (
+                <ChevronUp className="w-5 h-5 text-gray-500" />
+              )}
+            </div>
           </div>
 
-          <div className="p-6">
+          {!isAccountSettingsCollapsed && (
+            <div className="p-6">
             <div className="space-y-4">
               <div>
                 <label className="block text-sm font-medium text-gray-700">Email</label>
@@ -554,7 +589,8 @@ export default function SettingsPage() {
                 </p>
               </div>
             </div>
-          </div>
+            </div>
+          )}
         </div>
       </div>
     </DashboardLayout>
