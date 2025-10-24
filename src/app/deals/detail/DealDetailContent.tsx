@@ -356,7 +356,11 @@ export default function DealDetailContent() {
                 {contacts.length > 0 ? (
                   <div className="space-y-3">
                     {contacts.map((contact) => (
-                      <div key={contact.id} className="flex items-center justify-between p-3 border border-gray-200 rounded-lg">
+                      <div 
+                        key={contact.id} 
+                        className="flex items-center justify-between p-3 border border-gray-200 rounded-lg hover:bg-gray-50 transition-colors cursor-pointer"
+                        onClick={() => router.push(`/contacts/detail?id=${contact.id}`)}
+                      >
                         <div className="flex-1">
                           <div className="flex items-center gap-3">
                             <h3 className="font-medium text-gray-900" style={{ fontFamily: 'var(--font-poppins)' }}>
@@ -372,13 +376,6 @@ export default function DealDetailContent() {
                             </div>
                           )}
                         </div>
-                        <button
-                          onClick={() => router.push(`/contacts/detail?id=${contact.id}`)}
-                          className="p-2 text-gray-400 hover:text-gray-600 transition-colors"
-                          title="View contact details"
-                        >
-                          <Eye className="h-4 w-4" />
-                        </button>
                       </div>
                     ))}
                   </div>

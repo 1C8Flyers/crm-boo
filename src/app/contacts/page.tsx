@@ -278,7 +278,11 @@ function ContactsContent() {
           <div className="bg-white rounded-lg shadow border border-gray-200 overflow-hidden">
             <div className="divide-y divide-gray-200">
               {filteredContacts.map((contact) => (
-                <div key={contact.id} className="p-6 hover:bg-gray-50 transition-colors">
+                <div 
+                  key={contact.id} 
+                  className="p-6 hover:bg-gray-50 transition-colors cursor-pointer"
+                  onClick={() => router.push(`/contacts/detail?id=${contact.id}`)}
+                >
                   <div className="flex items-center justify-between">
                     <div className="flex items-center space-x-4 flex-1">
                       {/* Avatar */}
@@ -334,7 +338,7 @@ function ContactsContent() {
                     </div>
 
                     {/* Actions */}
-                    <div className="flex items-center space-x-2">
+                    <div className="flex items-center space-x-2" onClick={(e) => e.stopPropagation()}>
                       <button
                         onClick={() => handleEdit(contact)}
                         className="p-2 text-gray-400 hover:text-gray-600 hover:bg-gray-100 rounded-md"

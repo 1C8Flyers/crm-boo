@@ -325,7 +325,11 @@ function ContactDetailContent() {
                 
                 <div className="space-y-4">
                   {deals.slice(0, 5).map((deal) => (
-                    <div key={deal.id} className="border border-gray-200 rounded-lg p-4 hover:bg-gray-50 transition-colors">
+                    <div 
+                      key={deal.id} 
+                      className="border border-gray-200 rounded-lg p-4 hover:bg-gray-50 transition-colors cursor-pointer"
+                      onClick={() => router.push(`/deals/detail?id=${deal.id}`)}
+                    >
                       <div className="flex items-center justify-between">
                         <div className="flex-1">
                           <h4 className="font-medium text-gray-900 mb-2" style={{ fontFamily: 'var(--font-poppins)' }}>
@@ -343,14 +347,6 @@ function ContactDetailContent() {
                             </span>
                           </div>
                         </div>
-                        
-                        <button
-                          onClick={() => router.push(`/deals/detail?id=${deal.id}`)}
-                          className="p-2 text-gray-400 hover:text-gray-600 transition-colors"
-                          title="View deal details"
-                        >
-                          <Eye className="h-5 w-5" />
-                        </button>
                       </div>
                     </div>
                   ))}
