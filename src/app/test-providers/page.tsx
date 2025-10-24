@@ -31,7 +31,7 @@ export default function ProviderTestPage() {
         <div className="grid grid-cols-1 md:grid-cols-2 gap-6">
           {/* Current State */}
           <div className="bg-white p-6 rounded-lg shadow">
-            <h2 className="text-lg font-semibold mb-4">Current State</h2>
+            <h2 className="text-lg font-semibold mb-4 text-gray-900">Current State</h2>
             <div className="space-y-2 text-sm">
               <div className={`p-2 rounded ${loading ? 'bg-yellow-100' : 'bg-green-100'}`}>
                 Loading: {loading ? 'Yes' : 'No'}
@@ -63,7 +63,7 @@ export default function ProviderTestPage() {
 
           {/* Console Logs */}
           <div className="bg-white p-6 rounded-lg shadow">
-            <h2 className="text-lg font-semibold mb-4">Console Logs</h2>
+            <h2 className="text-lg font-semibold mb-4 text-gray-900">Console Logs</h2>
             <div className="bg-gray-900 text-green-400 p-4 rounded text-xs font-mono max-h-96 overflow-y-auto">
               {logs.length === 0 ? (
                 <div className="text-gray-500">No logs yet...</div>

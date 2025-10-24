@@ -216,7 +216,7 @@ export default function Dashboard() {
                 className="p-4 border border-gray-200 rounded-lg hover:bg-gray-50 text-left"
               >
                 <Users className="w-6 h-6 text-blue-500 mb-2" />
-                <p className="font-medium">Add Customer</p>
+                <p className="font-medium text-gray-900">Add Customer</p>
                 <p className="text-sm text-gray-900">Create new customer</p>
               </button>
               <button
@@ -224,7 +224,7 @@ export default function Dashboard() {
                 className="p-4 border border-gray-200 rounded-lg hover:bg-gray-50 text-left"
               >
                 <TrendingUp className="w-6 h-6 text-green-500 mb-2" />
-                <p className="font-medium">New Deal</p>
+                <p className="font-medium text-gray-900">New Deal</p>
                 <p className="text-sm text-gray-900">Create new deal</p>
               </button>
               <button
@@ -232,7 +232,7 @@ export default function Dashboard() {
                 className="p-4 border border-gray-200 rounded-lg hover:bg-gray-50 text-left"
               >
                 <Package className="w-6 h-6 text-purple-500 mb-2" />
-                <p className="font-medium">Add Product</p>
+                <p className="font-medium text-gray-900">Add Product</p>
                 <p className="text-sm text-gray-900">Create new product</p>
               </button>
               <button
@@ -240,7 +240,7 @@ export default function Dashboard() {
                 className="p-4 border border-gray-200 rounded-lg hover:bg-gray-50 text-left"
               >
                 <FileText className="w-6 h-6 text-orange-500 mb-2" />
-                <p className="font-medium">New Invoice</p>
+                <p className="font-medium text-gray-900">New Invoice</p>
                 <p className="text-sm text-gray-900">Create new invoice</p>
               </button>
             </div>

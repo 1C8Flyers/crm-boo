@@ -245,7 +245,7 @@ export default function DealDetailContent() {
             {/* Deal Overview Card */}
             <div className="bg-white rounded-lg shadow p-6">
               <div className="mb-4">
-                <h2 className="text-lg font-semibold">Deal Overview</h2>
+                <h2 className="text-lg font-semibold text-black">Deal Overview</h2>
               </div>
               
               <div className="grid grid-cols-2 gap-4">
@@ -303,7 +303,7 @@ export default function DealDetailContent() {
             {/* Products Card */}
             <div className="bg-white rounded-lg shadow p-6">
               <div className="flex items-center justify-between mb-4">
-                <h2 className="text-lg font-semibold">Products & Services</h2>
+                <h2 className="text-lg font-semibold text-black">Products & Services</h2>
                 <button
                   onClick={() => setShowAddProduct(true)}
                   className="flex items-center gap-2 px-3 py-2 bg-blue-600 text-white rounded-lg hover:bg-blue-700 transition-colors"
@@ -319,7 +319,7 @@ export default function DealDetailContent() {
                     <div key={index} className="flex items-center justify-between p-4 border rounded-lg">
                       <div className="flex-1">
                         <div className="flex items-center gap-3">
-                          <h3 className="font-medium">{product.productName}</h3>
+                          <h3 className="font-medium text-black">{product.productName}</h3>
                           {product.subscriptionInterval && (
                             <span className="px-2 py-1 bg-purple-100 text-purple-700 text-xs rounded-full">
                               {product.subscriptionInterval}
@@ -341,8 +341,8 @@ export default function DealDetailContent() {
                   
                   <div className="pt-3 border-t">
                     <div className="flex justify-between items-center">
-                      <span className="font-semibold">Total:</span>
-                      <span className="font-semibold text-lg">{formatCurrency(deal.value)}</span>
+                      <span className="font-semibold text-black">Total:</span>
+                      <span className="font-semibold text-lg text-black">{formatCurrency(deal.value)}</span>
                     </div>
                   </div>
                 </div>
@@ -399,7 +399,7 @@ export default function DealDetailContent() {
           <div className="fixed inset-0 bg-black bg-opacity-50 flex items-center justify-center z-50">
             <div className="bg-white rounded-lg p-6 w-full max-w-md">
               <div className="flex items-center justify-between mb-4">
-                <h3 className="text-lg font-semibold">Add Product to Deal</h3>
+                <h3 className="text-lg font-semibold text-black">Add Product to Deal</h3>
                 <button
                   onClick={() => setShowAddProduct(false)}
                   className="p-2 hover:bg-gray-100 rounded-lg"
@@ -448,7 +448,7 @@ export default function DealDetailContent() {
                   <div className="p-3 bg-gray-50 rounded-lg">
                     <div className="flex justify-between items-center">
                       <span className="text-sm text-gray-600">Total:</span>
-                      <span className="font-semibold">
+                      <span className="font-semibold text-black">
                         {formatCurrency(selectedProduct.price * quantity)}
                       </span>
                     </div>

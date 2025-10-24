@@ -73,7 +73,7 @@ export default function SignIn() {
         <div className="max-w-md w-full space-y-8">
           <div className="text-center">
             <div className="w-8 h-8 border-2 border-blue-600 border-t-transparent rounded-full animate-spin mx-auto" />
-            <p className="mt-4 text-gray-600">Loading sign-in options...</p>
+            <p className="mt-4 text-gray-900">Loading sign-in options...</p>
           </div>
         </div>
       </div>
@@ -92,7 +92,7 @@ export default function SignIn() {
             <h2 className="mt-6 text-3xl font-bold text-gray-900">
               Authentication Not Configured
             </h2>
-            <p className="mt-2 text-sm text-gray-600">
+            <p className="mt-2 text-sm text-gray-900">
               No authentication providers are currently enabled. Please contact your administrator.
             </p>
             <div className="mt-4 p-3 bg-yellow-50 border border-yellow-200 rounded-md">
@@ -122,7 +122,7 @@ export default function SignIn() {
           <h2 className="mt-6 text-center text-3xl font-bold text-gray-900">
             Sign in to CRM-BOO
           </h2>
-          <p className="mt-2 text-center text-sm text-gray-600">
+          <p className="mt-2 text-center text-sm text-gray-900">
             Or{' '}
             <Link
               href="/auth/signup"
@@ -160,7 +160,7 @@ export default function SignIn() {
                 <div className="w-full border-t border-gray-300" />
               </div>
               <div className="relative flex justify-center text-sm">
-                <span className="px-2 bg-gray-50 text-gray-500">Or continue with email</span>
+                <span className="px-2 bg-gray-50 text-gray-900">Or continue with email</span>
               </div>
             </div>
           )}

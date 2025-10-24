@@ -120,7 +120,7 @@ export default function SignUp() {
         <div className="max-w-md w-full space-y-8">
           <div className="text-center">
             <div className="w-8 h-8 border-2 border-blue-600 border-t-transparent rounded-full animate-spin mx-auto" />
-            <p className="mt-4 text-gray-600">Loading sign-up options...</p>
+            <p className="mt-4 text-gray-900">Loading sign-up options...</p>
           </div>
         </div>
       </div>
@@ -224,7 +224,7 @@ export default function SignUp() {
                 <div className="w-full border-t border-gray-300" />
               </div>
               <div className="relative flex justify-center text-sm">
-                <span className="px-2 bg-gray-50 text-gray-500">Or continue with email</span>
+                <span className="px-2 bg-gray-50 text-gray-900">Or continue with email</span>
               </div>
             </div>
           )}

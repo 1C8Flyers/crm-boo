@@ -120,7 +120,7 @@ function DealCard({ deal, customerName, isDragging = false }: DealCardProps) {
       <div className="mt-2">
         <div className="flex items-center justify-between text-xs">
           <span className="text-gray-800">Probability</span>
-          <span className="font-medium">{deal.probability}%</span>
+          <span className="font-medium text-gray-900">{deal.probability}%</span>
         </div>
         <div className="mt-1 w-full bg-gray-200 rounded-full h-1.5">
           <div
