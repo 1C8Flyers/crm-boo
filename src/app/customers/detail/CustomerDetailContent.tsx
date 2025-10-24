@@ -25,7 +25,8 @@ import {
   CheckSquare,
   Edit,
   Save,
-  X
+  X,
+  Trash2
 } from 'lucide-react';
 
 const customerSchema = z.object({
@@ -181,6 +182,20 @@ export default function CustomerDetailContent() {
     setIsEditing(!isEditing);
   };
 
+  const handleDelete = async () => {
+    if (!customer) return;
+    
+    if (confirm(`Are you sure you want to delete ${customer.name}? This action cannot be undone.`)) {
+      try {
+        await customerService.delete(customer.id);
+        router.push('/customers');
+      } catch (error) {
+        console.error('Error deleting customer:', error);
+        alert('Failed to delete customer. Please try again.');
+      }
+    }
+  };
+
   const formatCurrency = (amount: number) => {
     return new Intl.NumberFormat('en-US', {
       style: 'currency',
@@ -274,6 +289,14 @@ export default function CustomerDetailContent() {
                 >
                   <Edit className="h-4 w-4" />
                   Edit Customer
+                </button>
+                <button
+                  onClick={handleDelete}
+                  className="flex items-center gap-2 px-4 py-2 text-red-600 border border-red-300 rounded-lg hover:bg-red-50 transition-colors"
+                  style={{ fontFamily: 'var(--font-pt-sans)' }}
+                >
+                  <Trash2 className="h-4 w-4" />
+                  Delete
                 </button>
                 <button
                   onClick={() => router.push(`/deals/new?customerId=${customer.id}`)}

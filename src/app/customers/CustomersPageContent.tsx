@@ -6,7 +6,7 @@ import { useRouter, useSearchParams } from 'next/navigation';
 import { DashboardLayout } from '@/components/layout/DashboardLayout';
 import { customerService } from '@/lib/firebase-services';
 import type { Customer } from '@/types';
-import { Plus, Search, Edit, Trash2, Mail, Phone, Building, Users, MapPin, Eye } from 'lucide-react';
+import { Plus, Search, Building, Users, MapPin, Mail, Phone } from 'lucide-react';
 import { CustomerModal } from '@/components/customers/CustomerModal';
 
 export default function CustomersPageContent() {
@@ -45,17 +45,6 @@ export default function CustomersPageContent() {
       console.error('Error loading customers:', error);
     } finally {
       setIsLoading(false);
-    }
-  };
-
-  const handleDelete = async (id: string) => {
-    if (confirm('Are you sure you want to delete this customer?')) {
-      try {
-        await customerService.delete(id);
-        setCustomers(customers.filter(c => c.id !== id));
-      } catch (error) {
-        console.error('Error deleting customer:', error);
-      }
     }
   };
 
@@ -163,53 +152,27 @@ export default function CustomersPageContent() {
         ) : (
           <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6">
             {filteredCustomers.map((customer) => (
-              <div key={customer.id} className="bg-white p-6 rounded-lg shadow hover:shadow-md transition-shadow">
-                <div className="flex items-start justify-between">
-                  <div className="flex items-center space-x-4 flex-1">
-                    <div className="w-12 h-12 bg-blue-500 rounded-full flex items-center justify-center">
-                      <span className="text-white font-medium text-lg">
-                        {customer.name.charAt(0).toUpperCase()}
-                      </span>
-                    </div>
-                    <div className="flex-1 min-w-0">
-                      <button
-                        onClick={() => router.push(`/customers/detail?id=${customer.id}`)}
-                        className="text-left w-full"
-                      >
-                        <h3 className="text-lg font-medium text-gray-900 truncate hover:text-blue-600 transition-colors">
-                          {customer.name}
-                        </h3>
-                      </button>
-                      {customer.company && (
-                        <div className="flex items-center text-sm text-gray-900 mt-1">
-                          <Building className="w-4 h-4 mr-1" />
-                          <span className="truncate">{customer.company}</span>
-                        </div>
-                      )}
-                    </div>
+              <div 
+                key={customer.id} 
+                className="bg-white p-6 rounded-lg shadow hover:shadow-md transition-all cursor-pointer hover:border-blue-200 border border-transparent"
+                onClick={() => router.push(`/customers/detail?id=${customer.id}`)}
+              >
+                <div className="flex items-center space-x-4">
+                  <div className="w-12 h-12 bg-blue-500 rounded-full flex items-center justify-center">
+                    <span className="text-white font-medium text-lg">
+                      {customer.name.charAt(0).toUpperCase()}
+                    </span>
                   </div>
-                  <div className="flex space-x-2">
-                    <button
-                      onClick={() => router.push(`/customers/detail?id=${customer.id}`)}
-                      className="text-gray-700 hover:text-blue-600"
-                      title="View customer details"
-                    >
-                      <Eye className="w-4 h-4" />
-                    </button>
-                    <button
-                      onClick={() => router.push(`/customers/detail?id=${customer.id}&edit=true`)}
-                      className="text-gray-700 hover:text-gray-900"
-                      title="Edit customer"
-                    >
-                      <Edit className="w-4 h-4" />
-                    </button>
-                    <button
-                      onClick={() => handleDelete(customer.id)}
-                      className="text-gray-700 hover:text-red-600"
-                      title="Delete customer"
-                    >
-                      <Trash2 className="w-4 h-4" />
-                    </button>
+                  <div className="flex-1 min-w-0">
+                    <h3 className="text-lg font-medium text-gray-900 truncate">
+                      {customer.name}
+                    </h3>
+                    {customer.company && (
+                      <div className="flex items-center text-sm text-gray-900 mt-1">
+                        <Building className="w-4 h-4 mr-1" />
+                        <span className="truncate">{customer.company}</span>
+                      </div>
+                    )}
                   </div>
                 </div>
 
