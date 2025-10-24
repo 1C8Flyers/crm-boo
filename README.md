@@ -29,8 +29,24 @@ A comprehensive, modern sales CRM built with Next.js 14, TypeScript, Tailwind CS
 - **Visual Pipeline**: Kanban-style board view of deals
 - **Deal Details**: Comprehensive deal information with customer association
 - **Probability Tracking**: Success probability for each deal
-- **Value Management**: Track deal values with one-time and subscription breakdowns
+- **Value Management**: Automated deal value calculations from proposals
+- **Proposal-Driven Values**: Deal values automatically update from all linked proposals
+- **Subscription Tracking**: Separate tracking for one-time and subscription revenue
 - **Expected Close Dates**: Timeline management for deals
+- **Real-time Updates**: Values refresh automatically when proposals change
+
+### 📝 Proposal & Quote Management
+- **Professional Proposals**: Create detailed proposals with line items
+- **Product Integration**: Add products and subscriptions to proposals
+- **Quick Product Creation**: Create new products on-the-fly during proposal creation
+- **Proposal Status Tracking**: Draft, sent, viewed, accepted, rejected, expired
+- **PDF Generation**: Browser-native HTML to PDF conversion
+- **Company Branding**: Proposals include company information and branding
+- **Deal Integration**: Automatically update deal values from proposal totals
+- **Customer & Deal Links**: Associate proposals with customers and deals
+- **Discount & Tax Management**: Apply discounts and taxes to proposals
+- **Validity Periods**: Set expiration dates for proposals
+- **Notes & Terms**: Include custom notes and terms on proposals
 
 ### 📝 Activity & Task Management
 - **Activity Types**: Notes, emails, calls, meetings, and tasks
@@ -49,10 +65,14 @@ A comprehensive, modern sales CRM built with Next.js 14, TypeScript, Tailwind CS
 
 ### 🧾 Invoicing System
 - **Invoice Creation**: Generate invoices with line items from products
-- **Status Tracking**: Draft, sent, paid, overdue, and cancelled statuses
+- **Status Management**: Draft, sent, paid, overdue, and cancelled statuses
+- **Flexible Status Changes**: Change invoice status at any time (including after paid)
+- **Accidental Payment Correction**: Easily unmark invoices if marked paid by mistake
 - **Automatic Calculations**: Subtotal, tax, and total calculations
+- **PDF Generation**: Professional PDF invoices with company branding
 - **Customer Association**: Link invoices to customers and deals
 - **Due Date Management**: Track payment deadlines
+- **Company Information**: Invoices include full company details and branding
 
 ### 📁 Data Import/Export
 - **CSV Import**: Import customers and deals from CSV files
@@ -92,16 +112,35 @@ src/
 │   ├── activities/          # Activity management
 │   ├── auth/               # Authentication pages
 │   ├── contacts/           # Contact management
+│   │   └── detail/         # Contact detail pages
 │   ├── customers/          # Customer management
+│   │   └── detail/         # Customer detail pages
 │   ├── dashboard/          # Main dashboard
 │   ├── deals/              # Deal pipeline management
+│   │   ├── detail/         # Deal detail pages
+│   │   ├── edit/           # Deal editing
+│   │   └── new/            # New deal creation
 │   ├── invoices/           # Invoice system
+│   │   ├── detail/         # Invoice detail with PDF generation
+│   │   └── new/            # Invoice creation
 │   ├── products/           # Product catalog
+│   ├── proposals/          # Proposal management
+│   │   ├── detail/         # Proposal detail with PDF generation
+│   │   ├── edit/           # Proposal editing
+│   │   └── new/            # Proposal creation
 │   ├── settings/           # Application settings
 │   └── layout.tsx          # Root layout
 ├── components/             # Reusable React components
 │   ├── auth/               # Authentication components
+│   ├── contacts/           # Contact-specific components
+│   │   ├── ContactFormModal.tsx
+│   │   └── ContactSelector.tsx
 │   ├── layout/             # Layout components (Sidebar, DashboardLayout)
+│   ├── proposals/          # Proposal components
+│   │   ├── ProposalForm.tsx
+│   │   ├── ProposalList.tsx
+│   │   ├── ProposalDetail.tsx
+│   │   └── ProductQuickCreate.tsx
 │   ├── settings/           # Settings-specific components
 │   └── Notes.tsx           # Activity/Notes management component
 ├── contexts/               # React Context providers
@@ -109,6 +148,8 @@ src/
 ├── hooks/                  # Custom React hooks
 ├── lib/                    # Utility libraries
 │   ├── services/           # Service layer
+│   │   ├── companyService.ts
+│   │   └── invoiceService.ts
 │   ├── firebase.ts         # Firebase configuration
 │   └── firebase-services.ts # Firebase service functions
 └── types/                  # TypeScript type definitions
@@ -214,6 +255,18 @@ npm run build
 - **Move Deals**: Drag deals between stages or use edit forms
 - **Track Progress**: Monitor deal values, probability, and close dates
 - **Deal Activities**: Add notes, schedule meetings, and track communications
+- **Proposal Integration**: Link proposals to deals for automatic value updates
+- **Real-time Values**: Deal totals update automatically when proposals change
+
+### Proposal Management
+
+- **Create Proposals**: Build detailed proposals with line items
+- **Add Products**: Select from product catalog or create new products on-the-fly
+- **Status Workflow**: Track proposals through draft, sent, viewed, accepted/rejected
+- **Generate PDFs**: Create professional PDF proposals with company branding
+- **Deal Association**: Link proposals to deals for automatic value calculation
+- **Discount & Tax**: Apply percentage discounts and taxes
+- **Validity Periods**: Set expiration dates for time-sensitive proposals
 
 ### Activity Management
 
@@ -237,12 +290,33 @@ npm run build
 - **Company Info**: Set up company details for invoices
 - **Data Management**: Import/export data and manage preferences
 
+## 🎨 Design System
+
+### Brand Colors
+- **Primary**: #2E4A62 (Deep Blue) - Headers, primary actions, icons
+- **Secondary**: #A38B5C (Gold) - Accents, highlights, value indicators
+- **Background**: White (#FFFFFF) with subtle gray borders (#E5E7EB)
+- **Text**: Gray-900 for headings, Gray-700 for body, Gray-600 for secondary
+
+### Typography
+- **Headings**: Poppins - Used for page titles, card headers, and metrics
+- **Body**: PT Sans - Used for labels, descriptions, and content
+- **Consistency**: Font families applied via CSS custom properties
+
+### Component Standards
+- **Cards**: White background, rounded corners, shadow, border
+- **Icons**: 12px colored backgrounds matching brand colors
+- **Buttons**: Brand colors with hover states and transitions
+- **Forms**: Proper labels, validation, and accessibility
+- **Spacing**: Consistent padding and margins throughout
+
 ## 🎨 Customization
 
 ### Styling
-- **Brand Colors**: Defined in Tailwind CSS configuration
+- **Brand Colors**: #2E4A62 (primary), #A38B5C (secondary)
 - **Fonts**: Poppins for headings, PT Sans for body text
-- **Components**: Consistent design system throughout
+- **Components**: Consistent design system with cards, borders, shadows
+- **Accessibility**: WCAG compliant with proper form labels and autoComplete
 
 ### Adding Features
 - **New Data Types**: Add interfaces to `src/types/index.ts`
@@ -296,13 +370,32 @@ The application includes comprehensive error handling and validation:
 
 ## 📋 Feature Roadmap
 
-- [ ] Email integration for activity tracking
+### Completed ✅
+- [x] Customer and contact management
+- [x] Deal pipeline with customizable stages
+- [x] Activity and task tracking
+- [x] Product catalog with subscriptions
+- [x] Proposal generation with PDF export
+- [x] Invoice management with PDF generation
+- [x] Automatic deal value calculation from proposals
+- [x] Flexible invoice status management
+- [x] Real-time proposal-to-deal value updates
+- [x] Comprehensive design system implementation
+- [x] Form accessibility improvements
+
+### In Progress 🚧
 - [ ] Advanced reporting and analytics
+- [ ] Email integration for activity tracking
+- [ ] Calendar integration for meetings
+
+### Planned 📅
 - [ ] Team collaboration features
 - [ ] Mobile app development
 - [ ] API integrations (Calendar, Email providers)
 - [ ] Advanced workflow automation
 - [ ] Document storage and management
+- [ ] Payment processing integration
+- [ ] Advanced forecasting and projections
 
 ## 🤝 Contributing
 
@@ -343,4 +436,26 @@ If you encounter any issues or have feature requests:
 
 Built with ❤️ using Next.js 14, TypeScript, Tailwind CSS, and Firebase.
 
-**Version**: 0.1.0 | **Last Updated**: October 2025
+**Version**: 0.2.0 | **Last Updated**: October 24, 2025
+
+## 🔄 Recent Updates
+
+### Version 0.2.0 - October 24, 2025
+- ✨ **Proposal System**: Complete proposal management with PDF generation
+- 🔄 **Automatic Deal Values**: Deal values now automatically calculate from all linked proposals
+- 💰 **Real-time Updates**: Values refresh automatically when proposals are created, edited, or deleted
+- 🎨 **Design System**: Comprehensive UI standardization with brand colors and typography
+- 📧 **Contact Management**: Enhanced contact system with customer and deal associations
+- 🧾 **Flexible Invoicing**: Invoice status can now be changed at any time for easy corrections
+- ♿ **Accessibility**: Improved form accessibility with proper labels and autoComplete attributes
+- 📱 **Responsive Design**: Better mobile and tablet experience across all pages
+
+### Version 0.1.0 - Initial Release
+- 🎉 Core CRM functionality with customers, deals, and activities
+- 📊 Dashboard with key metrics and today's activities
+- 💼 Customizable deal pipeline with drag-and-drop stages
+- 📦 Product catalog with subscription support
+- 🧾 Basic invoicing system
+- 🔐 Firebase authentication and security
+
+````
