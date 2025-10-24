@@ -162,23 +162,32 @@ export default function ForecastPage() {
           <div className="overflow-x-auto">
             <table className="min-w-full divide-y divide-gray-200" aria-label="Forecast by month">
               <caption className="sr-only">Projected revenue by month (count, sum, and weighted sum)</caption>
-              <thead className="bg-gray-50">
+              <thead className="bg-gray-50 sticky top-0 z-10">
                 <tr>
                   <th className="px-4 py-2 text-left text-xs font-medium text-gray-900 uppercase tracking-wider">Month</th>
-                  <th className="px-4 py-2 text-left text-xs font-medium text-gray-900 uppercase tracking-wider">Deals</th>
-                  <th className="px-4 py-2 text-left text-xs font-medium text-gray-900 uppercase tracking-wider">Sum</th>
-                  <th className="px-4 py-2 text-left text-xs font-medium text-gray-900 uppercase tracking-wider">Weighted</th>
+                  <th className="px-4 py-2 text-right text-xs font-medium text-gray-900 uppercase tracking-wider">Deals</th>
+                  <th className="px-4 py-2 text-right text-xs font-medium text-gray-900 uppercase tracking-wider">Sum</th>
+                  <th className="px-4 py-2 text-right text-xs font-medium text-gray-900 uppercase tracking-wider">Weighted</th>
                 </tr>
               </thead>
               <tbody className="bg-white divide-y divide-gray-100">
-                {monthBucketsOrder.map((key) => (
-                  <tr key={key}>
-                    <td className="px-4 py-2">{formatMonthLabel(key)}</td>
-                    <td className="px-4 py-2">{byMonth[key]?.count || 0}</td>
-                    <td className="px-4 py-2">{currency.format(Math.round(byMonth[key]?.sum || 0))}</td>
-                    <td className="px-4 py-2">{currency.format(Math.round(byMonth[key]?.weighted || 0))}</td>
-                  </tr>
-                ))}
+                {monthBucketsOrder.map((key) => {
+                  const isCurrent = key === monthKey(startOfMonth(now));
+                  const row = byMonth[key] || { count: 0, sum: 0, weighted: 0 };
+                  const nonZero = row.sum > 0 || row.weighted > 0;
+                  return (
+                    <tr
+                      key={key}
+                      className={`${isCurrent ? 'border-l-4' : ''} ${nonZero ? 'odd:bg-gray-50' : 'opacity-80'} hover:bg-gray-50`}
+                      style={isCurrent ? { borderLeftColor: '#2E4A62' } : undefined}
+                    >
+                      <td className="px-4 py-2 whitespace-nowrap text-gray-900">{formatMonthLabel(key)}</td>
+                      <td className="px-4 py-2 text-right tabular-nums text-gray-900">{row.count}</td>
+                      <td className={`px-4 py-2 text-right tabular-nums ${row.sum === 0 ? 'text-gray-500' : 'text-gray-900 font-medium'}`}>{currency.format(Math.round(row.sum))}</td>
+                      <td className={`px-4 py-2 text-right tabular-nums ${row.weighted === 0 ? 'text-gray-500' : 'text-gray-900 font-medium'}`}>{currency.format(Math.round(row.weighted))}</td>
+                    </tr>
+                  );
+                })}
                 {monthBucketsOrder.length === 0 && (
                   <tr>
                     <td className="px-4 py-6 text-center text-gray-800" colSpan={4}>No forecast data available</td>
@@ -195,28 +204,32 @@ export default function ForecastPage() {
           <div className="overflow-x-auto">
             <table className="min-w-full divide-y divide-gray-200" aria-label="Pipeline by stage">
               <caption className="sr-only">Open pipeline totals grouped by stage</caption>
-              <thead className="bg-gray-50">
+              <thead className="bg-gray-50 sticky top-0 z-10">
                 <tr>
                   <th className="px-4 py-2 text-left text-xs font-medium text-gray-900 uppercase tracking-wider">Stage</th>
-                  <th className="px-4 py-2 text-left text-xs font-medium text-gray-900 uppercase tracking-wider">Deals</th>
-                  <th className="px-4 py-2 text-left text-xs font-medium text-gray-900 uppercase tracking-wider">Sum</th>
-                  <th className="px-4 py-2 text-left text-xs font-medium text-gray-900 uppercase tracking-wider">Weighted</th>
+                  <th className="px-4 py-2 text-right text-xs font-medium text-gray-900 uppercase tracking-wider">Deals</th>
+                  <th className="px-4 py-2 text-right text-xs font-medium text-gray-900 uppercase tracking-wider">Sum</th>
+                  <th className="px-4 py-2 text-right text-xs font-medium text-gray-900 uppercase tracking-wider">Weighted</th>
                 </tr>
               </thead>
               <tbody className="bg-white divide-y divide-gray-100">
-                {stages.map((s) => (
-                  <tr key={s.id}>
-                    <td className="px-4 py-2">
-                      <span className="inline-flex items-center gap-2">
-                        <span className="inline-block h-3 w-3 rounded-full" style={{ backgroundColor: s.color || '#CBD5E1' }} aria-hidden="true"></span>
-                        {s.name}
-                      </span>
-                    </td>
-                    <td className="px-4 py-2">{byStage[s.id]?.count || 0}</td>
-                    <td className="px-4 py-2">{currency.format(Math.round(byStage[s.id]?.sum || 0))}</td>
-                    <td className="px-4 py-2">{currency.format(Math.round(byStage[s.id]?.weighted || 0))}</td>
-                  </tr>
-                ))}
+                {stages.map((s) => {
+                  const row = byStage[s.id] || { name: s.name, count: 0, sum: 0, weighted: 0 };
+                  const isClosed = s.name.toLowerCase().includes('closed');
+                  return (
+                    <tr key={s.id} className={`odd:bg-gray-50 hover:bg-gray-50 ${isClosed ? 'opacity-80' : ''}`}>
+                      <td className="px-4 py-2">
+                        <span className="inline-flex items-center gap-2 text-gray-900">
+                          <span className="inline-block h-3 w-3 rounded-full" style={{ backgroundColor: s.color || '#CBD5E1' }} aria-hidden="true"></span>
+                          {s.name}
+                        </span>
+                      </td>
+                      <td className="px-4 py-2 text-right tabular-nums text-gray-900">{row.count}</td>
+                      <td className={`px-4 py-2 text-right tabular-nums ${row.sum === 0 ? 'text-gray-500' : 'text-gray-900 font-medium'}`}>{currency.format(Math.round(row.sum))}</td>
+                      <td className={`px-4 py-2 text-right tabular-nums ${row.weighted === 0 ? 'text-gray-500' : 'text-gray-900 font-medium'}`}>{currency.format(Math.round(row.weighted))}</td>
+                    </tr>
+                  );
+                })}
                 {stages.length === 0 && (
                   <tr>
                     <td className="px-4 py-6 text-center text-gray-800" colSpan={4}>No stages configured</td>
