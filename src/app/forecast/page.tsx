@@ -28,6 +28,7 @@ export default function ForecastPage() {
   const [stages, setStages] = useState<DealStage[]>([]);
   const [customers, setCustomers] = useState<Customer[]>([]);
   const [isLoading, setIsLoading] = useState(true);
+  const currency = useMemo(() => new Intl.NumberFormat(undefined, { style: 'currency', currency: 'USD', maximumFractionDigits: 0 }), []);
 
   useEffect(() => {
     if (!loading && !user) {
@@ -137,29 +138,30 @@ export default function ForecastPage() {
 
         {/* Summary cards */}
         <div className="grid grid-cols-1 md:grid-cols-4 gap-4">
-          <div className="bg-white rounded-lg shadow-sm border border-gray-200 p-4">
+          <div className="bg-white rounded-lg shadow-sm border border-gray-200 p-4 border-t-4" style={{ borderTopColor: '#2E4A62' }}>
             <div className="text-sm text-gray-800">Open Pipeline</div>
-            <div className="text-2xl font-bold text-gray-900">${openPipelineTotal.toLocaleString()}</div>
+            <div className="text-2xl font-bold text-gray-900">{currency.format(openPipelineTotal)}</div>
           </div>
-          <div className="bg-white rounded-lg shadow-sm border border-gray-200 p-4">
+          <div className="bg-white rounded-lg shadow-sm border border-gray-200 p-4 border-t-4" style={{ borderTopColor: '#2E4A62' }}>
             <div className="text-sm text-gray-800">Weighted Pipeline</div>
-            <div className="text-2xl font-bold text-gray-900">${Math.round(weightedPipeline).toLocaleString()}</div>
+            <div className="text-2xl font-bold text-gray-900">{currency.format(Math.round(weightedPipeline))}</div>
           </div>
-          <div className="bg-white rounded-lg shadow-sm border border-gray-200 p-4">
+          <div className="bg-white rounded-lg shadow-sm border border-gray-200 p-4 border-t-4" style={{ borderTopColor: '#2E4A62' }}>
             <div className="text-sm text-gray-800">Closed Won (This Month)</div>
-            <div className="text-2xl font-bold text-gray-900">${closedWonThisMonth.toLocaleString()}</div>
+            <div className="text-2xl font-bold text-gray-900">{currency.format(closedWonThisMonth)}</div>
           </div>
-          <div className="bg-white rounded-lg shadow-sm border border-gray-200 p-4">
+          <div className="bg-white rounded-lg shadow-sm border border-gray-200 p-4 border-t-4" style={{ borderTopColor: '#A38B5C' }}>
             <div className="text-sm text-gray-800">Forecast Horizon</div>
             <div className="text-2xl font-bold text-gray-900">Next {monthsAhead} mo</div>
           </div>
         </div>
 
         {/* Forecast by Month */}
-        <div className="bg-white rounded-lg shadow-sm border border-gray-200 p-4">
+        <div className="bg-white rounded-lg shadow-sm border border-gray-200 p-4 border-t-4" style={{ borderTopColor: '#2E4A62' }}>
           <h3 className="text-lg font-semibold text-gray-900 mb-3">Forecast by Month</h3>
           <div className="overflow-x-auto">
-            <table className="min-w-full divide-y divide-gray-200">
+            <table className="min-w-full divide-y divide-gray-200" aria-label="Forecast by month">
+              <caption className="sr-only">Projected revenue by month (count, sum, and weighted sum)</caption>
               <thead className="bg-gray-50">
                 <tr>
                   <th className="px-4 py-2 text-left text-xs font-medium text-gray-900 uppercase tracking-wider">Month</th>
@@ -173,20 +175,26 @@ export default function ForecastPage() {
                   <tr key={key}>
                     <td className="px-4 py-2">{formatMonthLabel(key)}</td>
                     <td className="px-4 py-2">{byMonth[key]?.count || 0}</td>
-                    <td className="px-4 py-2">${Math.round(byMonth[key]?.sum || 0).toLocaleString()}</td>
-                    <td className="px-4 py-2">${Math.round(byMonth[key]?.weighted || 0).toLocaleString()}</td>
+                    <td className="px-4 py-2">{currency.format(Math.round(byMonth[key]?.sum || 0))}</td>
+                    <td className="px-4 py-2">{currency.format(Math.round(byMonth[key]?.weighted || 0))}</td>
                   </tr>
                 ))}
+                {monthBucketsOrder.length === 0 && (
+                  <tr>
+                    <td className="px-4 py-6 text-center text-gray-800" colSpan={4}>No forecast data available</td>
+                  </tr>
+                )}
               </tbody>
             </table>
           </div>
         </div>
 
         {/* Pipeline by Stage */}
-        <div className="bg-white rounded-lg shadow-sm border border-gray-200 p-4">
+        <div className="bg-white rounded-lg shadow-sm border border-gray-200 p-4 border-t-4" style={{ borderTopColor: '#2E4A62' }}>
           <h3 className="text-lg font-semibold text-gray-900 mb-3">Pipeline by Stage</h3>
           <div className="overflow-x-auto">
-            <table className="min-w-full divide-y divide-gray-200">
+            <table className="min-w-full divide-y divide-gray-200" aria-label="Pipeline by stage">
+              <caption className="sr-only">Open pipeline totals grouped by stage</caption>
               <thead className="bg-gray-50">
                 <tr>
                   <th className="px-4 py-2 text-left text-xs font-medium text-gray-900 uppercase tracking-wider">Stage</th>
@@ -198,12 +206,22 @@ export default function ForecastPage() {
               <tbody className="bg-white divide-y divide-gray-100">
                 {stages.map((s) => (
                   <tr key={s.id}>
-                    <td className="px-4 py-2">{s.name}</td>
+                    <td className="px-4 py-2">
+                      <span className="inline-flex items-center gap-2">
+                        <span className="inline-block h-3 w-3 rounded-full" style={{ backgroundColor: s.color || '#CBD5E1' }} aria-hidden="true"></span>
+                        {s.name}
+                      </span>
+                    </td>
                     <td className="px-4 py-2">{byStage[s.id]?.count || 0}</td>
-                    <td className="px-4 py-2">${Math.round(byStage[s.id]?.sum || 0).toLocaleString()}</td>
-                    <td className="px-4 py-2">${Math.round(byStage[s.id]?.weighted || 0).toLocaleString()}</td>
+                    <td className="px-4 py-2">{currency.format(Math.round(byStage[s.id]?.sum || 0))}</td>
+                    <td className="px-4 py-2">{currency.format(Math.round(byStage[s.id]?.weighted || 0))}</td>
                   </tr>
                 ))}
+                {stages.length === 0 && (
+                  <tr>
+                    <td className="px-4 py-6 text-center text-gray-800" colSpan={4}>No stages configured</td>
+                  </tr>
+                )}
               </tbody>
             </table>
           </div>
