@@ -15,6 +15,15 @@ const productSchema = z.object({
   isSubscription: z.boolean(),
   subscriptionInterval: z.enum(['monthly', 'quarterly', 'yearly']).optional(),
   isActive: z.boolean(),
+}).refine((data) => {
+  // If it's a subscription, subscriptionInterval is required
+  if (data.isSubscription && !data.subscriptionInterval) {
+    return false;
+  }
+  return true;
+}, {
+  message: "Subscription interval is required for subscription products",
+  path: ["subscriptionInterval"]
 });
 
 type ProductFormData = z.infer<typeof productSchema>;
@@ -72,11 +81,22 @@ export function ProductModal({ product, onClose, onSave }: ProductModalProps) {
   const onSubmit = async (data: ProductFormData) => {
     setIsLoading(true);
     try {
-      const productData = {
-        ...data,
-        description: data.description || undefined,
-        subscriptionInterval: data.isSubscription ? data.subscriptionInterval : undefined,
+      const productData: any = {
+        name: data.name,
+        price: data.price,
+        isSubscription: data.isSubscription,
+        isActive: data.isActive,
       };
+
+      // Only include description if it's not empty
+      if (data.description && data.description.trim()) {
+        productData.description = data.description.trim();
+      }
+
+      // Only include subscriptionInterval if it's a subscription product and has a value
+      if (data.isSubscription && data.subscriptionInterval) {
+        productData.subscriptionInterval = data.subscriptionInterval;
+      }
 
       if (isEditing && product) {
         await productService.update(product.id, productData);
