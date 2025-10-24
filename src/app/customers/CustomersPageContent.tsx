@@ -101,7 +101,7 @@ export default function CustomersPageContent() {
         <div className="flex justify-between items-center">
           <div>
             <h1 className="text-2xl font-bold text-gray-900">Customers</h1>
-            <p className="text-gray-600">Manage your customer relationships</p>
+            <p className="text-gray-900">Manage your customer relationships</p>
           </div>
           <button
             onClick={() => setShowModal(true)}
@@ -115,7 +115,7 @@ export default function CustomersPageContent() {
         {/* Search */}
         <div className="relative">
           <div className="absolute inset-y-0 left-0 pl-3 flex items-center pointer-events-none">
-            <Search className="h-5 w-5 text-gray-400" />
+            <Search className="h-5 w-5 text-gray-700" />
           </div>
           <input
             type="text"
@@ -147,7 +147,7 @@ export default function CustomersPageContent() {
             <h3 className="text-lg font-medium text-gray-900 mb-2">
               {searchTerm ? 'No customers found' : 'No customers yet'}
             </h3>
-            <p className="text-gray-500 mb-4">
+            <p className="text-gray-900 mb-4">
               {searchTerm
                 ? 'Try adjusting your search terms'
                 : 'Get started by adding your first customer'}
@@ -178,7 +178,7 @@ export default function CustomersPageContent() {
                         {customer.name}
                       </h3>
                       {customer.company && (
-                        <div className="flex items-center text-sm text-gray-500 mt-1">
+                        <div className="flex items-center text-sm text-gray-900 mt-1">
                           <Building className="w-4 h-4 mr-1" />
                           <span className="truncate">{customer.company}</span>
                         </div>
@@ -191,13 +191,13 @@ export default function CustomersPageContent() {
                         setEditingCustomer(customer);
                         setShowModal(true);
                       }}
-                      className="text-gray-400 hover:text-gray-600"
+                      className="text-gray-700 hover:text-gray-900"
                     >
                       <Edit className="w-4 h-4" />
                     </button>
                     <button
                       onClick={() => handleDelete(customer.id)}
-                      className="text-gray-400 hover:text-red-600"
+                      className="text-gray-700 hover:text-red-600"
                     >
                       <Trash2 className="w-4 h-4" />
                     </button>
@@ -205,18 +205,18 @@ export default function CustomersPageContent() {
                 </div>
 
                 <div className="mt-4 space-y-2">
-                  <div className="flex items-center text-sm text-gray-600">
+                  <div className="flex items-center text-sm text-gray-900">
                     <Mail className="w-4 h-4 mr-2" />
                     <span className="truncate">{customer.email}</span>
                   </div>
                   {customer.phone && (
-                    <div className="flex items-center text-sm text-gray-600">
+                    <div className="flex items-center text-sm text-gray-900">
                       <Phone className="w-4 h-4 mr-2" />
                       <span>{customer.phone}</span>
                     </div>
                   )}
                   {formatAddress(customer.address) && (
-                    <div className="flex items-start text-sm text-gray-600">
+                    <div className="flex items-start text-sm text-gray-900">
                       <MapPin className="w-4 h-4 mr-2 mt-0.5 flex-shrink-0" />
                       <span className="line-clamp-2">{formatAddress(customer.address)}</span>
                     </div>
@@ -224,7 +224,7 @@ export default function CustomersPageContent() {
                 </div>
 
                 <div className="mt-4 pt-4 border-t border-gray-200">
-                  <p className="text-xs text-gray-500">
+                  <p className="text-xs text-gray-800">
                     Added {customer.createdAt.toLocaleDateString()}
                   </p>
                 </div>

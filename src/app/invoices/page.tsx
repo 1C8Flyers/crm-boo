@@ -83,7 +83,7 @@ export default function Invoices() {
         <div className="flex justify-between items-center">
           <div>
             <h1 className="text-2xl font-bold text-gray-900">Invoices</h1>
-            <p className="text-gray-600">Manage your billing and invoices</p>
+            <p className="text-gray-900">Manage your billing and invoices</p>
           </div>
           <button
             onClick={() => router.push('/invoices/new')}
@@ -96,7 +96,7 @@ export default function Invoices() {
 
         <div className="relative">
           <div className="absolute inset-y-0 left-0 pl-3 flex items-center pointer-events-none">
-            <Search className="h-5 w-5 text-gray-400" />
+            <Search className="h-5 w-5 text-gray-700" />
           </div>
           <input
             type="text"
@@ -111,25 +111,25 @@ export default function Invoices() {
         <div className="grid grid-cols-1 md:grid-cols-4 gap-6">
           <div className="bg-white p-6 rounded-lg shadow">
             <div className="text-2xl font-bold text-gray-900">{invoices.length}</div>
-            <div className="text-sm text-gray-600">Total Invoices</div>
+            <div className="text-sm text-gray-900">Total Invoices</div>
           </div>
           <div className="bg-white p-6 rounded-lg shadow">
             <div className="text-2xl font-bold text-green-600">
               ${invoices.filter(i => i.status === 'paid').reduce((sum, i) => sum + i.total, 0).toLocaleString()}
             </div>
-            <div className="text-sm text-gray-600">Paid</div>
+            <div className="text-sm text-gray-900">Paid</div>
           </div>
           <div className="bg-white p-6 rounded-lg shadow">
             <div className="text-2xl font-bold text-blue-600">
               ${invoices.filter(i => i.status === 'sent').reduce((sum, i) => sum + i.total, 0).toLocaleString()}
             </div>
-            <div className="text-sm text-gray-600">Pending</div>
+            <div className="text-sm text-gray-900">Pending</div>
           </div>
           <div className="bg-white p-6 rounded-lg shadow">
             <div className="text-2xl font-bold text-red-600">
               ${invoices.filter(i => i.status === 'overdue').reduce((sum, i) => sum + i.total, 0).toLocaleString()}
             </div>
-            <div className="text-sm text-gray-600">Overdue</div>
+            <div className="text-sm text-gray-900">Overdue</div>
           </div>
         </div>
 
@@ -159,7 +159,7 @@ export default function Invoices() {
             <h3 className="text-lg font-medium text-gray-900 mb-2">
               {searchTerm ? 'No invoices found' : 'No invoices yet'}
             </h3>
-            <p className="text-gray-500 mb-4">
+            <p className="text-gray-900 mb-4">
               {searchTerm
                 ? 'Try adjusting your search terms'
                 : 'Get started by creating your first invoice'}

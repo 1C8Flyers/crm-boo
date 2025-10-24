@@ -80,7 +80,7 @@ function DealCard({ deal, customerName, isDragging = false }: DealCardProps) {
         </div>
       </div>
       
-      <div className="space-y-1 text-sm text-gray-600">
+      <div className="space-y-1 text-sm text-gray-900">
         <div className="flex items-center">
           <DollarSign className="w-4 h-4 mr-1" />
           <span>${deal.value.toLocaleString()}</span>
@@ -88,7 +88,7 @@ function DealCard({ deal, customerName, isDragging = false }: DealCardProps) {
         
         {/* Show subscription vs one-time breakdown if available */}
         {(deal.subscriptionValue || deal.oneTimeValue) && (
-          <div className="text-xs text-gray-500 ml-5">
+          <div className="text-xs text-gray-800 ml-5">
             {deal.subscriptionValue && (
               <div>Subscription: ${deal.subscriptionValue.toLocaleString()}</div>
             )}
@@ -112,14 +112,14 @@ function DealCard({ deal, customerName, isDragging = false }: DealCardProps) {
       </div>
 
       {deal.description && (
-        <p className="text-sm text-gray-500 mt-2 line-clamp-2">
+        <p className="text-sm text-gray-900 mt-2 line-clamp-2">
           {deal.description}
         </p>
       )}
 
       <div className="mt-2">
         <div className="flex items-center justify-between text-xs">
-          <span className="text-gray-500">Probability</span>
+          <span className="text-gray-800">Probability</span>
           <span className="font-medium">{deal.probability}%</span>
         </div>
         <div className="mt-1 w-full bg-gray-200 rounded-full h-1.5">
@@ -152,7 +152,7 @@ function DroppableStage({ stage, deals, customerNames, activeId }: DroppableStag
     >
       <div className="flex items-center justify-between mb-4">
         <h3 className="font-semibold text-gray-900">{stage.name}</h3>
-        <span className="bg-gray-100 text-gray-600 px-2 py-1 rounded-full text-sm">
+        <span className="bg-gray-100 text-gray-900 px-2 py-1 rounded-full text-sm">
           {deals.length}
         </span>
       </div>
@@ -173,7 +173,7 @@ function DroppableStage({ stage, deals, customerNames, activeId }: DroppableStag
           
           {/* Drop zone for empty stages */}
           {deals.length === 0 && (
-            <div className="border-2 border-dashed border-gray-200 rounded-lg p-8 text-center text-gray-400">
+            <div className="border-2 border-dashed border-gray-200 rounded-lg p-8 text-center text-gray-800">
               Drop deals here
             </div>
           )}
@@ -329,7 +329,7 @@ export default function Deals() {
         <div className="flex justify-between items-center">
           <div>
             <h1 className="text-2xl font-bold text-gray-900">Deals Pipeline</h1>
-            <p className="text-gray-600">Track your sales opportunities</p>
+            <p className="text-gray-900">Track your sales opportunities</p>
           </div>
           <button
             onClick={() => router.push('/deals/new')}
@@ -343,7 +343,7 @@ export default function Deals() {
         {/* Search */}
         <div className="relative">
           <div className="absolute inset-y-0 left-0 pl-3 flex items-center pointer-events-none">
-            <Search className="h-5 w-5 text-gray-400" />
+            <Search className="h-5 w-5 text-gray-700" />
           </div>
           <input
             type="text"
@@ -379,7 +379,7 @@ export default function Deals() {
           ) : stages.length === 0 ? (
             <div className="text-center py-12">
               <h3 className="text-lg font-medium text-gray-900 mb-2">No deal stages configured</h3>
-              <p className="text-gray-500 mb-4">Deal stages will be created automatically when you add your first deal</p>
+              <p className="text-gray-900 mb-4">Deal stages will be created automatically when you add your first deal</p>
             </div>
           ) : (
             <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 xl:grid-cols-4 gap-6">
@@ -422,8 +422,8 @@ export default function Deals() {
                   <div className="text-2xl font-bold text-gray-900">
                     ${totalValue.toLocaleString()}
                   </div>
-                  <div className="text-sm text-gray-600">{stage.name}</div>
-                  <div className="text-xs text-gray-500">
+                  <div className="text-sm text-gray-900">{stage.name}</div>
+                  <div className="text-xs text-gray-800">
                     {stageDeals.length} deals • {Math.round(avgProbability)}% avg
                   </div>
                 </div>

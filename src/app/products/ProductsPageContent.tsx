@@ -84,7 +84,7 @@ export default function ProductsPageContent() {
         <div className="flex justify-between items-center">
           <div>
             <h1 className="text-2xl font-bold text-gray-900">Products</h1>
-            <p className="text-gray-600">Manage your products and subscriptions</p>
+            <p className="text-gray-900">Manage your products and subscriptions</p>
           </div>
           <button
             onClick={() => setShowModal(true)}
@@ -97,7 +97,7 @@ export default function ProductsPageContent() {
 
         <div className="relative">
           <div className="absolute inset-y-0 left-0 pl-3 flex items-center pointer-events-none">
-            <Search className="h-5 w-5 text-gray-400" />
+            <Search className="h-5 w-5 text-gray-700" />
           </div>
           <input
             type="text"
@@ -124,7 +124,7 @@ export default function ProductsPageContent() {
             <h3 className="text-lg font-medium text-gray-900 mb-2">
               {searchTerm ? 'No products found' : 'No products yet'}
             </h3>
-            <p className="text-gray-500 mb-4">
+            <p className="text-gray-900 mb-4">
               {searchTerm
                 ? 'Try adjusting your search terms'
                 : 'Get started by adding your first product'}
@@ -180,13 +180,13 @@ export default function ProductsPageContent() {
                         setEditingProduct(product);
                         setShowModal(true);
                       }}
-                      className="text-gray-400 hover:text-gray-600"
+                      className="text-gray-700 hover:text-gray-900"
                     >
                       <Edit className="w-4 h-4" />
                     </button>
                     <button
                       onClick={() => handleDelete(product.id)}
-                      className="text-gray-400 hover:text-red-600"
+                      className="text-gray-700 hover:text-red-600"
                     >
                       <Trash2 className="w-4 h-4" />
                     </button>
@@ -194,7 +194,7 @@ export default function ProductsPageContent() {
                 </div>
 
                 {product.description && (
-                  <p className="text-gray-600 text-sm mb-4 line-clamp-2">{product.description}</p>
+                  <p className="text-gray-900 text-sm mb-4 line-clamp-2">{product.description}</p>
                 )}
 
                 <div className="flex items-center justify-between">
@@ -202,7 +202,7 @@ export default function ProductsPageContent() {
                     <DollarSign className="w-5 h-5 mr-1" />
                     <span>{product.price.toLocaleString()}</span>
                     {product.isSubscription && product.subscriptionInterval && (
-                      <span className="text-sm text-gray-500 ml-1">
+                      <span className="text-sm text-gray-800 ml-1">
                         /{product.subscriptionInterval.replace('ly', '')}
                       </span>
                     )}
@@ -210,7 +210,7 @@ export default function ProductsPageContent() {
                 </div>
 
                 <div className="mt-4 pt-4 border-t border-gray-200">
-                  <p className="text-xs text-gray-500">
+                  <p className="text-xs text-gray-800">
                     Created {product.createdAt.toLocaleDateString()}
                   </p>
                 </div>

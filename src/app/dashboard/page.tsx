@@ -155,7 +155,7 @@ export default function Dashboard() {
       <div className="space-y-6">
         <div>
           <h1 className="text-2xl font-bold text-gray-900">Dashboard</h1>
-          <p className="text-gray-600">Welcome back! Here's your business overview.</p>
+          <p className="text-gray-900">Welcome back! Here's your business overview.</p>
         </div>
 
         {isLoadingStats ? (
@@ -185,7 +185,7 @@ export default function Dashboard() {
                     <card.icon className="w-6 h-6 text-white" />
                   </div>
                   <div>
-                    <p className="text-sm text-gray-600">{card.name}</p>
+                    <p className="text-sm text-gray-900">{card.name}</p>
                     <p className="text-2xl font-bold text-gray-900">{card.value}</p>
                   </div>
                 </div>
@@ -199,7 +199,7 @@ export default function Dashboard() {
           <div className="bg-white p-6 rounded-lg shadow">
             <h3 className="text-lg font-semibold text-gray-900 mb-4">Recent Activity</h3>
             <div className="space-y-4">
-              <div className="text-center text-gray-500 py-8">
+              <div className="text-center text-gray-900 py-8">
                 <Calendar className="w-12 h-12 mx-auto mb-4 text-gray-300" />
                 <p>No recent activity</p>
                 <p className="text-sm">Activity will appear here as you use the CRM</p>
@@ -217,7 +217,7 @@ export default function Dashboard() {
               >
                 <Users className="w-6 h-6 text-blue-500 mb-2" />
                 <p className="font-medium">Add Customer</p>
-                <p className="text-sm text-gray-600">Create new customer</p>
+                <p className="text-sm text-gray-900">Create new customer</p>
               </button>
               <button
                 onClick={() => router.push('/deals?new=true')}
@@ -225,7 +225,7 @@ export default function Dashboard() {
               >
                 <TrendingUp className="w-6 h-6 text-green-500 mb-2" />
                 <p className="font-medium">New Deal</p>
-                <p className="text-sm text-gray-600">Create new deal</p>
+                <p className="text-sm text-gray-900">Create new deal</p>
               </button>
               <button
                 onClick={() => router.push('/products?new=true')}
@@ -233,7 +233,7 @@ export default function Dashboard() {
               >
                 <Package className="w-6 h-6 text-purple-500 mb-2" />
                 <p className="font-medium">Add Product</p>
-                <p className="text-sm text-gray-600">Create new product</p>
+                <p className="text-sm text-gray-900">Create new product</p>
               </button>
               <button
                 onClick={() => router.push('/invoices?new=true')}
@@ -241,7 +241,7 @@ export default function Dashboard() {
               >
                 <FileText className="w-6 h-6 text-orange-500 mb-2" />
                 <p className="font-medium">New Invoice</p>
-                <p className="text-sm text-gray-600">Create new invoice</p>
+                <p className="text-sm text-gray-900">Create new invoice</p>
               </button>
             </div>
           </div>

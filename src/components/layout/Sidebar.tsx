@@ -44,7 +44,7 @@ export function Sidebar() {
       <div className="fixed top-0 left-0 z-50 lg:hidden">
         <button
           type="button"
-          className="m-4 inline-flex items-center justify-center rounded-md p-2 text-gray-400 hover:bg-gray-100 hover:text-gray-500 focus:outline-none focus:ring-2 focus:ring-inset focus:ring-blue-500"
+          className="m-4 inline-flex items-center justify-center rounded-md p-2 text-gray-700 hover:bg-gray-100 hover:text-gray-900 focus:outline-none focus:ring-2 focus:ring-inset focus:ring-blue-500"
           onClick={() => setSidebarOpen(true)}
         >
           <Menu className="h-6 w-6" aria-hidden="true" />
@@ -60,7 +60,7 @@ export function Sidebar() {
               <h1 className="text-xl font-bold text-gray-900">CRM-BOO</h1>
               <button
                 type="button"
-                className="text-gray-400 hover:text-gray-500"
+                className="text-gray-700 hover:text-gray-900"
                 onClick={() => setSidebarOpen(false)}
               >
                 <X className="h-6 w-6" />
@@ -101,7 +101,7 @@ function SidebarContent({ pathname, handleSignOut, userProfile }: {
               className={`group flex items-center px-2 py-2 text-sm font-medium rounded-md ${
                 isActive
                   ? 'bg-blue-100 text-blue-900'
-                  : 'text-gray-600 hover:bg-gray-50 hover:text-gray-900'
+                  : 'text-gray-900 hover:bg-gray-50 hover:text-blue-600'
               }`}
             >
               <item.icon
