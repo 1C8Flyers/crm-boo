@@ -214,17 +214,26 @@ export default function DealDetailContent() {
     <DashboardLayout>
       <div className="space-y-6">
         {/* Header */}
-        <div className="flex items-center gap-4">
-          <button
-            onClick={() => router.push('/deals')}
-            className="p-2 hover:bg-gray-100 rounded-lg transition-colors"
-          >
-            <ArrowLeft className="h-5 w-5" />
-          </button>
-          <div>
-            <h1 className="text-2xl font-bold text-gray-900">{deal.title}</h1>
-            <p className="text-gray-600">Deal Details</p>
+        <div className="flex items-center justify-between">
+          <div className="flex items-center gap-4">
+            <button
+              onClick={() => router.push('/deals')}
+              className="p-2 hover:bg-gray-100 rounded-lg transition-colors"
+            >
+              <ArrowLeft className="h-5 w-5" />
+            </button>
+            <div>
+              <h1 className="text-2xl font-bold text-gray-900">{deal.title}</h1>
+              <p className="text-gray-600">Deal Details</p>
+            </div>
           </div>
+          <button
+            onClick={() => router.push(`/deals/edit?id=${deal.id}`)}
+            className="flex items-center gap-2 px-4 py-2 bg-blue-600 text-white rounded-lg hover:bg-blue-700 transition-colors"
+          >
+            <Edit3 className="h-4 w-4" />
+            Edit Deal
+          </button>
         </div>
 
         <div className="grid grid-cols-1 lg:grid-cols-3 gap-6">
@@ -232,27 +241,24 @@ export default function DealDetailContent() {
           <div className="lg:col-span-2 space-y-6">
             {/* Deal Overview Card */}
             <div className="bg-white rounded-lg shadow p-6">
-              <div className="flex items-center justify-between mb-4">
+              <div className="mb-4">
                 <h2 className="text-lg font-semibold">Deal Overview</h2>
-                <button className="p-2 hover:bg-gray-100 rounded-lg">
-                  <Edit3 className="h-4 w-4" />
-                </button>
               </div>
               
               <div className="grid grid-cols-2 gap-4">
                 <div className="flex items-center gap-3">
                   <DollarSign className="h-5 w-5 text-green-500" />
                   <div>
-                    <p className="text-sm text-gray-600">Total Value</p>
-                    <p className="font-semibold">{formatCurrency(deal.value)}</p>
+                    <p className="text-sm text-gray-800 font-medium">Total Value</p>
+                    <p className="font-semibold text-gray-900">{formatCurrency(deal.value)}</p>
                   </div>
                 </div>
                 
                 <div className="flex items-center gap-3">
                   <Calendar className="h-5 w-5 text-blue-500" />
                   <div>
-                    <p className="text-sm text-gray-600">Expected Close</p>
-                    <p className="font-semibold">
+                    <p className="text-sm text-gray-800 font-medium">Expected Close</p>
+                    <p className="font-semibold text-gray-900">
                       {deal.expectedCloseDate ? formatDate(deal.expectedCloseDate) : 'Not set'}
                     </p>
                   </div>
@@ -261,7 +267,7 @@ export default function DealDetailContent() {
                 <div className="flex items-center gap-3">
                   <Package className="h-5 w-5 text-purple-500" />
                   <div>
-                    <p className="text-sm text-gray-600">Stage</p>
+                    <p className="text-sm text-gray-800 font-medium">Stage</p>
                     <span 
                       className="inline-flex items-center px-2.5 py-0.5 rounded-full text-xs font-medium"
                       style={{ 
@@ -277,16 +283,16 @@ export default function DealDetailContent() {
                 <div className="flex items-center gap-3">
                   <User className="h-5 w-5 text-orange-500" />
                   <div>
-                    <p className="text-sm text-gray-600">Probability</p>
-                    <p className="font-semibold">{deal.probability}%</p>
+                    <p className="text-sm text-gray-800 font-medium">Probability</p>
+                    <p className="font-semibold text-gray-900">{deal.probability}%</p>
                   </div>
                 </div>
               </div>
               
               {deal.description && (
                 <div className="mt-4 pt-4 border-t">
-                  <p className="text-sm text-gray-600">Description</p>
-                  <p className="mt-1">{deal.description}</p>
+                  <p className="text-sm text-gray-800 font-medium">Description</p>
+                  <p className="mt-1 text-gray-900">{deal.description}</p>
                 </div>
               )}
             </div>
@@ -356,8 +362,8 @@ export default function DealDetailContent() {
                 <div className="flex items-center gap-3">
                   <Building className="h-5 w-5 text-gray-400" />
                   <div>
-                    <p className="font-medium">{customer.name}</p>
-                    <p className="text-sm text-gray-600">Company</p>
+                    <p className="font-medium text-gray-900">{customer.name}</p>
+                    <p className="text-sm text-gray-800">Company</p>
                   </div>
                 </div>
                 
@@ -365,8 +371,8 @@ export default function DealDetailContent() {
                   <div className="flex items-center gap-3">
                     <Mail className="h-5 w-5 text-gray-400" />
                     <div>
-                      <p className="font-medium">{customer.email}</p>
-                      <p className="text-sm text-gray-600">Email</p>
+                      <p className="font-medium text-gray-900">{customer.email}</p>
+                      <p className="text-sm text-gray-800">Email</p>
                     </div>
                   </div>
                 )}
@@ -375,8 +381,8 @@ export default function DealDetailContent() {
                   <div className="flex items-center gap-3">
                     <Phone className="h-5 w-5 text-gray-400" />
                     <div>
-                      <p className="font-medium">{customer.phone}</p>
-                      <p className="text-sm text-gray-600">Phone</p>
+                      <p className="font-medium text-gray-900">{customer.phone}</p>
+                      <p className="text-sm text-gray-800">Phone</p>
                     </div>
                   </div>
                 )}
