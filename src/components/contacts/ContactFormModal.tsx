@@ -183,6 +183,7 @@ export function ContactFormModal({
                       id="firstName"
                       name="firstName"
                       type="text"
+                      autoComplete="given-name"
                       value={formData.firstName}
                       onChange={(e) => handleChange('firstName', e.target.value)}
                       className={`w-full px-3 py-2 border rounded-md focus:outline-none focus:ring-blue-500 focus:border-blue-500 ${
@@ -203,6 +204,7 @@ export function ContactFormModal({
                       id="lastName"
                       name="lastName"
                       type="text"
+                      autoComplete="family-name"
                       value={formData.lastName}
                       onChange={(e) => handleChange('lastName', e.target.value)}
                       className={`w-full px-3 py-2 border rounded-md focus:outline-none focus:ring-blue-500 focus:border-blue-500 ${
@@ -225,6 +227,7 @@ export function ContactFormModal({
                     id="email"
                     name="email"
                     type="email"
+                    autoComplete="email"
                     value={formData.email}
                     onChange={(e) => handleChange('email', e.target.value)}
                     className={`w-full px-3 py-2 border rounded-md focus:outline-none focus:ring-blue-500 focus:border-blue-500 ${
@@ -247,6 +250,7 @@ export function ContactFormModal({
                       id="phone"
                       name="phone"
                       type="tel"
+                      autoComplete="tel"
                       value={formData.phone}
                       onChange={(e) => handleChange('phone', e.target.value)}
                       className="w-full px-3 py-2 border border-gray-300 rounded-md focus:outline-none focus:ring-blue-500 focus:border-blue-500"
@@ -262,6 +266,7 @@ export function ContactFormModal({
                       id="mobile"
                       name="mobile"
                       type="tel"
+                      autoComplete="tel"
                       value={formData.mobile}
                       onChange={(e) => handleChange('mobile', e.target.value)}
                       className="w-full px-3 py-2 border border-gray-300 rounded-md focus:outline-none focus:ring-blue-500 focus:border-blue-500"
@@ -280,6 +285,7 @@ export function ContactFormModal({
                       id="title"
                       name="title"
                       type="text"
+                      autoComplete="organization-title"
                       value={formData.title}
                       onChange={(e) => handleChange('title', e.target.value)}
                       className="w-full px-3 py-2 border border-gray-300 rounded-md focus:outline-none focus:ring-blue-500 focus:border-blue-500"
@@ -295,6 +301,7 @@ export function ContactFormModal({
                       id="department"
                       name="department"
                       type="text"
+                      autoComplete="organization"
                       value={formData.department}
                       onChange={(e) => handleChange('department', e.target.value)}
                       className="w-full px-3 py-2 border border-gray-300 rounded-md focus:outline-none focus:ring-blue-500 focus:border-blue-500"
@@ -311,6 +318,7 @@ export function ContactFormModal({
                   <select
                     id="customerId"
                     name="customerId"
+                    autoComplete="organization"
                     value={formData.customerId}
                     onChange={(e) => handleChange('customerId', e.target.value)}
                     className="w-full px-3 py-2 border border-gray-300 rounded-md focus:outline-none focus:ring-blue-500 focus:border-blue-500"
@@ -357,6 +365,7 @@ export function ContactFormModal({
                     id="linkedin"
                     name="linkedin"
                     type="url"
+                    autoComplete="url"
                     value={formData.linkedin}
                     onChange={(e) => handleChange('linkedin', e.target.value)}
                     placeholder="https://linkedin.com/in/username"
@@ -373,6 +382,7 @@ export function ContactFormModal({
                     id="twitter"
                     name="twitter"
                     type="url"
+                    autoComplete="url"
                     value={formData.twitter}
                     onChange={(e) => handleChange('twitter', e.target.value)}
                     placeholder="https://twitter.com/username"
@@ -390,6 +400,7 @@ export function ContactFormModal({
                     id="street"
                     name="street"
                     type="text"
+                    autoComplete="street-address"
                     value={formData.street}
                     onChange={(e) => handleChange('street', e.target.value)}
                     className="w-full px-3 py-2 border border-gray-300 rounded-md focus:outline-none focus:ring-blue-500 focus:border-blue-500"
@@ -406,6 +417,7 @@ export function ContactFormModal({
                       id="city"
                       name="city"
                       type="text"
+                      autoComplete="address-level2"
                       value={formData.city}
                       onChange={(e) => handleChange('city', e.target.value)}
                       className="w-full px-3 py-2 border border-gray-300 rounded-md focus:outline-none focus:ring-blue-500 focus:border-blue-500"
@@ -421,6 +433,7 @@ export function ContactFormModal({
                       id="state"
                       name="state"
                       type="text"
+                      autoComplete="address-level1"
                       value={formData.state}
                       onChange={(e) => handleChange('state', e.target.value)}
                       className="w-full px-3 py-2 border border-gray-300 rounded-md focus:outline-none focus:ring-blue-500 focus:border-blue-500"
@@ -438,6 +451,7 @@ export function ContactFormModal({
                       id="zipCode"
                       name="zipCode"
                       type="text"
+                      autoComplete="postal-code"
                       value={formData.zipCode}
                       onChange={(e) => handleChange('zipCode', e.target.value)}
                       className="w-full px-3 py-2 border border-gray-300 rounded-md focus:outline-none focus:ring-blue-500 focus:border-blue-500"
@@ -453,6 +467,7 @@ export function ContactFormModal({
                       id="country"
                       name="country"
                       type="text"
+                      autoComplete="country-name"
                       value={formData.country}
                       onChange={(e) => handleChange('country', e.target.value)}
                       className="w-full px-3 py-2 border border-gray-300 rounded-md focus:outline-none focus:ring-blue-500 focus:border-blue-500"
@@ -469,6 +484,7 @@ export function ContactFormModal({
                   <textarea
                     id="notes"
                     name="notes"
+                    autoComplete="off"
                     value={formData.notes}
                     onChange={(e) => handleChange('notes', e.target.value)}
                     rows={4}
