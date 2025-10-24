@@ -6,7 +6,7 @@ import { useRouter } from 'next/navigation';
 import { DashboardLayout } from '@/components/layout/DashboardLayout';
 import { dealService, dealStageService, customerService } from '@/lib/firebase-services';
 import type { Deal, DealStage, Customer } from '@/types';
-import { Plus, DollarSign, Calendar, User, GripHorizontal, Search } from 'lucide-react';
+import { Plus, DollarSign, Calendar, User, GripHorizontal, Search, List, LayoutGrid } from 'lucide-react';
 import {
   DndContext,
   DragOverlay,
@@ -192,6 +192,7 @@ export default function Deals() {
   const [isLoading, setIsLoading] = useState(true);
   const [searchTerm, setSearchTerm] = useState('');
   const [activeId, setActiveId] = useState<string | null>(null);
+  const [viewMode, setViewMode] = useState<'pipeline' | 'list'>('pipeline');
 
   const sensors = useSensors(
     useSensor(PointerSensor),
@@ -251,6 +252,11 @@ export default function Deals() {
   const getCustomerName = (customerId: string) => {
     const customer = customers.find(c => c.id === customerId);
     return customer?.name || 'Unknown Customer';
+  };
+
+  // Optimistic local update helper (used by list view)
+  const patchDealLocal = (id: string, patch: Partial<Deal>) => {
+    setDeals(prev => prev.map(d => d.id === id ? { ...d, ...patch } : d));
   };
 
   // Create a mapping for efficient customer name lookups
@@ -340,21 +346,40 @@ export default function Deals() {
           </button>
         </div>
 
-        {/* Search */}
-        <div className="relative">
-          <div className="absolute inset-y-0 left-0 pl-3 flex items-center pointer-events-none">
-            <Search className="h-5 w-5 text-gray-700" />
+        {/* Search + View Toggle */}
+        <div className="flex flex-col md:flex-row md:items-center md:justify-between gap-3">
+          <div className="relative md:flex-1">
+            <div className="absolute inset-y-0 left-0 pl-3 flex items-center pointer-events-none">
+              <Search className="h-5 w-5 text-gray-700" />
+            </div>
+            <input
+              type="text"
+              placeholder="Search deals..."
+              value={searchTerm}
+              onChange={(e) => setSearchTerm(e.target.value)}
+              className="pl-10 w-full border border-gray-300 rounded-lg px-3 py-2 focus:outline-none focus:ring-2 focus:ring-blue-500"
+            />
           </div>
-          <input
-            type="text"
-            placeholder="Search deals..."
-            value={searchTerm}
-            onChange={(e) => setSearchTerm(e.target.value)}
-            className="pl-10 w-full border border-gray-300 rounded-lg px-3 py-2 focus:outline-none focus:ring-2 focus:ring-blue-500"
-          />
+          <div className="flex items-center gap-2 self-end md:self-auto">
+            <button
+              onClick={() => setViewMode('pipeline')}
+              className={`inline-flex items-center gap-2 px-3 py-2 rounded-lg border ${viewMode==='pipeline' ? 'text-white' : 'text-gray-900'} transition-colors`}
+              style={{ backgroundColor: viewMode==='pipeline' ? '#2E4A62' : 'transparent', borderColor: '#CBD5E1' }}
+            >
+              <LayoutGrid className="w-4 h-4" /> Pipeline
+            </button>
+            <button
+              onClick={() => setViewMode('list')}
+              className={`inline-flex items-center gap-2 px-3 py-2 rounded-lg border ${viewMode==='list' ? 'text-white' : 'text-gray-900'} transition-colors`}
+              style={{ backgroundColor: viewMode==='list' ? '#2E4A62' : 'transparent', borderColor: '#CBD5E1' }}
+            >
+              <List className="w-4 h-4" /> List
+            </button>
+          </div>
         </div>
 
-        {/* Pipeline */}
+        {/* Main Content */}
+        {viewMode === 'pipeline' ? (
         <DndContext
           sensors={sensors}
           collisionDetection={closestCenter}
@@ -405,9 +430,23 @@ export default function Deals() {
             ) : null}
           </DragOverlay>
         </DndContext>
+        ) : (
+          // List view
+          <div>
+            {/* Lazy import to avoid SSR issues */}
+            {/** Using dynamic import could be ideal, but keeping simple here */}
+            {/** @ts-ignore */}
+            <DealsListTable
+              deals={filteredDeals}
+              stages={stages}
+              customers={customers}
+              onLocalUpdate={patchDealLocal}
+            />
+          </div>
+        )}
 
-        {/* Pipeline Summary */}
-        <div className="bg-white rounded-lg shadow-sm border border-gray-200 p-6">
+  {/* Pipeline Summary */}
+  <div className="bg-white rounded-lg shadow-sm border border-gray-200 p-6">
           <h3 className="text-lg font-semibold text-gray-900 mb-4">Pipeline Summary</h3>
           <div className="grid grid-cols-1 md:grid-cols-4 gap-4">
             {stages.map((stage) => {
