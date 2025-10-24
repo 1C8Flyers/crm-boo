@@ -80,6 +80,7 @@ export default function DealDetailContent() {
     if (!selectedProduct || !deal || quantity <= 0) return;
 
     try {
+      // Create clean deal product object without undefined values
       const dealProduct: DealProduct = {
         id: `${selectedProduct.id}-${Date.now()}`, // Generate unique ID for the deal product
         productId: selectedProduct.id!,
@@ -88,21 +89,41 @@ export default function DealDetailContent() {
         quantity,
         total: selectedProduct.price * quantity,
         isSubscription: selectedProduct.isSubscription,
-        subscriptionInterval: selectedProduct.isSubscription ? selectedProduct.subscriptionInterval : undefined
+        ...(selectedProduct.isSubscription && selectedProduct.subscriptionInterval && {
+          subscriptionInterval: selectedProduct.subscriptionInterval
+        })
       };
 
       const updatedProducts = [...(deal.products || []), dealProduct];
-      const newTotalValue = updatedProducts.reduce((sum, p) => sum + p.total, 0);
+      const subscriptionValue = updatedProducts
+        .filter(p => p.isSubscription)
+        .reduce((sum, p) => sum + p.total, 0);
+      const oneTimeValue = updatedProducts
+        .filter(p => !p.isSubscription)
+        .reduce((sum, p) => sum + p.total, 0);
 
-      await dealService.update(deal.id!, {
+      // Create clean update object without undefined values
+      const updateData: any = {
         products: updatedProducts,
-        value: newTotalValue
-      });
+        value: subscriptionValue + oneTimeValue
+      };
+
+      // Only include subscription/oneTime values if they exist
+      if (subscriptionValue > 0) {
+        updateData.subscriptionValue = subscriptionValue;
+      }
+      if (oneTimeValue > 0) {
+        updateData.oneTimeValue = oneTimeValue;
+      }
+
+      await dealService.update(deal.id!, updateData);
 
       setDeal({
         ...deal,
         products: updatedProducts,
-        value: newTotalValue
+        value: subscriptionValue + oneTimeValue,
+        subscriptionValue: subscriptionValue > 0 ? subscriptionValue : undefined,
+        oneTimeValue: oneTimeValue > 0 ? oneTimeValue : undefined
       });
 
       // Reset form
@@ -119,17 +140,35 @@ export default function DealDetailContent() {
 
     try {
       const updatedProducts = deal.products?.filter((_, i) => i !== index) || [];
-      const newTotalValue = updatedProducts.reduce((sum, p) => sum + p.total, 0);
+      const subscriptionValue = updatedProducts
+        .filter(p => p.isSubscription)
+        .reduce((sum, p) => sum + p.total, 0);
+      const oneTimeValue = updatedProducts
+        .filter(p => !p.isSubscription)
+        .reduce((sum, p) => sum + p.total, 0);
 
-      await dealService.update(deal.id!, {
+      // Create clean update object without undefined values
+      const updateData: any = {
         products: updatedProducts,
-        value: newTotalValue
-      });
+        value: subscriptionValue + oneTimeValue
+      };
+
+      // Only include subscription/oneTime values if they exist
+      if (subscriptionValue > 0) {
+        updateData.subscriptionValue = subscriptionValue;
+      }
+      if (oneTimeValue > 0) {
+        updateData.oneTimeValue = oneTimeValue;
+      }
+
+      await dealService.update(deal.id!, updateData);
 
       setDeal({
         ...deal,
         products: updatedProducts,
-        value: newTotalValue
+        value: subscriptionValue + oneTimeValue,
+        subscriptionValue: subscriptionValue > 0 ? subscriptionValue : undefined,
+        oneTimeValue: oneTimeValue > 0 ? oneTimeValue : undefined
       });
     } catch (error) {
       console.error('Error removing product from deal:', error);
