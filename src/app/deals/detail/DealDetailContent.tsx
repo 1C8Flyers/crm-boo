@@ -358,7 +358,7 @@ export default function DealDetailContent() {
           {/* Customer Info Sidebar */}
           <div className="space-y-6">
             <div className="bg-white rounded-lg shadow p-6">
-              <h2 className="text-lg font-semibold mb-4">Customer Information</h2>
+              <h2 className="text-lg font-semibold mb-4 text-gray-900">Customer Information</h2>
               
               <div className="space-y-4">
                 <div className="flex items-center gap-3">
