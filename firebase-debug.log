@@ -1,0 +1,307 @@
+[debug] [2025-10-24T20:18:58.519Z] ----------------------------------------------------------------------
+[debug] [2025-10-24T20:18:58.520Z] Command:       C:\Program Files\nodejs\node.exe C:\Users\jmanr\AppData\Roaming\npm\node_modules\firebase-tools\lib\bin\firebase.js deploy --only hosting --non-interactive --debug
+[debug] [2025-10-24T20:18:58.521Z] CLI Version:   14.21.0
+[debug] [2025-10-24T20:18:58.521Z] Platform:      win32
+[debug] [2025-10-24T20:18:58.521Z] Node Version:  v20.19.5
+[debug] [2025-10-24T20:18:58.521Z] Time:          Fri Oct 24 2025 15:18:58 GMT-0500 (Central Daylight Time)
+[debug] [2025-10-24T20:18:58.521Z] ----------------------------------------------------------------------
+[debug] 
+[debug] [2025-10-24T20:18:58.642Z] > command requires scopes: ["email","openid","https://www.googleapis.com/auth/cloudplatformprojects.readonly","https://www.googleapis.com/auth/firebase","https://www.googleapis.com/auth/cloud-platform"]
+[debug] [2025-10-24T20:18:58.643Z] > authorizing via signed-in user (josh.manring@chapterforge.co)
+[debug] [2025-10-24T20:18:58.644Z] [iam] checking project crm-boo-prod for permissions ["firebase.projects.get","firebasehosting.sites.update"]
+[debug] [2025-10-24T20:18:58.644Z] Checked if tokens are valid: true, expires at: 1761339433483
+[debug] [2025-10-24T20:18:58.645Z] Checked if tokens are valid: true, expires at: 1761339433483
+[debug] [2025-10-24T20:18:58.645Z] >>> [apiv2][query] POST https://cloudresourcemanager.googleapis.com/v1/projects/crm-boo-prod:testIamPermissions [none]
+[debug] [2025-10-24T20:18:58.645Z] >>> [apiv2][(partial)header] POST https://cloudresourcemanager.googleapis.com/v1/projects/crm-boo-prod:testIamPermissions x-goog-quota-user=projects/crm-boo-prod
+[debug] [2025-10-24T20:18:58.646Z] >>> [apiv2][body] POST https://cloudresourcemanager.googleapis.com/v1/projects/crm-boo-prod:testIamPermissions {"permissions":["firebase.projects.get","firebasehosting.sites.update"]}
+[debug] [2025-10-24T20:18:58.894Z] <<< [apiv2][status] POST https://cloudresourcemanager.googleapis.com/v1/projects/crm-boo-prod:testIamPermissions 200
+[debug] [2025-10-24T20:18:58.894Z] <<< [apiv2][body] POST https://cloudresourcemanager.googleapis.com/v1/projects/crm-boo-prod:testIamPermissions {"permissions":["firebase.projects.get","firebasehosting.sites.update"]}
+[debug] [2025-10-24T20:18:58.894Z] Checked if tokens are valid: true, expires at: 1761339433483
+[debug] [2025-10-24T20:18:58.895Z] Checked if tokens are valid: true, expires at: 1761339433483
+[debug] [2025-10-24T20:18:58.895Z] >>> [apiv2][query] GET https://firebase.googleapis.com/v1beta1/projects/crm-boo-prod [none]
+[debug] [2025-10-24T20:18:59.183Z] <<< [apiv2][status] GET https://firebase.googleapis.com/v1beta1/projects/crm-boo-prod 200
+[debug] [2025-10-24T20:18:59.183Z] <<< [apiv2][body] GET https://firebase.googleapis.com/v1beta1/projects/crm-boo-prod {"projectId":"crm-boo-prod","projectNumber":"48394410331","displayName":"CRM-BOO","name":"projects/crm-boo-prod","resources":{"hostingSite":"crm-boo-prod"},"state":"ACTIVE","etag":"1_5f976341-28ee-463c-a221-cd3a0556b859"}
+[info] 
+[info] === Deploying to 'crm-boo-prod'...
+[info] 
+[info] i  deploying hosting 
+[debug] [2025-10-24T20:18:59.186Z] Checked if tokens are valid: true, expires at: 1761339433483
+[debug] [2025-10-24T20:18:59.186Z] Checked if tokens are valid: true, expires at: 1761339433483
+[debug] [2025-10-24T20:18:59.186Z] >>> [apiv2][query] POST https://firebasehosting.googleapis.com/v1beta1/projects/-/sites/crm-boo-prod/versions [none]
+[debug] [2025-10-24T20:18:59.186Z] >>> [apiv2][body] POST https://firebasehosting.googleapis.com/v1beta1/projects/-/sites/crm-boo-prod/versions {"status":"CREATED","labels":{"deployment-tool":"cli-firebase"}}
+[debug] [2025-10-24T20:18:59.690Z] <<< [apiv2][status] POST https://firebasehosting.googleapis.com/v1beta1/projects/-/sites/crm-boo-prod/versions 200
+[debug] [2025-10-24T20:18:59.690Z] <<< [apiv2][body] POST https://firebasehosting.googleapis.com/v1beta1/projects/-/sites/crm-boo-prod/versions {"name":"projects/48394410331/sites/crm-boo-prod/versions/4efd8b128dd2f75a","status":"CREATED","config":{},"labels":{"deployment-tool":"cli-firebase"}}
+[info] i  hosting[crm-boo-prod]: beginning deploy... 
+[info] i  hosting[crm-boo-prod]: found 279 files in out 
+[debug] [2025-10-24T20:18:59.720Z] [hosting] uploading with 200 concurrency
+[debug] [2025-10-24T20:18:59.720Z] [hosting] hash cache [b3V0] not populated
+[debug] [2025-10-24T20:18:59.759Z] Error: EISDIR: illegal operation on a directory, read
+[error] 
+[error] Error: An unexpected error has occurred.
+[debug] [2025-10-24T20:18:59.772Z] Error: EISDIR: illegal operation on a directory, read
+[error] 
+[error] Error: An unexpected error has occurred.
+[debug] [2025-10-24T20:18:59.793Z] Error: EISDIR: illegal operation on a directory, read
+[error] 
+[error] Error: An unexpected error has occurred.
+[debug] [2025-10-24T20:20:07.790Z] ----------------------------------------------------------------------
+[debug] [2025-10-24T20:20:07.792Z] Command:       C:\Program Files\nodejs\node.exe C:\Users\jmanr\AppData\Roaming\npm\node_modules\firebase-tools\lib\bin\firebase.js deploy --only hosting --non-interactive --debug
+[debug] [2025-10-24T20:20:07.793Z] CLI Version:   14.21.0
+[debug] [2025-10-24T20:20:07.793Z] Platform:      win32
+[debug] [2025-10-24T20:20:07.793Z] Node Version:  v20.19.5
+[debug] [2025-10-24T20:20:07.793Z] Time:          Fri Oct 24 2025 15:20:07 GMT-0500 (Central Daylight Time)
+[debug] [2025-10-24T20:20:07.793Z] ----------------------------------------------------------------------
+[debug] 
+[debug] [2025-10-24T20:20:07.914Z] > command requires scopes: ["email","openid","https://www.googleapis.com/auth/cloudplatformprojects.readonly","https://www.googleapis.com/auth/firebase","https://www.googleapis.com/auth/cloud-platform"]
+[debug] [2025-10-24T20:20:07.915Z] > authorizing via signed-in user (josh.manring@chapterforge.co)
+[debug] [2025-10-24T20:20:07.915Z] [iam] checking project crm-boo-prod for permissions ["firebase.projects.get","firebasehosting.sites.update"]
+[debug] [2025-10-24T20:20:07.916Z] Checked if tokens are valid: true, expires at: 1761339433483
+[debug] [2025-10-24T20:20:07.916Z] Checked if tokens are valid: true, expires at: 1761339433483
+[debug] [2025-10-24T20:20:07.917Z] >>> [apiv2][query] POST https://cloudresourcemanager.googleapis.com/v1/projects/crm-boo-prod:testIamPermissions [none]
+[debug] [2025-10-24T20:20:07.917Z] >>> [apiv2][(partial)header] POST https://cloudresourcemanager.googleapis.com/v1/projects/crm-boo-prod:testIamPermissions x-goog-quota-user=projects/crm-boo-prod
+[debug] [2025-10-24T20:20:07.917Z] >>> [apiv2][body] POST https://cloudresourcemanager.googleapis.com/v1/projects/crm-boo-prod:testIamPermissions {"permissions":["firebase.projects.get","firebasehosting.sites.update"]}
+[debug] [2025-10-24T20:20:08.170Z] <<< [apiv2][status] POST https://cloudresourcemanager.googleapis.com/v1/projects/crm-boo-prod:testIamPermissions 200
+[debug] [2025-10-24T20:20:08.170Z] <<< [apiv2][body] POST https://cloudresourcemanager.googleapis.com/v1/projects/crm-boo-prod:testIamPermissions {"permissions":["firebase.projects.get","firebasehosting.sites.update"]}
+[debug] [2025-10-24T20:20:08.170Z] Checked if tokens are valid: true, expires at: 1761339433483
+[debug] [2025-10-24T20:20:08.171Z] Checked if tokens are valid: true, expires at: 1761339433483
+[debug] [2025-10-24T20:20:08.171Z] >>> [apiv2][query] GET https://firebase.googleapis.com/v1beta1/projects/crm-boo-prod [none]
+[debug] [2025-10-24T20:20:08.521Z] <<< [apiv2][status] GET https://firebase.googleapis.com/v1beta1/projects/crm-boo-prod 200
+[debug] [2025-10-24T20:20:08.522Z] <<< [apiv2][body] GET https://firebase.googleapis.com/v1beta1/projects/crm-boo-prod {"projectId":"crm-boo-prod","projectNumber":"48394410331","displayName":"CRM-BOO","name":"projects/crm-boo-prod","resources":{"hostingSite":"crm-boo-prod"},"state":"ACTIVE","etag":"1_5f976341-28ee-463c-a221-cd3a0556b859"}
+[info] 
+[info] === Deploying to 'crm-boo-prod'...
+[info] 
+[info] i  deploying hosting 
+[debug] [2025-10-24T20:20:08.524Z] Checked if tokens are valid: true, expires at: 1761339433483
+[debug] [2025-10-24T20:20:08.524Z] Checked if tokens are valid: true, expires at: 1761339433483
+[debug] [2025-10-24T20:20:08.524Z] >>> [apiv2][query] POST https://firebasehosting.googleapis.com/v1beta1/projects/-/sites/crm-boo-prod/versions [none]
+[debug] [2025-10-24T20:20:08.524Z] >>> [apiv2][body] POST https://firebasehosting.googleapis.com/v1beta1/projects/-/sites/crm-boo-prod/versions {"status":"CREATED","labels":{"deployment-tool":"cli-firebase"}}
+[debug] [2025-10-24T20:20:08.962Z] <<< [apiv2][status] POST https://firebasehosting.googleapis.com/v1beta1/projects/-/sites/crm-boo-prod/versions 200
+[debug] [2025-10-24T20:20:08.962Z] <<< [apiv2][body] POST https://firebasehosting.googleapis.com/v1beta1/projects/-/sites/crm-boo-prod/versions {"name":"projects/48394410331/sites/crm-boo-prod/versions/259a3021b5325fe1","status":"CREATED","config":{},"labels":{"deployment-tool":"cli-firebase"}}
+[info] i  hosting[crm-boo-prod]: beginning deploy... 
+[info] i  hosting[crm-boo-prod]: found 103 files in out 
+[debug] [2025-10-24T20:20:08.981Z] [hosting] uploading with 200 concurrency
+[debug] [2025-10-24T20:20:08.982Z] [hosting] hash cache [b3V0] not populated
+[debug] [2025-10-24T20:20:09.023Z] Checked if tokens are valid: true, expires at: 1761339433483
+[debug] [2025-10-24T20:20:09.024Z] Checked if tokens are valid: true, expires at: 1761339433483
+[debug] [2025-10-24T20:20:09.025Z] [hosting] hash cache [b3V0] stored for 103 files
+[debug] [2025-10-24T20:20:09.025Z] [hosting][hash queue][FINAL] {"max":29,"min":4,"avg":14.038834951456312,"active":0,"complete":103,"success":103,"errored":0,"retried":0,"total":103,"elapsed":43}
+[debug] [2025-10-24T20:20:09.025Z] >>> [apiv2][query] POST https://firebasehosting.googleapis.com/v1beta1/projects/48394410331/sites/crm-boo-prod/versions/259a3021b5325fe1:populateFiles [none]
+[debug] [2025-10-24T20:20:09.025Z] >>> [apiv2][body] POST https://firebasehosting.googleapis.com/v1beta1/projects/48394410331/sites/crm-boo-prod/versions/259a3021b5325fe1:populateFiles {"files":{"/window.svg":"6bd2003bd35bb32c1c0d99ab3aeac0cc1edaefd79f27df1d954bc87184048d74","/vercel.svg":"529a1a21b4a82475a82db26173c28d7b27e2dc9d4b900eaf1c5329d96eea4ddd","/globe.svg":"6502a3e6120bf2d6e8417e7c40bb57fb8a6954de9c86d3f43076a75b60cd23a2","/next.svg":"0665b9ab4493aa9d7e988b57024e28772ae543e804b8cf6b0a3633854b7c3c7f","/file.svg":"5a09df6187e21aa9a7d05094389385876ac93c818e1dcbb77a26a8fe408bf79c","/index.html":"b75fdcb167fd3c7146ba4f49c8a28cd4754b22f63b78c888d91ffe333929ece6","/404.html":"385f052a37a794e3cbe205c4aa55d9d08920065c7a566ce41932bd43db47214e","/_next/static/media/f05228a5f9ec0eae-s.p.b2529432.woff2":"aad6357df429dabd8aaeeff0b1e3b563b26b5639cb3a1bcc8a6a8a7e95255329","/_next/static/media/e2334d715941921e-s.p.d82a9aff.woff2":"bbf9d54f0278fe17c584ae99fbc265ea46f9972c2ba0e300bbef8329cd950333","/_next/static/media/c875c6f5d3e977ac-s.p.80fc2c9e.woff2":"ee9454aec968f23e95e86cfca33bc62f2a2a452d97823eec4cc5829158bd88c2","/_next/static/media/c29509b8a0bee3b9-s.c9204edf.woff2":"9c3444a26d28987ee13e1c848ea1f2ed823beba6233eac425fabdcdb3dcd51bd","/_next/static/media/a218039a3287bcfd-s.p.4a23d71b.woff2":"c5bd05024e1e2129db2746a432087f86ecee241a72d9990429e8e2a92f395391","/_next/static/media/favicon.0b3bf435.ico":"36eaaa9259cda5765c4061fa8b7bf61c74dbda3a2a721a0811c73f5dae61a2e9","/_next/static/media/8e6fa89aa22d24ec-s.p.3aec397d.woff2":"de52eb28b773356b47ace1d81c28e1932d1ec1fa302cc5455f0c7c8384b77a6c","/_next/static/media/9dc791b0865fd39f-s.88abb702.woff2":"ab2bc78a123057a5ab78819547b6989d5e4f90458a4271b90adfde8049fd2e24","/favicon.ico":"36eaaa9259cda5765c4061fa8b7bf61c74dbda3a2a721a0811c73f5dae61a2e9","/_next/static/media/798ea22d9983e047-s.b460e02c.woff2":"5232b7db292516451404f5717dbecf3e86ebbd61263585e160ce44518bdf19fa","/_next/static/media/6c55a692938ebbbc-s.0a77efb4.woff2":"7ea8aa4c12ee19cf9064b1f8d31a8093ca9b7a20c430bd26ce8fa9d28ca49791","/_next/static/media/5f9d24ebef5d5292-s.bd593fbe.woff2":"ce8f68446de64b95bdb0484f6347d2e2aaebb12aa191f5c513f553c91da79555","/_not-found/index.html":"385f052a37a794e3cbe205c4aa55d9d08920065c7a566ce41932bd43db47214e","/_next/static/media/536b4d72a397ec90-s.p.a277c2de.woff2":"1e57f94d9a7f85d37df4d02804d64070b0aa7f5389ab226ee5af5c2d49895027","/_next/static/media/261abb472e2873a9-s.1276e4bb.woff2":"24193f1b977e926675c6ddad6e2c054438b05ccc4decf9bd0e0636099fd54a4f","/_next/static/media/17603af13aa8a542-s.0f6f851b.woff2":"3fc3bec2de25131b59aa36f8224b1b864cf3facbb853bad4ae1566d694da7b37","/_next/static/media/2094fb60fd9c8287-s.3ed55436.woff2":"b7ffcedc865fa6d6fec8b492ac73cf65920bf148c05e89c3325dde65b350cf2e","/_next/static/Lhe5C8TWqmOQ1q-weyebi/_ssgManifest.js":"dc28a4dc92fe352ed5d2201bd3972ce47691bc8e89e0400a68d1541d0567c6d5","/_next/static/media/0da9c7f357bd9d4d-s.b2288445.woff2":"1bb6cff1da82f3a9b4f588c872083e412dc9756ff00e5c7a25a6ef9d5ac0d2ee","/_next/static/media/207e57240b1809b2-s.4dd71181.woff2":"4f90889cc410522b40c0297bb5e4a96defee4bedfc2ca3f38cb51cb8e12924c5","/_next/static/Lhe5C8TWqmOQ1q-weyebi/_buildManifest.js":"dcbe1c9b9159ca21caea98e1bad364012ae284e9551375ca62b83d2811efac91","/_next/static/media/00231884809ac59e-s.467e14c2.woff2":"51be8700773a94d0039efe5a2b4928f3ec293ca94feaf58dccb23b1a79d128f3","/_next/static/media/47fe1b7cd6e6ed85-s.p.855a563b.woff2":"a59c0152a6ad63dbbd6d072df71a1928613ca4f1e0c57824b06cfbaaab15ec7d","/_next/static/chunks/fca98335bf1f4111.js":"0ab29bcba472455c38568ff542c5b6a8a14ad5d5aa6c0b8aa81af547a23acaa5","/_next/static/chunks/ff1a16fafef87110.js":"1c5ce9de9f2087594a99c79ed2344979288c2efaeb57adf3aecb7d6c8dfa5bcf","/_next/static/Lhe5C8TWqmOQ1q-weyebi/_clientMiddlewareManifest.json":"61663fde99b3394d71653f41c19fe91269442622a4a6695f8352a70fbf5ca4c1","/_next/static/chunks/dceab6b03b3c3b03.js":"95b88e39d98b791872183e56e1583d06e886a78213ec51545d9e3e3f7d6ebd70","/_next/static/chunks/ec32c7ec7ac18400.js":"7afa390b859438caed42f34f699ab499faf9b924256da4110fbdb99d40617ba7","/_next/static/chunks/fbcd5a4832b20178.js":"d46c65f86ef93b9287e1193c8e447164ce00e6df523f6fe2881863fa8d7161c2","/_next/static/chunks/f4774f23c9a47f51.js":"c6016a408989b1c4feaa3aa0431445db04b58b2a22d63833808810c73542edd4","/_next/static/chunks/be49febe87ff2784.js":"272868eefe0af66d81feec6af6c0708dc583ee7b37fa3bcdfcee164f6d432660","/_next/static/chunks/bb507f846ca3ec8e.js":"ec67a8c3ec18a3e266a5f6aec9623925b9d2e296cbceb33cb8c8680f5f579950","/_next/static/chunks/da46ae0487a42197.js":"450155f6fd2cf85d04a52ce632662ac6413ad1fadb214426d6fb9f8643838632","/_next/static/chunks/turbopack-51f2c47a09cd738f.js":"ecd210fa130491b720b3964515480873f4f967ccdb927422a575350c3311d5ff","/_next/static/chunks/c90c69dd043bdacf.js":"6319021081eea22e7b797d817639c9ce49ce6ea9a61634b2389514277a1fc2fa","/_next/static/chunks/b85351cab797d2c1.css":"ebfaf078f19b87bd292a93fd93e0c917d2f7a1296733ba3daadd9da194728856","/_next/static/media/b53057dbf91a7acf-s.c55744ae.woff2":"18ee0d92e52a5b2014a47b9474dde5cab064b2e257cf817139126426aebd7713","/_next/static/media/bdc7e24a509eb931-s.43b0b13e.woff2":"7a5cb883e026e70eadf536ff2a4053303f2d104108ef9109d95d96792c9acec0","/_next/static/media/7e832ad540183e91-s.a2f18b1a.woff2":"cc8cbeacc17b8d1c0cf8f83af10889fc738913bc742f9420b09c0dd7234f9a30","/_next/static/media/41e95f694c5c4549-s.666bad7d.woff2":"e45679dfff636f4a386fab877f76e27139b3e60c3d1e11d31e527016c4157409","/_next/static/media/0a7740363b4d4863-s.95e4158a.woff2":"c3a0c0179ad6dff7ee771b0e1bbbee12175c086ea7e0000e6bd5ff47e09af4b2","/_next/static/chunks/f9b56140889fae42.js":"7d09d50b89e356d4f668c6ad7edf0ea47cddba3d09e63745ccc037e4bd06367a","/_next/static/chunks/a23d87bb92b13490.js":"21c3f2c961b1b603389fc6373e090c1f0f7f678c786423e141124e7a099ce414","/_next/static/chunks/8142a6a7545b5316.js":"7f9c12aaa40f3d29bd4bca284003be0ea0aaee433d8b7cd853292966ed333196","/_next/static/chunks/7f0d9b90d5d08d8c.js":"a5c37c09f3c23ba8a1239ca014247a76d927db3847150ccc11b156872495288f","/_next/static/chunks/5d990b09ac588ff5.js":"20e44a436ca8aba19def5d039dceaeec80c007695018a276a0636f090293ba40","/_next/static/chunks/6cc3282ac626e6c5.js":"4ce1bbcd911e28b0aa713906cf5277df6874d5f4c5f6a384a720e1d8eb10332a","/_next/static/chunks/53a5f65db3520cba.js":"85fe8879fc8632a2d2c2974b7519146f59d7094cdcc88884bd107a7e6405f07e","/_next/static/chunks/4f5e7f54bbdf3f6d.js":"a9e2a871eb3afd68af9e70854cd5e04361795a9e84605bc5a06c762507114cd5","/_next/static/chunks/445a06d227f4c026.js":"3079366d1d7ad06a766ac41f89c368a2999678e2f53319769894818fc6349c71","/_next/static/chunks/461eced9b2a95a69.js":"18ab4bcf6ce15aba5d63de7d5aa972affb9ef5d0e00c3b82aafceaee3d84dd31","/_next/static/chunks/3523653c3c2f0e1a.js":"af303bc2601fd66c07154fdab087f56f0f442daa8e053ed99d74a459a4b006bb","/_next/static/chunks/350fa41436762246.js":"dffa43fb3b9748803ec5f4ac62c4ee245018738887030fa4fc56264d37a75be4","/_next/static/chunks/2d8d4b45065f291b.js":"f23d5258d3c1e079fa3b72714727c3b4946c07863266796743530212cd25ee74","/_next/static/chunks/1ffffb719918d0a8.js":"ef5e192b33f0196119c8eca61c4a19d68803968b812672046c3c5786f37f84d7","/_next/static/chunks/3f07dbb9745b0599.js":"37cc06d22955699fe4afc7a805877ca6c2ad8c750adbf42da733e24c57568d23","/_next/static/chunks/1b82b4ccc40d6f2f.js":"d8a2ab31357ddf488b6b3e1aecdb9f002d10c7ef51b507abb423c930d9e73a3d","/_next/static/chunks/1a113e58fd21d74d.js":"10b1d161368cd949839ce9c74d3779afb94245adf8bb6c2360d5cc4a21c04c07","/_next/static/chunks/247eb132b7f7b574.js":"9921c934244f7dc73e4a67ae57f0e6ad054227c2f4b49c7c96f9d3673b64f86d","/_next/static/chunks/1fdae31e7ac1959d.js":"21de13cbfb1dc6600cd674789de40eb662dec957400efa25ac8c3ebb91cb98b6","/_next/static/chunks/112f346e31f991df.js":"7c76c51e879c5093caf610f88253873a25a2b743ec20f0cd1fe298fa8c711232","/_next/static/chunks/10242c7426d1e2cf.js":"85bbca272e78bf026063ba21b36ff9de4e48beaf0a8b7d2e408ff61a5120ba9d","/_next/static/chunks/0f59dd56586290a1.js":"eba990662cb123ce67b9cc2c8587ec00ab3f3aad062f8118ef921811e96eedec","/_next/static/chunks/0d563d1b247b5fa6.js":"7af56d8f6ab2f1678b81f381f8751a0f12d2561999678225049e70e7ccd769d0","/_next/static/chunks/106456973ec9d3e2.js":"0d8ba19620d2394f1aa23a7fc9a25879179a073c45fb17f27ad065d8ab4af9cc","/test-providers/index.html":"a7a776bedf2af476edb363790281bea43205514aa26c400a70def6b7fabec9ad","/settings/index.html":"4b8dc7e73cc4eab1d2a41c45a5710c04e4f880eaaf23c6cfa11664b2b600664f","/proposals/new/index.html":"4b379ec7f93ebd908442cd40433194503eb39fb43e4ddc21d82219bf4b487414","/proposals/index.html":"ed9e43b3e783573f318c9d22d50680cddd6ee41f8cff2e0d78ba84e86686b5fb","/_next/static/chunks/0c0740356692cf00.js":"7fff6812359ed996af7e5430f7e3358ea2a202ac2f1f2ab9c64b9ed8f2fa08ed","/proposals/edit/index.html":"47ea94b9afb8bd4419f402c38f88d69d7df21eec656b7ff37b91fdc6f55623d9","/proposals/detail/index.html":"d8d67802aaf0a23bf5df9c3d27a6727bae02e8464eafaae17041345b10b63fbf","/products/index.html":"91a4228962bc5328260cb45deffbe12e47f5629e8b73dd348be1768e94506d7e","/invoices/new/index.html":"2d0e87ac549cb124de5836c9309a5750e0bd888c8870a1b22b424da2267c6aed","/invoices/detail/index.html":"c4b953af1a794e6d151f1599d87c3567b3379ef79cbfac6493c0496e93ab31bc","/invoices/index.html":"51d017089752c0e90811e8dce69e65e0440a243a3f93072cef01a45a0f842ec8","/forecast/index.html":"871d91f9c55e0344ef32953e9f15f3204e84e083eba151e2f9c8e8416ba2e35b","/deals/index.html":"bc590a11a07e66fdeaafb4b0b3d119aa538fe7b1595ba48ffd3817647bd8ac54","/deals/new/index.html":"647568a28e0bb416c00815d5346563585bb24917d430c782a06097dda9ab241a","/deals/edit/index.html":"07455ebe22b5b53950dbfc99d01dd3b4fd7741e4ddac80b250748033f1e99651","/deals/detail/index.html":"6d212002688705dc880a990680055c0c4d9733c2644d131373956f8d700c72c9","/dashboard/index.html":"681fe9a2f0b920a6c0bd52ab3cd7271f0bbfbfc13f9749cff818c0cbed6f9c96","/customers/index.html":"46e396062b9cf94ecf40c3d2a78f2907e766578bcdd3010940f2557d152e3898","/customers/detail/index.html":"871be2dc8211120dc4a94e194a6e4d6e07b9027f11a019fa0d3c2b3b58a2595f","/contacts/index.html":"3f94adfbd79d8fd9dfb8e7b025d1fe41312c4df0940eeecb0425b8b5f8a674fe","/contacts/detail/index.html":"c0e16177e859fc407893752094dc1ec8800576f7c022d3a9970f34fb62275ad3","/contact-selector-demo/index.html":"210e999bdeb397fbdbbf794239b57d44efbdbd5c333482dd274823b8e7851c52","/contact-deal-service-demo/index.html":"6f9e40af78342bb71a26f4e0b4a6b06fa6e333c09ee1029361357172612ba0df","/_next/static/chunks/a6dad97d9634a72d.js":"18e28d3214eda45048d80d3925ea7627b809e69ad2e95f7f98459e9146a61c3d","/auth/signup/index.html":"5e987760eed9c1f50a7ab542fff5204a179f761030ba2bad9b3240796d0a994f","/auth/signin/index.html":"ecf56f5fb3d34638ec67b2c1a3d2b36b64373e01acad83ff246a59c9b4f0a9e0","/activities/index.html":"84a7adb001c0dbfb9adc32a874a5176b5c04a363146d32f7b905f0be637a2f31","/404/index.html":"385f052a37a794e3cbe205c4aa55d9d08920065c7a566ce41932bd43db47214e","/_next/static/chunks/b211b93605ad1ac0.js":"c27e035534d5852b5053a59afcb38ae51cf6f1f6e0ba7f26819bb3be2a5526d2","/_next/static/chunks/58e77fc17acbf1e7.js":"44ef09416565214b484fb34f24961911e5e5728bd55cd9acc0c386cd2705a29a","/_next/static/chunks/5b561b72d193831a.js":"aa6742f0f9a78ed498147bdc9943c8b6c649418268cade49586c171c24a4dc0f"}}
+[debug] [2025-10-24T20:20:09.210Z] <<< [apiv2][status] POST https://firebasehosting.googleapis.com/v1beta1/projects/48394410331/sites/crm-boo-prod/versions/259a3021b5325fe1:populateFiles 200
+[debug] [2025-10-24T20:20:09.210Z] <<< [apiv2][body] POST https://firebasehosting.googleapis.com/v1beta1/projects/48394410331/sites/crm-boo-prod/versions/259a3021b5325fe1:populateFiles {"uploadRequiredHashes":["871be2dc8211120dc4a94e194a6e4d6e07b9027f11a019fa0d3c2b3b58a2595f","210e999bdeb397fbdbbf794239b57d44efbdbd5c333482dd274823b8e7851c52","871d91f9c55e0344ef32953e9f15f3204e84e083eba151e2f9c8e8416ba2e35b","91a4228962bc5328260cb45deffbe12e47f5629e8b73dd348be1768e94506d7e","d8d67802aaf0a23bf5df9c3d27a6727bae02e8464eafaae17041345b10b63fbf","a7a776bedf2af476edb363790281bea43205514aa26c400a70def6b7fabec9ad","ebfaf078f19b87bd292a93fd93e0c917d2f7a1296733ba3daadd9da194728856","07455ebe22b5b53950dbfc99d01dd3b4fd7741e4ddac80b250748033f1e99651","6d212002688705dc880a990680055c0c4d9733c2644d131373956f8d700c72c9","c0e16177e859fc407893752094dc1ec8800576f7c022d3a9970f34fb62275ad3","47ea94b9afb8bd4419f402c38f88d69d7df21eec656b7ff37b91fdc6f55623d9","46e396062b9cf94ecf40c3d2a78f2907e766578bcdd3010940f2557d152e3898","681fe9a2f0b920a6c0bd52ab3cd7271f0bbfbfc13f9749cff818c0cbed6f9c96","ed9e43b3e783573f318c9d22d50680cddd6ee41f8cff2e0d78ba84e86686b5fb","b75fdcb167fd3c7146ba4f49c8a28cd4754b22f63b78c888d91ffe333929ece6","bc590a11a07e66fdeaafb4b0b3d119aa538fe7b1595ba48ffd3817647bd8ac54","2d0e87ac549cb124de5836c9309a5750e0bd888c8870a1b22b424da2267c6aed","5e987760eed9c1f50a7ab542fff5204a179f761030ba2bad9b3240796d0a994f","ecf56f5fb3d34638ec67b2c1a3d2b36b64373e01acad83ff246a59c9b4f0a9e0","385f052a37a794e3cbe205c4aa55d9d08920065c7a566ce41932bd43db47214e","4b8dc7e73cc4eab1d2a41c45a5710c04e4f880eaaf23c6cfa11664b2b600664f","51d017089752c0e90811e8dce69e65e0440a243a3f93072cef01a45a0f842ec8","3f94adfbd79d8fd9dfb8e7b025d1fe41312c4df0940eeecb0425b8b5f8a674fe","6f9e40af78342bb71a26f4e0b4a6b06fa6e333c09ee1029361357172612ba0df","ef5e192b33f0196119c8eca61c4a19d68803968b812672046c3c5786f37f84d7","4b379ec7f93ebd908442cd40433194503eb39fb43e4ddc21d82219bf4b487414","84a7adb001c0dbfb9adc32a874a5176b5c04a363146d32f7b905f0be637a2f31","c4b953af1a794e6d151f1599d87c3567b3379ef79cbfac6493c0496e93ab31bc","647568a28e0bb416c00815d5346563585bb24917d430c782a06097dda9ab241a"],"uploadUrl":"https://upload-firebasehosting.googleapis.com/upload/sites/crm-boo-prod/versions/259a3021b5325fe1/files"}
+[debug] [2025-10-24T20:20:09.211Z] Checked if tokens are valid: true, expires at: 1761339433483
+[debug] [2025-10-24T20:20:09.211Z] Checked if tokens are valid: true, expires at: 1761339433483
+[debug] [2025-10-24T20:20:09.211Z] Checked if tokens are valid: true, expires at: 1761339433483
+[debug] [2025-10-24T20:20:09.211Z] Checked if tokens are valid: true, expires at: 1761339433483
+[debug] [2025-10-24T20:20:09.211Z] Checked if tokens are valid: true, expires at: 1761339433483
+[debug] [2025-10-24T20:20:09.211Z] Checked if tokens are valid: true, expires at: 1761339433483
+[debug] [2025-10-24T20:20:09.211Z] Checked if tokens are valid: true, expires at: 1761339433483
+[debug] [2025-10-24T20:20:09.211Z] Checked if tokens are valid: true, expires at: 1761339433483
+[debug] [2025-10-24T20:20:09.212Z] Checked if tokens are valid: true, expires at: 1761339433483
+[debug] [2025-10-24T20:20:09.212Z] Checked if tokens are valid: true, expires at: 1761339433483
+[debug] [2025-10-24T20:20:09.212Z] Checked if tokens are valid: true, expires at: 1761339433483
+[debug] [2025-10-24T20:20:09.212Z] Checked if tokens are valid: true, expires at: 1761339433483
+[debug] [2025-10-24T20:20:09.212Z] Checked if tokens are valid: true, expires at: 1761339433483
+[debug] [2025-10-24T20:20:09.212Z] Checked if tokens are valid: true, expires at: 1761339433483
+[debug] [2025-10-24T20:20:09.212Z] Checked if tokens are valid: true, expires at: 1761339433483
+[debug] [2025-10-24T20:20:09.212Z] Checked if tokens are valid: true, expires at: 1761339433483
+[debug] [2025-10-24T20:20:09.212Z] Checked if tokens are valid: true, expires at: 1761339433483
+[debug] [2025-10-24T20:20:09.212Z] Checked if tokens are valid: true, expires at: 1761339433483
+[debug] [2025-10-24T20:20:09.213Z] Checked if tokens are valid: true, expires at: 1761339433483
+[debug] [2025-10-24T20:20:09.213Z] Checked if tokens are valid: true, expires at: 1761339433483
+[debug] [2025-10-24T20:20:09.213Z] Checked if tokens are valid: true, expires at: 1761339433483
+[debug] [2025-10-24T20:20:09.213Z] Checked if tokens are valid: true, expires at: 1761339433483
+[debug] [2025-10-24T20:20:09.213Z] Checked if tokens are valid: true, expires at: 1761339433483
+[debug] [2025-10-24T20:20:09.213Z] Checked if tokens are valid: true, expires at: 1761339433483
+[debug] [2025-10-24T20:20:09.214Z] Checked if tokens are valid: true, expires at: 1761339433483
+[debug] [2025-10-24T20:20:09.214Z] Checked if tokens are valid: true, expires at: 1761339433483
+[debug] [2025-10-24T20:20:09.214Z] Checked if tokens are valid: true, expires at: 1761339433483
+[debug] [2025-10-24T20:20:09.214Z] Checked if tokens are valid: true, expires at: 1761339433483
+[debug] [2025-10-24T20:20:09.214Z] Checked if tokens are valid: true, expires at: 1761339433483
+[debug] [2025-10-24T20:20:09.214Z] Checked if tokens are valid: true, expires at: 1761339433483
+[debug] [2025-10-24T20:20:09.214Z] Checked if tokens are valid: true, expires at: 1761339433483
+[debug] [2025-10-24T20:20:09.215Z] Checked if tokens are valid: true, expires at: 1761339433483
+[debug] [2025-10-24T20:20:09.215Z] Checked if tokens are valid: true, expires at: 1761339433483
+[debug] [2025-10-24T20:20:09.215Z] Checked if tokens are valid: true, expires at: 1761339433483
+[debug] [2025-10-24T20:20:09.215Z] Checked if tokens are valid: true, expires at: 1761339433483
+[debug] [2025-10-24T20:20:09.215Z] Checked if tokens are valid: true, expires at: 1761339433483
+[debug] [2025-10-24T20:20:09.215Z] Checked if tokens are valid: true, expires at: 1761339433483
+[debug] [2025-10-24T20:20:09.215Z] Checked if tokens are valid: true, expires at: 1761339433483
+[debug] [2025-10-24T20:20:09.215Z] Checked if tokens are valid: true, expires at: 1761339433483
+[debug] [2025-10-24T20:20:09.215Z] Checked if tokens are valid: true, expires at: 1761339433483
+[debug] [2025-10-24T20:20:09.216Z] Checked if tokens are valid: true, expires at: 1761339433483
+[debug] [2025-10-24T20:20:09.216Z] Checked if tokens are valid: true, expires at: 1761339433483
+[debug] [2025-10-24T20:20:09.216Z] Checked if tokens are valid: true, expires at: 1761339433483
+[debug] [2025-10-24T20:20:09.216Z] Checked if tokens are valid: true, expires at: 1761339433483
+[debug] [2025-10-24T20:20:09.216Z] Checked if tokens are valid: true, expires at: 1761339433483
+[debug] [2025-10-24T20:20:09.216Z] Checked if tokens are valid: true, expires at: 1761339433483
+[debug] [2025-10-24T20:20:09.216Z] Checked if tokens are valid: true, expires at: 1761339433483
+[debug] [2025-10-24T20:20:09.217Z] Checked if tokens are valid: true, expires at: 1761339433483
+[debug] [2025-10-24T20:20:09.217Z] Checked if tokens are valid: true, expires at: 1761339433483
+[debug] [2025-10-24T20:20:09.217Z] Checked if tokens are valid: true, expires at: 1761339433483
+[debug] [2025-10-24T20:20:09.217Z] Checked if tokens are valid: true, expires at: 1761339433483
+[debug] [2025-10-24T20:20:09.217Z] Checked if tokens are valid: true, expires at: 1761339433483
+[debug] [2025-10-24T20:20:09.217Z] Checked if tokens are valid: true, expires at: 1761339433483
+[debug] [2025-10-24T20:20:09.217Z] Checked if tokens are valid: true, expires at: 1761339433483
+[debug] [2025-10-24T20:20:09.218Z] Checked if tokens are valid: true, expires at: 1761339433483
+[debug] [2025-10-24T20:20:09.218Z] Checked if tokens are valid: true, expires at: 1761339433483
+[debug] [2025-10-24T20:20:09.218Z] Checked if tokens are valid: true, expires at: 1761339433483
+[debug] [2025-10-24T20:20:09.218Z] Checked if tokens are valid: true, expires at: 1761339433483
+[debug] [2025-10-24T20:20:09.218Z] >>> [apiv2][query] POST https://upload-firebasehosting.googleapis.com/upload/sites/crm-boo-prod/versions/259a3021b5325fe1/files/871be2dc8211120dc4a94e194a6e4d6e07b9027f11a019fa0d3c2b3b58a2595f [none]
+[debug] [2025-10-24T20:20:09.218Z] >>> [apiv2][body] POST https://upload-firebasehosting.googleapis.com/upload/sites/crm-boo-prod/versions/259a3021b5325fe1/files/871be2dc8211120dc4a94e194a6e4d6e07b9027f11a019fa0d3c2b3b58a2595f [stream]
+[debug] [2025-10-24T20:20:09.219Z] >>> [apiv2][query] POST https://upload-firebasehosting.googleapis.com/upload/sites/crm-boo-prod/versions/259a3021b5325fe1/files/210e999bdeb397fbdbbf794239b57d44efbdbd5c333482dd274823b8e7851c52 [none]
+[debug] [2025-10-24T20:20:09.219Z] >>> [apiv2][body] POST https://upload-firebasehosting.googleapis.com/upload/sites/crm-boo-prod/versions/259a3021b5325fe1/files/210e999bdeb397fbdbbf794239b57d44efbdbd5c333482dd274823b8e7851c52 [stream]
+[debug] [2025-10-24T20:20:09.220Z] >>> [apiv2][query] POST https://upload-firebasehosting.googleapis.com/upload/sites/crm-boo-prod/versions/259a3021b5325fe1/files/871d91f9c55e0344ef32953e9f15f3204e84e083eba151e2f9c8e8416ba2e35b [none]
+[debug] [2025-10-24T20:20:09.220Z] >>> [apiv2][body] POST https://upload-firebasehosting.googleapis.com/upload/sites/crm-boo-prod/versions/259a3021b5325fe1/files/871d91f9c55e0344ef32953e9f15f3204e84e083eba151e2f9c8e8416ba2e35b [stream]
+[debug] [2025-10-24T20:20:09.221Z] >>> [apiv2][query] POST https://upload-firebasehosting.googleapis.com/upload/sites/crm-boo-prod/versions/259a3021b5325fe1/files/91a4228962bc5328260cb45deffbe12e47f5629e8b73dd348be1768e94506d7e [none]
+[debug] [2025-10-24T20:20:09.221Z] >>> [apiv2][body] POST https://upload-firebasehosting.googleapis.com/upload/sites/crm-boo-prod/versions/259a3021b5325fe1/files/91a4228962bc5328260cb45deffbe12e47f5629e8b73dd348be1768e94506d7e [stream]
+[debug] [2025-10-24T20:20:09.222Z] >>> [apiv2][query] POST https://upload-firebasehosting.googleapis.com/upload/sites/crm-boo-prod/versions/259a3021b5325fe1/files/d8d67802aaf0a23bf5df9c3d27a6727bae02e8464eafaae17041345b10b63fbf [none]
+[debug] [2025-10-24T20:20:09.222Z] >>> [apiv2][body] POST https://upload-firebasehosting.googleapis.com/upload/sites/crm-boo-prod/versions/259a3021b5325fe1/files/d8d67802aaf0a23bf5df9c3d27a6727bae02e8464eafaae17041345b10b63fbf [stream]
+[debug] [2025-10-24T20:20:09.222Z] >>> [apiv2][query] POST https://upload-firebasehosting.googleapis.com/upload/sites/crm-boo-prod/versions/259a3021b5325fe1/files/a7a776bedf2af476edb363790281bea43205514aa26c400a70def6b7fabec9ad [none]
+[debug] [2025-10-24T20:20:09.222Z] >>> [apiv2][body] POST https://upload-firebasehosting.googleapis.com/upload/sites/crm-boo-prod/versions/259a3021b5325fe1/files/a7a776bedf2af476edb363790281bea43205514aa26c400a70def6b7fabec9ad [stream]
+[debug] [2025-10-24T20:20:09.223Z] >>> [apiv2][query] POST https://upload-firebasehosting.googleapis.com/upload/sites/crm-boo-prod/versions/259a3021b5325fe1/files/ebfaf078f19b87bd292a93fd93e0c917d2f7a1296733ba3daadd9da194728856 [none]
+[debug] [2025-10-24T20:20:09.223Z] >>> [apiv2][body] POST https://upload-firebasehosting.googleapis.com/upload/sites/crm-boo-prod/versions/259a3021b5325fe1/files/ebfaf078f19b87bd292a93fd93e0c917d2f7a1296733ba3daadd9da194728856 [stream]
+[debug] [2025-10-24T20:20:09.224Z] >>> [apiv2][query] POST https://upload-firebasehosting.googleapis.com/upload/sites/crm-boo-prod/versions/259a3021b5325fe1/files/07455ebe22b5b53950dbfc99d01dd3b4fd7741e4ddac80b250748033f1e99651 [none]
+[debug] [2025-10-24T20:20:09.224Z] >>> [apiv2][body] POST https://upload-firebasehosting.googleapis.com/upload/sites/crm-boo-prod/versions/259a3021b5325fe1/files/07455ebe22b5b53950dbfc99d01dd3b4fd7741e4ddac80b250748033f1e99651 [stream]
+[debug] [2025-10-24T20:20:09.225Z] >>> [apiv2][query] POST https://upload-firebasehosting.googleapis.com/upload/sites/crm-boo-prod/versions/259a3021b5325fe1/files/6d212002688705dc880a990680055c0c4d9733c2644d131373956f8d700c72c9 [none]
+[debug] [2025-10-24T20:20:09.225Z] >>> [apiv2][body] POST https://upload-firebasehosting.googleapis.com/upload/sites/crm-boo-prod/versions/259a3021b5325fe1/files/6d212002688705dc880a990680055c0c4d9733c2644d131373956f8d700c72c9 [stream]
+[debug] [2025-10-24T20:20:09.226Z] >>> [apiv2][query] POST https://upload-firebasehosting.googleapis.com/upload/sites/crm-boo-prod/versions/259a3021b5325fe1/files/c0e16177e859fc407893752094dc1ec8800576f7c022d3a9970f34fb62275ad3 [none]
+[debug] [2025-10-24T20:20:09.226Z] >>> [apiv2][body] POST https://upload-firebasehosting.googleapis.com/upload/sites/crm-boo-prod/versions/259a3021b5325fe1/files/c0e16177e859fc407893752094dc1ec8800576f7c022d3a9970f34fb62275ad3 [stream]
+[debug] [2025-10-24T20:20:09.226Z] >>> [apiv2][query] POST https://upload-firebasehosting.googleapis.com/upload/sites/crm-boo-prod/versions/259a3021b5325fe1/files/47ea94b9afb8bd4419f402c38f88d69d7df21eec656b7ff37b91fdc6f55623d9 [none]
+[debug] [2025-10-24T20:20:09.227Z] >>> [apiv2][body] POST https://upload-firebasehosting.googleapis.com/upload/sites/crm-boo-prod/versions/259a3021b5325fe1/files/47ea94b9afb8bd4419f402c38f88d69d7df21eec656b7ff37b91fdc6f55623d9 [stream]
+[debug] [2025-10-24T20:20:09.227Z] >>> [apiv2][query] POST https://upload-firebasehosting.googleapis.com/upload/sites/crm-boo-prod/versions/259a3021b5325fe1/files/46e396062b9cf94ecf40c3d2a78f2907e766578bcdd3010940f2557d152e3898 [none]
+[debug] [2025-10-24T20:20:09.227Z] >>> [apiv2][body] POST https://upload-firebasehosting.googleapis.com/upload/sites/crm-boo-prod/versions/259a3021b5325fe1/files/46e396062b9cf94ecf40c3d2a78f2907e766578bcdd3010940f2557d152e3898 [stream]
+[debug] [2025-10-24T20:20:09.228Z] >>> [apiv2][query] POST https://upload-firebasehosting.googleapis.com/upload/sites/crm-boo-prod/versions/259a3021b5325fe1/files/681fe9a2f0b920a6c0bd52ab3cd7271f0bbfbfc13f9749cff818c0cbed6f9c96 [none]
+[debug] [2025-10-24T20:20:09.228Z] >>> [apiv2][body] POST https://upload-firebasehosting.googleapis.com/upload/sites/crm-boo-prod/versions/259a3021b5325fe1/files/681fe9a2f0b920a6c0bd52ab3cd7271f0bbfbfc13f9749cff818c0cbed6f9c96 [stream]
+[debug] [2025-10-24T20:20:09.229Z] >>> [apiv2][query] POST https://upload-firebasehosting.googleapis.com/upload/sites/crm-boo-prod/versions/259a3021b5325fe1/files/ed9e43b3e783573f318c9d22d50680cddd6ee41f8cff2e0d78ba84e86686b5fb [none]
+[debug] [2025-10-24T20:20:09.229Z] >>> [apiv2][body] POST https://upload-firebasehosting.googleapis.com/upload/sites/crm-boo-prod/versions/259a3021b5325fe1/files/ed9e43b3e783573f318c9d22d50680cddd6ee41f8cff2e0d78ba84e86686b5fb [stream]
+[debug] [2025-10-24T20:20:09.229Z] >>> [apiv2][query] POST https://upload-firebasehosting.googleapis.com/upload/sites/crm-boo-prod/versions/259a3021b5325fe1/files/b75fdcb167fd3c7146ba4f49c8a28cd4754b22f63b78c888d91ffe333929ece6 [none]
+[debug] [2025-10-24T20:20:09.230Z] >>> [apiv2][body] POST https://upload-firebasehosting.googleapis.com/upload/sites/crm-boo-prod/versions/259a3021b5325fe1/files/b75fdcb167fd3c7146ba4f49c8a28cd4754b22f63b78c888d91ffe333929ece6 [stream]
+[debug] [2025-10-24T20:20:09.230Z] >>> [apiv2][query] POST https://upload-firebasehosting.googleapis.com/upload/sites/crm-boo-prod/versions/259a3021b5325fe1/files/bc590a11a07e66fdeaafb4b0b3d119aa538fe7b1595ba48ffd3817647bd8ac54 [none]
+[debug] [2025-10-24T20:20:09.230Z] >>> [apiv2][body] POST https://upload-firebasehosting.googleapis.com/upload/sites/crm-boo-prod/versions/259a3021b5325fe1/files/bc590a11a07e66fdeaafb4b0b3d119aa538fe7b1595ba48ffd3817647bd8ac54 [stream]
+[debug] [2025-10-24T20:20:09.231Z] >>> [apiv2][query] POST https://upload-firebasehosting.googleapis.com/upload/sites/crm-boo-prod/versions/259a3021b5325fe1/files/2d0e87ac549cb124de5836c9309a5750e0bd888c8870a1b22b424da2267c6aed [none]
+[debug] [2025-10-24T20:20:09.231Z] >>> [apiv2][body] POST https://upload-firebasehosting.googleapis.com/upload/sites/crm-boo-prod/versions/259a3021b5325fe1/files/2d0e87ac549cb124de5836c9309a5750e0bd888c8870a1b22b424da2267c6aed [stream]
+[debug] [2025-10-24T20:20:09.232Z] >>> [apiv2][query] POST https://upload-firebasehosting.googleapis.com/upload/sites/crm-boo-prod/versions/259a3021b5325fe1/files/5e987760eed9c1f50a7ab542fff5204a179f761030ba2bad9b3240796d0a994f [none]
+[debug] [2025-10-24T20:20:09.232Z] >>> [apiv2][body] POST https://upload-firebasehosting.googleapis.com/upload/sites/crm-boo-prod/versions/259a3021b5325fe1/files/5e987760eed9c1f50a7ab542fff5204a179f761030ba2bad9b3240796d0a994f [stream]
+[debug] [2025-10-24T20:20:09.232Z] >>> [apiv2][query] POST https://upload-firebasehosting.googleapis.com/upload/sites/crm-boo-prod/versions/259a3021b5325fe1/files/ecf56f5fb3d34638ec67b2c1a3d2b36b64373e01acad83ff246a59c9b4f0a9e0 [none]
+[debug] [2025-10-24T20:20:09.233Z] >>> [apiv2][body] POST https://upload-firebasehosting.googleapis.com/upload/sites/crm-boo-prod/versions/259a3021b5325fe1/files/ecf56f5fb3d34638ec67b2c1a3d2b36b64373e01acad83ff246a59c9b4f0a9e0 [stream]
+[debug] [2025-10-24T20:20:09.233Z] >>> [apiv2][query] POST https://upload-firebasehosting.googleapis.com/upload/sites/crm-boo-prod/versions/259a3021b5325fe1/files/385f052a37a794e3cbe205c4aa55d9d08920065c7a566ce41932bd43db47214e [none]
+[debug] [2025-10-24T20:20:09.233Z] >>> [apiv2][body] POST https://upload-firebasehosting.googleapis.com/upload/sites/crm-boo-prod/versions/259a3021b5325fe1/files/385f052a37a794e3cbe205c4aa55d9d08920065c7a566ce41932bd43db47214e [stream]
+[debug] [2025-10-24T20:20:09.234Z] >>> [apiv2][query] POST https://upload-firebasehosting.googleapis.com/upload/sites/crm-boo-prod/versions/259a3021b5325fe1/files/4b8dc7e73cc4eab1d2a41c45a5710c04e4f880eaaf23c6cfa11664b2b600664f [none]
+[debug] [2025-10-24T20:20:09.234Z] >>> [apiv2][body] POST https://upload-firebasehosting.googleapis.com/upload/sites/crm-boo-prod/versions/259a3021b5325fe1/files/4b8dc7e73cc4eab1d2a41c45a5710c04e4f880eaaf23c6cfa11664b2b600664f [stream]
+[debug] [2025-10-24T20:20:09.234Z] >>> [apiv2][query] POST https://upload-firebasehosting.googleapis.com/upload/sites/crm-boo-prod/versions/259a3021b5325fe1/files/51d017089752c0e90811e8dce69e65e0440a243a3f93072cef01a45a0f842ec8 [none]
+[debug] [2025-10-24T20:20:09.234Z] >>> [apiv2][body] POST https://upload-firebasehosting.googleapis.com/upload/sites/crm-boo-prod/versions/259a3021b5325fe1/files/51d017089752c0e90811e8dce69e65e0440a243a3f93072cef01a45a0f842ec8 [stream]
+[debug] [2025-10-24T20:20:09.235Z] >>> [apiv2][query] POST https://upload-firebasehosting.googleapis.com/upload/sites/crm-boo-prod/versions/259a3021b5325fe1/files/3f94adfbd79d8fd9dfb8e7b025d1fe41312c4df0940eeecb0425b8b5f8a674fe [none]
+[debug] [2025-10-24T20:20:09.235Z] >>> [apiv2][body] POST https://upload-firebasehosting.googleapis.com/upload/sites/crm-boo-prod/versions/259a3021b5325fe1/files/3f94adfbd79d8fd9dfb8e7b025d1fe41312c4df0940eeecb0425b8b5f8a674fe [stream]
+[debug] [2025-10-24T20:20:09.235Z] >>> [apiv2][query] POST https://upload-firebasehosting.googleapis.com/upload/sites/crm-boo-prod/versions/259a3021b5325fe1/files/6f9e40af78342bb71a26f4e0b4a6b06fa6e333c09ee1029361357172612ba0df [none]
+[debug] [2025-10-24T20:20:09.235Z] >>> [apiv2][body] POST https://upload-firebasehosting.googleapis.com/upload/sites/crm-boo-prod/versions/259a3021b5325fe1/files/6f9e40af78342bb71a26f4e0b4a6b06fa6e333c09ee1029361357172612ba0df [stream]
+[debug] [2025-10-24T20:20:09.236Z] >>> [apiv2][query] POST https://upload-firebasehosting.googleapis.com/upload/sites/crm-boo-prod/versions/259a3021b5325fe1/files/ef5e192b33f0196119c8eca61c4a19d68803968b812672046c3c5786f37f84d7 [none]
+[debug] [2025-10-24T20:20:09.236Z] >>> [apiv2][body] POST https://upload-firebasehosting.googleapis.com/upload/sites/crm-boo-prod/versions/259a3021b5325fe1/files/ef5e192b33f0196119c8eca61c4a19d68803968b812672046c3c5786f37f84d7 [stream]
+[debug] [2025-10-24T20:20:09.237Z] >>> [apiv2][query] POST https://upload-firebasehosting.googleapis.com/upload/sites/crm-boo-prod/versions/259a3021b5325fe1/files/4b379ec7f93ebd908442cd40433194503eb39fb43e4ddc21d82219bf4b487414 [none]
+[debug] [2025-10-24T20:20:09.237Z] >>> [apiv2][body] POST https://upload-firebasehosting.googleapis.com/upload/sites/crm-boo-prod/versions/259a3021b5325fe1/files/4b379ec7f93ebd908442cd40433194503eb39fb43e4ddc21d82219bf4b487414 [stream]
+[debug] [2025-10-24T20:20:09.237Z] >>> [apiv2][query] POST https://upload-firebasehosting.googleapis.com/upload/sites/crm-boo-prod/versions/259a3021b5325fe1/files/84a7adb001c0dbfb9adc32a874a5176b5c04a363146d32f7b905f0be637a2f31 [none]
+[debug] [2025-10-24T20:20:09.237Z] >>> [apiv2][body] POST https://upload-firebasehosting.googleapis.com/upload/sites/crm-boo-prod/versions/259a3021b5325fe1/files/84a7adb001c0dbfb9adc32a874a5176b5c04a363146d32f7b905f0be637a2f31 [stream]
+[debug] [2025-10-24T20:20:09.238Z] >>> [apiv2][query] POST https://upload-firebasehosting.googleapis.com/upload/sites/crm-boo-prod/versions/259a3021b5325fe1/files/c4b953af1a794e6d151f1599d87c3567b3379ef79cbfac6493c0496e93ab31bc [none]
+[debug] [2025-10-24T20:20:09.238Z] >>> [apiv2][body] POST https://upload-firebasehosting.googleapis.com/upload/sites/crm-boo-prod/versions/259a3021b5325fe1/files/c4b953af1a794e6d151f1599d87c3567b3379ef79cbfac6493c0496e93ab31bc [stream]
+[debug] [2025-10-24T20:20:09.238Z] >>> [apiv2][query] POST https://upload-firebasehosting.googleapis.com/upload/sites/crm-boo-prod/versions/259a3021b5325fe1/files/647568a28e0bb416c00815d5346563585bb24917d430c782a06097dda9ab241a [none]
+[debug] [2025-10-24T20:20:09.238Z] >>> [apiv2][body] POST https://upload-firebasehosting.googleapis.com/upload/sites/crm-boo-prod/versions/259a3021b5325fe1/files/647568a28e0bb416c00815d5346563585bb24917d430c782a06097dda9ab241a [stream]
+[debug] [2025-10-24T20:20:09.239Z] [hosting][populate queue][FINAL] {"max":195,"min":195,"avg":195,"active":0,"complete":1,"success":1,"errored":0,"retried":0,"total":1,"elapsed":216}
+[debug] [2025-10-24T20:20:09.239Z] [hosting] uploads queued: 29
+[debug] [2025-10-24T20:20:10.026Z] <<< [apiv2][status] POST https://upload-firebasehosting.googleapis.com/upload/sites/crm-boo-prod/versions/259a3021b5325fe1/files/ef5e192b33f0196119c8eca61c4a19d68803968b812672046c3c5786f37f84d7 200
+[debug] [2025-10-24T20:20:10.026Z] <<< [apiv2][body] POST https://upload-firebasehosting.googleapis.com/upload/sites/crm-boo-prod/versions/259a3021b5325fe1/files/ef5e192b33f0196119c8eca61c4a19d68803968b812672046c3c5786f37f84d7 [stream]
+[debug] [2025-10-24T20:20:10.057Z] <<< [apiv2][status] POST https://upload-firebasehosting.googleapis.com/upload/sites/crm-boo-prod/versions/259a3021b5325fe1/files/bc590a11a07e66fdeaafb4b0b3d119aa538fe7b1595ba48ffd3817647bd8ac54 200
+[debug] [2025-10-24T20:20:10.057Z] <<< [apiv2][body] POST https://upload-firebasehosting.googleapis.com/upload/sites/crm-boo-prod/versions/259a3021b5325fe1/files/bc590a11a07e66fdeaafb4b0b3d119aa538fe7b1595ba48ffd3817647bd8ac54 [stream]
+[debug] [2025-10-24T20:20:10.061Z] <<< [apiv2][status] POST https://upload-firebasehosting.googleapis.com/upload/sites/crm-boo-prod/versions/259a3021b5325fe1/files/b75fdcb167fd3c7146ba4f49c8a28cd4754b22f63b78c888d91ffe333929ece6 200
+[debug] [2025-10-24T20:20:10.061Z] <<< [apiv2][body] POST https://upload-firebasehosting.googleapis.com/upload/sites/crm-boo-prod/versions/259a3021b5325fe1/files/b75fdcb167fd3c7146ba4f49c8a28cd4754b22f63b78c888d91ffe333929ece6 [stream]
+[debug] [2025-10-24T20:20:10.080Z] <<< [apiv2][status] POST https://upload-firebasehosting.googleapis.com/upload/sites/crm-boo-prod/versions/259a3021b5325fe1/files/4b8dc7e73cc4eab1d2a41c45a5710c04e4f880eaaf23c6cfa11664b2b600664f 200
+[debug] [2025-10-24T20:20:10.081Z] <<< [apiv2][body] POST https://upload-firebasehosting.googleapis.com/upload/sites/crm-boo-prod/versions/259a3021b5325fe1/files/4b8dc7e73cc4eab1d2a41c45a5710c04e4f880eaaf23c6cfa11664b2b600664f [stream]
+[debug] [2025-10-24T20:20:10.099Z] <<< [apiv2][status] POST https://upload-firebasehosting.googleapis.com/upload/sites/crm-boo-prod/versions/259a3021b5325fe1/files/ebfaf078f19b87bd292a93fd93e0c917d2f7a1296733ba3daadd9da194728856 200
+[debug] [2025-10-24T20:20:10.099Z] <<< [apiv2][body] POST https://upload-firebasehosting.googleapis.com/upload/sites/crm-boo-prod/versions/259a3021b5325fe1/files/ebfaf078f19b87bd292a93fd93e0c917d2f7a1296733ba3daadd9da194728856 [stream]
+[debug] [2025-10-24T20:20:10.110Z] <<< [apiv2][status] POST https://upload-firebasehosting.googleapis.com/upload/sites/crm-boo-prod/versions/259a3021b5325fe1/files/ed9e43b3e783573f318c9d22d50680cddd6ee41f8cff2e0d78ba84e86686b5fb 200
+[debug] [2025-10-24T20:20:10.110Z] <<< [apiv2][body] POST https://upload-firebasehosting.googleapis.com/upload/sites/crm-boo-prod/versions/259a3021b5325fe1/files/ed9e43b3e783573f318c9d22d50680cddd6ee41f8cff2e0d78ba84e86686b5fb [stream]
+[debug] [2025-10-24T20:20:10.114Z] <<< [apiv2][status] POST https://upload-firebasehosting.googleapis.com/upload/sites/crm-boo-prod/versions/259a3021b5325fe1/files/210e999bdeb397fbdbbf794239b57d44efbdbd5c333482dd274823b8e7851c52 200
+[debug] [2025-10-24T20:20:10.114Z] <<< [apiv2][body] POST https://upload-firebasehosting.googleapis.com/upload/sites/crm-boo-prod/versions/259a3021b5325fe1/files/210e999bdeb397fbdbbf794239b57d44efbdbd5c333482dd274823b8e7851c52 [stream]
+[debug] [2025-10-24T20:20:10.117Z] <<< [apiv2][status] POST https://upload-firebasehosting.googleapis.com/upload/sites/crm-boo-prod/versions/259a3021b5325fe1/files/2d0e87ac549cb124de5836c9309a5750e0bd888c8870a1b22b424da2267c6aed 200
+[debug] [2025-10-24T20:20:10.117Z] <<< [apiv2][body] POST https://upload-firebasehosting.googleapis.com/upload/sites/crm-boo-prod/versions/259a3021b5325fe1/files/2d0e87ac549cb124de5836c9309a5750e0bd888c8870a1b22b424da2267c6aed [stream]
+[debug] [2025-10-24T20:20:10.140Z] <<< [apiv2][status] POST https://upload-firebasehosting.googleapis.com/upload/sites/crm-boo-prod/versions/259a3021b5325fe1/files/3f94adfbd79d8fd9dfb8e7b025d1fe41312c4df0940eeecb0425b8b5f8a674fe 200
+[debug] [2025-10-24T20:20:10.141Z] <<< [apiv2][body] POST https://upload-firebasehosting.googleapis.com/upload/sites/crm-boo-prod/versions/259a3021b5325fe1/files/3f94adfbd79d8fd9dfb8e7b025d1fe41312c4df0940eeecb0425b8b5f8a674fe [stream]
+[debug] [2025-10-24T20:20:10.187Z] <<< [apiv2][status] POST https://upload-firebasehosting.googleapis.com/upload/sites/crm-boo-prod/versions/259a3021b5325fe1/files/ecf56f5fb3d34638ec67b2c1a3d2b36b64373e01acad83ff246a59c9b4f0a9e0 200
+[debug] [2025-10-24T20:20:10.188Z] <<< [apiv2][body] POST https://upload-firebasehosting.googleapis.com/upload/sites/crm-boo-prod/versions/259a3021b5325fe1/files/ecf56f5fb3d34638ec67b2c1a3d2b36b64373e01acad83ff246a59c9b4f0a9e0 [stream]
+[debug] [2025-10-24T20:20:10.200Z] <<< [apiv2][status] POST https://upload-firebasehosting.googleapis.com/upload/sites/crm-boo-prod/versions/259a3021b5325fe1/files/07455ebe22b5b53950dbfc99d01dd3b4fd7741e4ddac80b250748033f1e99651 200
+[debug] [2025-10-24T20:20:10.200Z] <<< [apiv2][body] POST https://upload-firebasehosting.googleapis.com/upload/sites/crm-boo-prod/versions/259a3021b5325fe1/files/07455ebe22b5b53950dbfc99d01dd3b4fd7741e4ddac80b250748033f1e99651 [stream]
+[debug] [2025-10-24T20:20:10.201Z] <<< [apiv2][status] POST https://upload-firebasehosting.googleapis.com/upload/sites/crm-boo-prod/versions/259a3021b5325fe1/files/a7a776bedf2af476edb363790281bea43205514aa26c400a70def6b7fabec9ad 200
+[debug] [2025-10-24T20:20:10.201Z] <<< [apiv2][body] POST https://upload-firebasehosting.googleapis.com/upload/sites/crm-boo-prod/versions/259a3021b5325fe1/files/a7a776bedf2af476edb363790281bea43205514aa26c400a70def6b7fabec9ad [stream]
+[debug] [2025-10-24T20:20:10.202Z] <<< [apiv2][status] POST https://upload-firebasehosting.googleapis.com/upload/sites/crm-boo-prod/versions/259a3021b5325fe1/files/4b379ec7f93ebd908442cd40433194503eb39fb43e4ddc21d82219bf4b487414 200
+[debug] [2025-10-24T20:20:10.202Z] <<< [apiv2][body] POST https://upload-firebasehosting.googleapis.com/upload/sites/crm-boo-prod/versions/259a3021b5325fe1/files/4b379ec7f93ebd908442cd40433194503eb39fb43e4ddc21d82219bf4b487414 [stream]
+[debug] [2025-10-24T20:20:10.215Z] <<< [apiv2][status] POST https://upload-firebasehosting.googleapis.com/upload/sites/crm-boo-prod/versions/259a3021b5325fe1/files/5e987760eed9c1f50a7ab542fff5204a179f761030ba2bad9b3240796d0a994f 200
+[debug] [2025-10-24T20:20:10.215Z] <<< [apiv2][body] POST https://upload-firebasehosting.googleapis.com/upload/sites/crm-boo-prod/versions/259a3021b5325fe1/files/5e987760eed9c1f50a7ab542fff5204a179f761030ba2bad9b3240796d0a994f [stream]
+[debug] [2025-10-24T20:20:10.224Z] <<< [apiv2][status] POST https://upload-firebasehosting.googleapis.com/upload/sites/crm-boo-prod/versions/259a3021b5325fe1/files/46e396062b9cf94ecf40c3d2a78f2907e766578bcdd3010940f2557d152e3898 200
+[debug] [2025-10-24T20:20:10.224Z] <<< [apiv2][body] POST https://upload-firebasehosting.googleapis.com/upload/sites/crm-boo-prod/versions/259a3021b5325fe1/files/46e396062b9cf94ecf40c3d2a78f2907e766578bcdd3010940f2557d152e3898 [stream]
+[debug] [2025-10-24T20:20:10.226Z] <<< [apiv2][status] POST https://upload-firebasehosting.googleapis.com/upload/sites/crm-boo-prod/versions/259a3021b5325fe1/files/681fe9a2f0b920a6c0bd52ab3cd7271f0bbfbfc13f9749cff818c0cbed6f9c96 200
+[debug] [2025-10-24T20:20:10.226Z] <<< [apiv2][body] POST https://upload-firebasehosting.googleapis.com/upload/sites/crm-boo-prod/versions/259a3021b5325fe1/files/681fe9a2f0b920a6c0bd52ab3cd7271f0bbfbfc13f9749cff818c0cbed6f9c96 [stream]
+[debug] [2025-10-24T20:20:10.239Z] <<< [apiv2][status] POST https://upload-firebasehosting.googleapis.com/upload/sites/crm-boo-prod/versions/259a3021b5325fe1/files/6f9e40af78342bb71a26f4e0b4a6b06fa6e333c09ee1029361357172612ba0df 200
+[debug] [2025-10-24T20:20:10.240Z] <<< [apiv2][body] POST https://upload-firebasehosting.googleapis.com/upload/sites/crm-boo-prod/versions/259a3021b5325fe1/files/6f9e40af78342bb71a26f4e0b4a6b06fa6e333c09ee1029361357172612ba0df [stream]
+[debug] [2025-10-24T20:20:10.277Z] <<< [apiv2][status] POST https://upload-firebasehosting.googleapis.com/upload/sites/crm-boo-prod/versions/259a3021b5325fe1/files/84a7adb001c0dbfb9adc32a874a5176b5c04a363146d32f7b905f0be637a2f31 200
+[debug] [2025-10-24T20:20:10.277Z] <<< [apiv2][body] POST https://upload-firebasehosting.googleapis.com/upload/sites/crm-boo-prod/versions/259a3021b5325fe1/files/84a7adb001c0dbfb9adc32a874a5176b5c04a363146d32f7b905f0be637a2f31 [stream]
+[debug] [2025-10-24T20:20:10.291Z] <<< [apiv2][status] POST https://upload-firebasehosting.googleapis.com/upload/sites/crm-boo-prod/versions/259a3021b5325fe1/files/647568a28e0bb416c00815d5346563585bb24917d430c782a06097dda9ab241a 200
+[debug] [2025-10-24T20:20:10.291Z] <<< [apiv2][body] POST https://upload-firebasehosting.googleapis.com/upload/sites/crm-boo-prod/versions/259a3021b5325fe1/files/647568a28e0bb416c00815d5346563585bb24917d430c782a06097dda9ab241a [stream]
+[debug] [2025-10-24T20:20:10.294Z] <<< [apiv2][status] POST https://upload-firebasehosting.googleapis.com/upload/sites/crm-boo-prod/versions/259a3021b5325fe1/files/47ea94b9afb8bd4419f402c38f88d69d7df21eec656b7ff37b91fdc6f55623d9 200
+[debug] [2025-10-24T20:20:10.295Z] <<< [apiv2][body] POST https://upload-firebasehosting.googleapis.com/upload/sites/crm-boo-prod/versions/259a3021b5325fe1/files/47ea94b9afb8bd4419f402c38f88d69d7df21eec656b7ff37b91fdc6f55623d9 [stream]
+[debug] [2025-10-24T20:20:10.303Z] <<< [apiv2][status] POST https://upload-firebasehosting.googleapis.com/upload/sites/crm-boo-prod/versions/259a3021b5325fe1/files/6d212002688705dc880a990680055c0c4d9733c2644d131373956f8d700c72c9 200
+[debug] [2025-10-24T20:20:10.303Z] <<< [apiv2][body] POST https://upload-firebasehosting.googleapis.com/upload/sites/crm-boo-prod/versions/259a3021b5325fe1/files/6d212002688705dc880a990680055c0c4d9733c2644d131373956f8d700c72c9 [stream]
+[debug] [2025-10-24T20:20:10.310Z] <<< [apiv2][status] POST https://upload-firebasehosting.googleapis.com/upload/sites/crm-boo-prod/versions/259a3021b5325fe1/files/c0e16177e859fc407893752094dc1ec8800576f7c022d3a9970f34fb62275ad3 200
+[debug] [2025-10-24T20:20:10.311Z] <<< [apiv2][body] POST https://upload-firebasehosting.googleapis.com/upload/sites/crm-boo-prod/versions/259a3021b5325fe1/files/c0e16177e859fc407893752094dc1ec8800576f7c022d3a9970f34fb62275ad3 [stream]
+[debug] [2025-10-24T20:20:10.338Z] <<< [apiv2][status] POST https://upload-firebasehosting.googleapis.com/upload/sites/crm-boo-prod/versions/259a3021b5325fe1/files/c4b953af1a794e6d151f1599d87c3567b3379ef79cbfac6493c0496e93ab31bc 200
+[debug] [2025-10-24T20:20:10.339Z] <<< [apiv2][body] POST https://upload-firebasehosting.googleapis.com/upload/sites/crm-boo-prod/versions/259a3021b5325fe1/files/c4b953af1a794e6d151f1599d87c3567b3379ef79cbfac6493c0496e93ab31bc [stream]
+[debug] [2025-10-24T20:20:10.350Z] <<< [apiv2][status] POST https://upload-firebasehosting.googleapis.com/upload/sites/crm-boo-prod/versions/259a3021b5325fe1/files/91a4228962bc5328260cb45deffbe12e47f5629e8b73dd348be1768e94506d7e 200
+[debug] [2025-10-24T20:20:10.350Z] <<< [apiv2][body] POST https://upload-firebasehosting.googleapis.com/upload/sites/crm-boo-prod/versions/259a3021b5325fe1/files/91a4228962bc5328260cb45deffbe12e47f5629e8b73dd348be1768e94506d7e [stream]
+[debug] [2025-10-24T20:20:10.507Z] <<< [apiv2][status] POST https://upload-firebasehosting.googleapis.com/upload/sites/crm-boo-prod/versions/259a3021b5325fe1/files/385f052a37a794e3cbe205c4aa55d9d08920065c7a566ce41932bd43db47214e 200
+[debug] [2025-10-24T20:20:10.507Z] <<< [apiv2][body] POST https://upload-firebasehosting.googleapis.com/upload/sites/crm-boo-prod/versions/259a3021b5325fe1/files/385f052a37a794e3cbe205c4aa55d9d08920065c7a566ce41932bd43db47214e [stream]
+[debug] [2025-10-24T20:20:10.514Z] <<< [apiv2][status] POST https://upload-firebasehosting.googleapis.com/upload/sites/crm-boo-prod/versions/259a3021b5325fe1/files/871d91f9c55e0344ef32953e9f15f3204e84e083eba151e2f9c8e8416ba2e35b 200
+[debug] [2025-10-24T20:20:10.515Z] <<< [apiv2][body] POST https://upload-firebasehosting.googleapis.com/upload/sites/crm-boo-prod/versions/259a3021b5325fe1/files/871d91f9c55e0344ef32953e9f15f3204e84e083eba151e2f9c8e8416ba2e35b [stream]
+[debug] [2025-10-24T20:20:10.518Z] <<< [apiv2][status] POST https://upload-firebasehosting.googleapis.com/upload/sites/crm-boo-prod/versions/259a3021b5325fe1/files/d8d67802aaf0a23bf5df9c3d27a6727bae02e8464eafaae17041345b10b63fbf 200
+[debug] [2025-10-24T20:20:10.518Z] <<< [apiv2][body] POST https://upload-firebasehosting.googleapis.com/upload/sites/crm-boo-prod/versions/259a3021b5325fe1/files/d8d67802aaf0a23bf5df9c3d27a6727bae02e8464eafaae17041345b10b63fbf [stream]
+[debug] [2025-10-24T20:20:10.528Z] <<< [apiv2][status] POST https://upload-firebasehosting.googleapis.com/upload/sites/crm-boo-prod/versions/259a3021b5325fe1/files/871be2dc8211120dc4a94e194a6e4d6e07b9027f11a019fa0d3c2b3b58a2595f 200
+[debug] [2025-10-24T20:20:10.528Z] <<< [apiv2][body] POST https://upload-firebasehosting.googleapis.com/upload/sites/crm-boo-prod/versions/259a3021b5325fe1/files/871be2dc8211120dc4a94e194a6e4d6e07b9027f11a019fa0d3c2b3b58a2595f [stream]
+[info] i  hosting: uploading new files [28/29] (96%) 
+[debug] [2025-10-24T20:20:10.987Z] <<< [apiv2][status] POST https://upload-firebasehosting.googleapis.com/upload/sites/crm-boo-prod/versions/259a3021b5325fe1/files/51d017089752c0e90811e8dce69e65e0440a243a3f93072cef01a45a0f842ec8 200
+[debug] [2025-10-24T20:20:10.987Z] <<< [apiv2][body] POST https://upload-firebasehosting.googleapis.com/upload/sites/crm-boo-prod/versions/259a3021b5325fe1/files/51d017089752c0e90811e8dce69e65e0440a243a3f93072cef01a45a0f842ec8 [stream]
+[debug] [2025-10-24T20:20:10.987Z] [hosting][upload queue][FINAL] {"max":1771,"min":809,"avg":1052.3103448275863,"active":0,"complete":29,"success":29,"errored":0,"retried":0,"total":29,"elapsed":1777}
+[info] i  hosting: upload complete 
+[info] +  hosting[crm-boo-prod]: file upload complete 
+[debug] [2025-10-24T20:20:10.987Z] [hosting] deploy completed after 2023ms
+[debug] [2025-10-24T20:20:10.988Z] [
+  {
+    "config": {
+      "site": "crm-boo-prod",
+      "public": "out",
+      "ignore": [
+        "firebase.json",
+        "**/.*",
+        "**/node_modules/**"
+      ],
+      "rewrites": [
+        {
+          "source": "**",
+          "destination": "/index.html"
+        }
+      ]
+    },
+    "version": "projects/48394410331/sites/crm-boo-prod/versions/259a3021b5325fe1"
+  }
+]
+[info] i  hosting[crm-boo-prod]: finalizing version... 
+[debug] [2025-10-24T20:20:10.988Z] Checked if tokens are valid: true, expires at: 1761339433483
+[debug] [2025-10-24T20:20:10.989Z] Checked if tokens are valid: true, expires at: 1761339433483
+[debug] [2025-10-24T20:20:10.989Z] >>> [apiv2][query] PATCH https://firebasehosting.googleapis.com/v1beta1/projects/-/sites/crm-boo-prod/versions/259a3021b5325fe1 updateMask=status%2Cconfig
+[debug] [2025-10-24T20:20:10.989Z] >>> [apiv2][body] PATCH https://firebasehosting.googleapis.com/v1beta1/projects/-/sites/crm-boo-prod/versions/259a3021b5325fe1 {"status":"FINALIZED","config":{"rewrites":[{"glob":"**","path":"/index.html"}]}}
+[debug] [2025-10-24T20:20:11.108Z] <<< [apiv2][status] PATCH https://firebasehosting.googleapis.com/v1beta1/projects/-/sites/crm-boo-prod/versions/259a3021b5325fe1 200
+[debug] [2025-10-24T20:20:11.108Z] <<< [apiv2][body] PATCH https://firebasehosting.googleapis.com/v1beta1/projects/-/sites/crm-boo-prod/versions/259a3021b5325fe1 {"name":"projects/48394410331/sites/crm-boo-prod/versions/259a3021b5325fe1","status":"FINALIZED","config":{"rewrites":[{"glob":"**","path":"/index.html"}]},"labels":{"deployment-tool":"cli-firebase"},"createTime":"2025-10-24T20:20:09.419968Z","createUser":{"email":"josh.manring@chapterforge.co"},"finalizeTime":"2025-10-24T20:20:11.749994Z","finalizeUser":{"email":"josh.manring@chapterforge.co"}}
+[debug] [2025-10-24T20:20:11.108Z] [hosting] finalized version for crm-boo-prod:[object Object]
+[info] +  hosting[crm-boo-prod]: version finalized 
+[info] i  hosting[crm-boo-prod]: releasing new version... 
+[debug] [2025-10-24T20:20:11.109Z] Checked if tokens are valid: true, expires at: 1761339433483
+[debug] [2025-10-24T20:20:11.109Z] Checked if tokens are valid: true, expires at: 1761339433483
+[debug] [2025-10-24T20:20:11.109Z] >>> [apiv2][query] POST https://firebasehosting.googleapis.com/v1beta1/projects/-/sites/crm-boo-prod/channels/live/releases versionName=projects%2F48394410331%2Fsites%2Fcrm-boo-prod%2Fversions%2F259a3021b5325fe1
+[debug] [2025-10-24T20:20:11.109Z] >>> [apiv2][body] POST https://firebasehosting.googleapis.com/v1beta1/projects/-/sites/crm-boo-prod/channels/live/releases {}
+[debug] [2025-10-24T20:20:11.257Z] <<< [apiv2][status] POST https://firebasehosting.googleapis.com/v1beta1/projects/-/sites/crm-boo-prod/channels/live/releases 200
