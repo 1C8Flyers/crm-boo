@@ -39,6 +39,7 @@ export default function DealDetailContent() {
 
   useEffect(() => {
     const dealId = searchParams.get('id');
+    const editActivityId = searchParams.get('editActivity');
     if (!dealId || !user) return;
 
     const loadDealDetails = async () => {
@@ -360,7 +361,11 @@ export default function DealDetailContent() {
             </div>
 
             {/* Notes & Activities */}
-            <Notes deal={deal} customer={customer || undefined} />
+            <Notes 
+              deal={deal} 
+              customer={customer || undefined} 
+              editActivityId={searchParams.get('editActivity') || undefined}
+            />
           </div>
 
           {/* Customer Info Sidebar */}

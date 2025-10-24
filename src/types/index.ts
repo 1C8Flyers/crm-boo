@@ -35,6 +35,35 @@ export interface Customer {
   updatedAt: Date;
 }
 
+// Contact types
+export interface Contact {
+  id: string;
+  firstName: string;
+  lastName: string;
+  email: string;
+  phone?: string;
+  mobile?: string;
+  title?: string; // Job title
+  department?: string;
+  customerId?: string; // Primary customer/company
+  dealIds?: string[]; // Associated deals
+  isPrimary?: boolean; // Is this the primary contact for the customer?
+  notes?: string;
+  socialMedia?: {
+    linkedin?: string;
+    twitter?: string;
+  };
+  address?: {
+    street?: string;
+    city?: string;
+    state?: string;
+    zipCode?: string;
+    country?: string;
+  };
+  createdAt: Date;
+  updatedAt: Date;
+}
+
 // Deal types
 export interface DealProduct {
   id: string;
@@ -132,7 +161,8 @@ export interface Activity {
   customerId?: string;
   dealId?: string;
   completed: boolean;
-  dueDate?: Date;
+  dueDate?: Date; // Follow-up due date for all activity types
+  meetingDate?: Date; // Actual meeting date for meetings (when it happened/will happen)
   duration?: number; // in minutes, for calls and meetings
   outcome?: string; // for calls and meetings
   nextAction?: string; // follow-up action

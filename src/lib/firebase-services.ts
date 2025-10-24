@@ -13,7 +13,7 @@ import {
   Timestamp,
 } from 'firebase/firestore';
 import { db } from '@/lib/firebase';
-import type { Customer, Deal, Product, Invoice, Activity, DealStage } from '@/types';
+import type { Customer, Deal, Product, Invoice, Activity, DealStage, Contact } from '@/types';
 import { v4 as uuidv4 } from 'uuid';
 
 // Customer services
@@ -342,6 +342,7 @@ export const activityService = {
       createdAt: doc.data().createdAt.toDate(),
       updatedAt: doc.data().updatedAt.toDate(),
       dueDate: doc.data().dueDate?.toDate(),
+      meetingDate: doc.data().meetingDate?.toDate(),
     })) as Activity[];
     
     // Sort in memory instead of using Firestore orderBy
@@ -361,6 +362,7 @@ export const activityService = {
       createdAt: doc.data().createdAt.toDate(),
       updatedAt: doc.data().updatedAt.toDate(),
       dueDate: doc.data().dueDate?.toDate(),
+      meetingDate: doc.data().meetingDate?.toDate(),
     })) as Activity[];
     
     // Sort in memory instead of using Firestore orderBy
@@ -372,6 +374,7 @@ export const activityService = {
     const docRef = await addDoc(collection(db, 'activities'), {
       ...activityData,
       dueDate: activityData.dueDate ? Timestamp.fromDate(activityData.dueDate) : null,
+      meetingDate: activityData.meetingDate ? Timestamp.fromDate(activityData.meetingDate) : null,
       createdAt: now,
       updatedAt: now,
     });
@@ -387,6 +390,10 @@ export const activityService = {
     
     if (activityData.dueDate) {
       updateData.dueDate = Timestamp.fromDate(activityData.dueDate);
+    }
+
+    if (activityData.meetingDate) {
+      updateData.meetingDate = Timestamp.fromDate(activityData.meetingDate);
     }
     
     await updateDoc(docRef, updateData);
@@ -439,6 +446,7 @@ export const activityService = {
             createdAt: doc.data().createdAt.toDate(),
             updatedAt: doc.data().updatedAt.toDate(),
             dueDate: doc.data().dueDate?.toDate(),
+            meetingDate: doc.data().meetingDate?.toDate(),
           } as Activity);
         }
       }
@@ -450,5 +458,294 @@ export const activityService = {
 
   async delete(id: string): Promise<void> {
     await deleteDoc(doc(db, 'activities', id));
+  },
+
+  async getTodaysActivities(): Promise<Activity[]> {
+    const today = new Date();
+    const startOfDay = new Date(today.getFullYear(), today.getMonth(), today.getDate());
+    const endOfDay = new Date(today.getFullYear(), today.getMonth(), today.getDate() + 1);
+
+    // Query for activities with meetingDate today
+    const meetingsQuery = query(
+      collection(db, 'activities'),
+      where('meetingDate', '>=', Timestamp.fromDate(startOfDay)),
+      where('meetingDate', '<', Timestamp.fromDate(endOfDay))
+    );
+
+    // Query for activities with dueDate today
+    const dueTodayQuery = query(
+      collection(db, 'activities'),
+      where('dueDate', '>=', Timestamp.fromDate(startOfDay)),
+      where('dueDate', '<', Timestamp.fromDate(endOfDay))
+    );
+
+    const [meetingsSnapshot, dueTodaySnapshot] = await Promise.all([
+      getDocs(meetingsQuery),
+      getDocs(dueTodayQuery)
+    ]);
+
+    const todaysActivities: Activity[] = [];
+    const seenIds = new Set<string>();
+
+    // Process meetings
+    for (const doc of meetingsSnapshot.docs) {
+      if (!seenIds.has(doc.id)) {
+        seenIds.add(doc.id);
+        todaysActivities.push({
+          ...doc.data(),
+          id: doc.id,
+          createdAt: doc.data().createdAt.toDate(),
+          updatedAt: doc.data().updatedAt.toDate(),
+          dueDate: doc.data().dueDate?.toDate(),
+          meetingDate: doc.data().meetingDate?.toDate(),
+        } as Activity);
+      }
+    }
+
+    // Process due items
+    for (const doc of dueTodaySnapshot.docs) {
+      if (!seenIds.has(doc.id)) {
+        seenIds.add(doc.id);
+        todaysActivities.push({
+          ...doc.data(),
+          id: doc.id,
+          createdAt: doc.data().createdAt.toDate(),
+          updatedAt: doc.data().updatedAt.toDate(),
+          dueDate: doc.data().dueDate?.toDate(),
+          meetingDate: doc.data().meetingDate?.toDate(),
+        } as Activity);
+      }
+    }
+
+    return todaysActivities.sort((a, b) => {
+      // Sort by meeting date first, then by due date
+      if (a.meetingDate && b.meetingDate) {
+        return a.meetingDate.getTime() - b.meetingDate.getTime();
+      }
+      if (a.meetingDate) return -1;
+      if (b.meetingDate) return 1;
+      if (a.dueDate && b.dueDate) {
+        return a.dueDate.getTime() - b.dueDate.getTime();
+      }
+      return 0;
+    });
+  },
+
+  async getOpenItems(): Promise<Activity[]> {
+    // Get all activities and filter in memory for more flexibility
+    const querySnapshot = await getDocs(collection(db, 'activities'));
+    
+    const today = new Date();
+    today.setHours(23, 59, 59, 999); // End of today
+    
+    const allActivities = querySnapshot.docs.map(doc => ({
+      ...doc.data(),
+      id: doc.id,
+      createdAt: doc.data().createdAt.toDate(),
+      updatedAt: doc.data().updatedAt.toDate(),
+      dueDate: doc.data().dueDate?.toDate(),
+      meetingDate: doc.data().meetingDate?.toDate(),
+    })) as Activity[];
+
+    // Filter for open items:
+    // 1. Incomplete tasks
+    // 2. Activities with due dates (past or today)
+    // 3. Activities with follow-up actions but not completed
+    const openItems = allActivities.filter(activity => {
+      // Incomplete tasks
+      if (activity.type === 'task' && !activity.completed) {
+        return true;
+      }
+      
+      // Activities with due dates that are due (today or overdue)
+      if (activity.dueDate && activity.dueDate <= today) {
+        return true;
+      }
+      
+      // Activities with next actions that aren't completed
+      if (activity.nextAction && activity.nextAction.trim() !== '' && !activity.completed) {
+        return true;
+      }
+      
+      return false;
+    });
+
+    return openItems.sort((a, b) => {
+      // Sort by due date, then by priority
+      if (a.dueDate && b.dueDate) {
+        return a.dueDate.getTime() - b.dueDate.getTime();
+      }
+      if (a.dueDate) return -1;
+      if (b.dueDate) return 1;
+      
+      // Sort by priority if no due dates
+      const priorityOrder = { high: 0, medium: 1, low: 2 };
+      const aPriority = priorityOrder[a.priority || 'medium'];
+      const bPriority = priorityOrder[b.priority || 'medium'];
+      return aPriority - bPriority;
+    });
+  },
+
+  async markAsComplete(id: string): Promise<void> {
+    const docRef = doc(db, 'activities', id);
+    await updateDoc(docRef, {
+      completed: true,
+      updatedAt: Timestamp.now(),
+    });
+  },
+
+  async getAll(): Promise<Activity[]> {
+    const querySnapshot = await getDocs(collection(db, 'activities'));
+    const activities = querySnapshot.docs.map(doc => ({
+      ...doc.data(),
+      id: doc.id,
+      createdAt: doc.data().createdAt.toDate(),
+      updatedAt: doc.data().updatedAt.toDate(),
+      dueDate: doc.data().dueDate?.toDate(),
+      meetingDate: doc.data().meetingDate?.toDate(),
+    })) as Activity[];
+    
+    return activities.sort((a, b) => b.createdAt.getTime() - a.createdAt.getTime());
+  },
+};
+
+// Contact services
+export const contactService = {
+  async getAll(): Promise<Contact[]> {
+    const querySnapshot = await getDocs(
+      query(collection(db, 'contacts'), orderBy('lastName'), orderBy('firstName'))
+    );
+    return querySnapshot.docs.map(doc => ({
+      ...doc.data(),
+      id: doc.id,
+      createdAt: doc.data().createdAt.toDate(),
+      updatedAt: doc.data().updatedAt.toDate(),
+    })) as Contact[];
+  },
+
+  async getById(id: string): Promise<Contact | null> {
+    const docRef = doc(db, 'contacts', id);
+    const docSnap = await getDoc(docRef);
+    
+    if (docSnap.exists()) {
+      return {
+        ...docSnap.data(),
+        id: docSnap.id,
+        createdAt: docSnap.data().createdAt.toDate(),
+        updatedAt: docSnap.data().updatedAt.toDate(),
+      } as Contact;
+    }
+    
+    return null;
+  },
+
+  async getByCustomer(customerId: string): Promise<Contact[]> {
+    const q = query(
+      collection(db, 'contacts'),
+      where('customerId', '==', customerId),
+      orderBy('isPrimary', 'desc'),
+      orderBy('lastName'),
+      orderBy('firstName')
+    );
+    const querySnapshot = await getDocs(q);
+    
+    return querySnapshot.docs.map(doc => ({
+      ...doc.data(),
+      id: doc.id,
+      createdAt: doc.data().createdAt.toDate(),
+      updatedAt: doc.data().updatedAt.toDate(),
+    })) as Contact[];
+  },
+
+  async getByDeal(dealId: string): Promise<Contact[]> {
+    const q = query(
+      collection(db, 'contacts'),
+      where('dealIds', 'array-contains', dealId)
+    );
+    const querySnapshot = await getDocs(q);
+    
+    return querySnapshot.docs.map(doc => ({
+      ...doc.data(),
+      id: doc.id,
+      createdAt: doc.data().createdAt.toDate(),
+      updatedAt: doc.data().updatedAt.toDate(),
+    })) as Contact[];
+  },
+
+  async create(contactData: Omit<Contact, 'id' | 'createdAt' | 'updatedAt'>): Promise<string> {
+    const docRef = await addDoc(collection(db, 'contacts'), {
+      ...contactData,
+      dealIds: contactData.dealIds || [],
+      createdAt: Timestamp.now(),
+      updatedAt: Timestamp.now(),
+    });
+    return docRef.id;
+  },
+
+  async update(id: string, contactData: Partial<Contact>): Promise<void> {
+    const docRef = doc(db, 'contacts', id);
+    await updateDoc(docRef, {
+      ...contactData,
+      updatedAt: Timestamp.now(),
+    });
+  },
+
+  async delete(id: string): Promise<void> {
+    await deleteDoc(doc(db, 'contacts', id));
+  },
+
+  async addToDeal(contactId: string, dealId: string): Promise<void> {
+    const contact = await this.getById(contactId);
+    if (!contact) throw new Error('Contact not found');
+    
+    const dealIds = contact.dealIds || [];
+    if (!dealIds.includes(dealId)) {
+      dealIds.push(dealId);
+      await this.update(contactId, { dealIds });
+    }
+  },
+
+  async removeFromDeal(contactId: string, dealId: string): Promise<void> {
+    const contact = await this.getById(contactId);
+    if (!contact) throw new Error('Contact not found');
+    
+    const dealIds = (contact.dealIds || []).filter(id => id !== dealId);
+    await this.update(contactId, { dealIds });
+  },
+
+  async search(searchTerm: string): Promise<Contact[]> {
+    const allContacts = await this.getAll();
+    const term = searchTerm.toLowerCase();
+    
+    return allContacts.filter(contact => 
+      contact.firstName.toLowerCase().includes(term) ||
+      contact.lastName.toLowerCase().includes(term) ||
+      contact.email.toLowerCase().includes(term) ||
+      (contact.title && contact.title.toLowerCase().includes(term)) ||
+      (contact.department && contact.department.toLowerCase().includes(term))
+    );
+  },
+
+  async setPrimary(contactId: string, customerId: string): Promise<void> {
+    // First, remove primary status from all contacts for this customer
+    const customerContacts = await this.getByCustomer(customerId);
+    const batch = writeBatch(db);
+    
+    customerContacts.forEach(contact => {
+      if (contact.isPrimary) {
+        batch.update(doc(db, 'contacts', contact.id), {
+          isPrimary: false,
+          updatedAt: Timestamp.now(),
+        });
+      }
+    });
+    
+    // Set the new primary contact
+    batch.update(doc(db, 'contacts', contactId), {
+      isPrimary: true,
+      updatedAt: Timestamp.now(),
+    });
+    
+    await batch.commit();
   },
 };

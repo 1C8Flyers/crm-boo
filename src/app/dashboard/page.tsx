@@ -4,8 +4,9 @@ import { useEffect, useState } from 'react';
 import { useAuth } from '@/contexts/AuthContext';
 import { useRouter } from 'next/navigation';
 import { DashboardLayout } from '@/components/layout/DashboardLayout';
-import { Users, TrendingUp, Package, FileText, DollarSign, Calendar } from 'lucide-react';
-import { customerService, dealService, productService, invoiceService } from '@/lib/firebase-services';
+import { Users, TrendingUp, Package, FileText, DollarSign, Calendar, Clock, CheckSquare, Phone, Mail, MessageSquare } from 'lucide-react';
+import { customerService, dealService, productService, invoiceService, activityService } from '@/lib/firebase-services';
+import type { Activity } from '@/types';
 
 interface DashboardStats {
   totalCustomers: number;
@@ -18,6 +19,22 @@ interface DashboardStats {
   oneTimeDealValue: number;
   upcomingTasks: number;
 }
+
+const activityIcons = {
+  note: MessageSquare,
+  call: Phone,
+  meeting: Calendar,
+  email: Mail,
+  task: CheckSquare,
+};
+
+const activityColors = {
+  note: 'text-blue-500',
+  call: 'text-green-500',
+  meeting: 'text-purple-500',
+  email: 'text-orange-500',
+  task: 'text-red-500',
+};
 
 export default function Dashboard() {
   const { user, loading } = useAuth();
@@ -34,6 +51,8 @@ export default function Dashboard() {
     upcomingTasks: 0,
   });
   const [isLoadingStats, setIsLoadingStats] = useState(true);
+  const [todaysActivities, setTodaysActivities] = useState<Activity[]>([]);
+  const [isLoadingToday, setIsLoadingToday] = useState(true);
 
   useEffect(() => {
     if (!loading && !user) {
@@ -44,8 +63,21 @@ export default function Dashboard() {
   useEffect(() => {
     if (user) {
       loadDashboardStats();
+      loadTodaysActivities();
     }
   }, [user]);
+
+  const loadTodaysActivities = async () => {
+    try {
+      setIsLoadingToday(true);
+      const activities = await activityService.getTodaysActivities();
+      setTodaysActivities(activities);
+    } catch (error) {
+      console.error('Error loading today\'s activities:', error);
+    } finally {
+      setIsLoadingToday(false);
+    }
+  };
 
   const loadDashboardStats = async () => {
     try {
@@ -81,6 +113,13 @@ export default function Dashboard() {
     } finally {
       setIsLoadingStats(false);
     }
+  };
+
+  const formatTime = (date: Date) => {
+    return new Intl.DateTimeFormat('en-US', {
+      hour: '2-digit',
+      minute: '2-digit',
+    }).format(date);
   };
 
   if (loading || !user) {
@@ -195,16 +234,81 @@ export default function Dashboard() {
         )}
 
         <div className="grid grid-cols-1 lg:grid-cols-2 gap-6">
-          {/* Recent Activity */}
+          {/* Today's Activities */}
           <div className="bg-white p-6 rounded-lg shadow border border-gray-200">
-            <h3 className="text-lg font-semibold text-gray-900 mb-4" style={{ fontFamily: 'Poppins, sans-serif' }}>Recent Activity</h3>
-            <div className="space-y-4">
+            <div className="flex items-center justify-between mb-4">
+              <h3 className="text-lg font-semibold text-gray-900" style={{ fontFamily: 'Poppins, sans-serif' }}>Today</h3>
+              <button
+                onClick={() => router.push('/activities')}
+                className="text-sm text-blue-600 hover:text-blue-800 transition-colors"
+                style={{ fontFamily: 'PT Sans, sans-serif' }}
+              >
+                View All
+              </button>
+            </div>
+            
+            {isLoadingToday ? (
+              <div className="space-y-3">
+                {[...Array(3)].map((_, i) => (
+                  <div key={i} className="animate-pulse">
+                    <div className="flex items-center space-x-3">
+                      <div className="w-8 h-8 bg-gray-200 rounded"></div>
+                      <div className="flex-1">
+                        <div className="h-4 bg-gray-200 rounded w-3/4 mb-2"></div>
+                        <div className="h-3 bg-gray-200 rounded w-1/2"></div>
+                      </div>
+                    </div>
+                  </div>
+                ))}
+              </div>
+            ) : todaysActivities.length === 0 ? (
               <div className="text-center text-gray-700 py-8">
                 <Calendar className="w-12 h-12 mx-auto mb-4 text-gray-400" />
-                <p style={{ fontFamily: 'PT Sans, sans-serif' }}>No recent activity</p>
-                <p className="text-sm" style={{ fontFamily: 'PT Sans, sans-serif' }}>Activity will appear here as you use the CRM</p>
+                <p style={{ fontFamily: 'PT Sans, sans-serif' }}>No activities for today</p>
+                <p className="text-sm" style={{ fontFamily: 'PT Sans, sans-serif' }}>Enjoy your free day!</p>
               </div>
-            </div>
+            ) : (
+              <div className="space-y-3">
+                {todaysActivities.slice(0, 5).map((activity) => {
+                  const Icon = activityIcons[activity.type];
+                  const colorClass = activityColors[activity.type];
+                  
+                  return (
+                    <div 
+                      key={activity.id} 
+                      className="flex items-center space-x-3 p-3 border border-gray-200 rounded-lg hover:bg-gray-50 transition-colors cursor-pointer"
+                      onClick={() => router.push(`/deals/detail?id=${activity.dealId}&editActivity=${activity.id}`)}
+                    >
+                      <Icon className={`w-5 h-5 ${colorClass} flex-shrink-0`} />
+                      <div className="flex-1 min-w-0">
+                        <p className="font-medium text-gray-900 truncate" style={{ fontFamily: 'Poppins, sans-serif' }}>
+                          {activity.title}
+                        </p>
+                        <div className="flex items-center text-sm text-gray-500" style={{ fontFamily: 'PT Sans, sans-serif' }}>
+                          {activity.meetingDate && (
+                            <span className="flex items-center">
+                              <Clock className="w-3 h-3 mr-1" />
+                              Meeting: {formatTime(activity.meetingDate)}
+                            </span>
+                          )}
+                          {activity.dueDate && !activity.meetingDate && (
+                            <span className="flex items-center">
+                              <Calendar className="w-3 h-3 mr-1" />
+                              Due today
+                            </span>
+                          )}
+                        </div>
+                      </div>
+                    </div>
+                  );
+                })}
+                {todaysActivities.length > 5 && (
+                  <p className="text-sm text-gray-500 text-center pt-2" style={{ fontFamily: 'PT Sans, sans-serif' }}>
+                    +{todaysActivities.length - 5} more activities
+                  </p>
+                )}
+              </div>
+            )}
           </div>
 
           {/* Quick Actions */}

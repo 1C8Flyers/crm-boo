@@ -4,13 +4,13 @@ import { useEffect, useState } from 'react';
 import { useAuth } from '@/contexts/AuthContext';
 import { useRouter } from 'next/navigation';
 import { DashboardLayout } from '@/components/layout/DashboardLayout';
-import { dealStageService } from '@/lib/firebase-services';
+import { dealStageService, customerService, dealService } from '@/lib/firebase-services';
 import CompanySettings from '@/components/settings/CompanySettings';
 import type { DealStage } from '@/types';
 import { useForm } from 'react-hook-form';
 import { zodResolver } from '@hookform/resolvers/zod';
 import { z } from 'zod';
-import { Settings, Plus, Trash2, AlertCircle, Save, GripVertical, ArrowUp, ArrowDown, ChevronDown, ChevronUp } from 'lucide-react';
+import { Settings, Plus, Trash2, AlertCircle, Save, GripVertical, ArrowUp, ArrowDown, ChevronDown, ChevronUp, Download, Upload, FileText } from 'lucide-react';
 import {
   DndContext,
   closestCenter,
@@ -145,8 +145,17 @@ export default function SettingsPage() {
 
   // Collapsible section states
   const [isDealStagesCollapsed, setIsDealStagesCollapsed] = useState(true);
+  const [isDataImportCollapsed, setIsDataImportCollapsed] = useState(true);
   const [isCompanySettingsCollapsed, setIsCompanySettingsCollapsed] = useState(true);
   const [isAccountSettingsCollapsed, setIsAccountSettingsCollapsed] = useState(true);
+
+  // Import functionality state
+  const [isImporting, setIsImporting] = useState(false);
+  const [importResults, setImportResults] = useState<{
+    success: number;
+    errors: string[];
+    type: 'customers' | 'deals' | null;
+  }>({ success: 0, errors: [], type: null });
 
   const sensors = useSensors(
     useSensor(PointerSensor),
@@ -352,6 +361,201 @@ export default function SettingsPage() {
     '#6B7280', // Gray
   ];
 
+  // Sample data for downloads
+  const generateCustomerSample = () => {
+    const csvContent = `name,email,phone,company,address
+John Smith,john.smith@example.com,555-0123,Acme Corp,"123 Main St, New York, NY 10001"
+Jane Doe,jane.doe@example.com,555-0456,TechStart Inc,"456 Tech Ave, San Francisco, CA 94102"
+Bob Johnson,bob.johnson@example.com,555-0789,Global Solutions,"789 Business Blvd, Chicago, IL 60601"`;
+    
+    const blob = new Blob([csvContent], { type: 'text/csv' });
+    const url = window.URL.createObjectURL(blob);
+    const a = document.createElement('a');
+    a.href = url;
+    a.download = 'customers_sample.csv';
+    a.click();
+    window.URL.revokeObjectURL(url);
+  };
+
+  const generateDealSample = () => {
+    const csvContent = `title,customerEmail,value,probability,stage,type,description
+"Q4 Software License",john.smith@example.com,25000,75,Proposal,subscription,"Annual software license renewal"
+"Hardware Upgrade",jane.doe@example.com,15000,50,Discovery,one-time,"Office hardware upgrade project"
+"Consulting Services",bob.johnson@example.com,50000,80,Negotiation,service,"6-month consulting engagement"`;
+    
+    const blob = new Blob([csvContent], { type: 'text/csv' });
+    const url = window.URL.createObjectURL(blob);
+    const a = document.createElement('a');
+    a.href = url;
+    a.download = 'deals_sample.csv';
+    a.click();
+    window.URL.revokeObjectURL(url);
+  };
+
+  const parseCSV = (csvText: string): string[][] => {
+    const lines = csvText.split('\n').filter(line => line.trim());
+    const result: string[][] = [];
+    
+    for (const line of lines) {
+      const row: string[] = [];
+      let current = '';
+      let inQuotes = false;
+      
+      for (let i = 0; i < line.length; i++) {
+        const char = line[i];
+        
+        if (char === '"') {
+          inQuotes = !inQuotes;
+        } else if (char === ',' && !inQuotes) {
+          row.push(current.trim());
+          current = '';
+        } else {
+          current += char;
+        }
+      }
+      
+      row.push(current.trim());
+      result.push(row);
+    }
+    
+    return result;
+  };
+
+  const handleFileImport = async (file: File, type: 'customers' | 'deals') => {
+    if (!user) return;
+    
+    setIsImporting(true);
+    setImportResults({ success: 0, errors: [], type });
+    
+    try {
+      const text = await file.text();
+      const rows = parseCSV(text);
+      
+      if (rows.length === 0) {
+        throw new Error('File is empty');
+      }
+      
+      const headers = rows[0].map(h => h.toLowerCase().replace(/"/g, ''));
+      const dataRows = rows.slice(1);
+      
+      let successCount = 0;
+      const errors: string[] = [];
+      
+      if (type === 'customers') {
+        const requiredFields = ['name', 'email'];
+        const missingFields = requiredFields.filter(field => !headers.includes(field));
+        
+        if (missingFields.length > 0) {
+          throw new Error(`Missing required fields: ${missingFields.join(', ')}`);
+        }
+        
+        for (let i = 0; i < dataRows.length; i++) {
+          const row = dataRows[i];
+          const rowNum = i + 2; // +2 because we skip header and arrays are 0-indexed
+          
+          try {
+            const customerData: any = {};
+            headers.forEach((header, index) => {
+              const value = row[index]?.replace(/"/g, '').trim();
+              if (value) {
+                customerData[header] = value;
+              }
+            });
+            
+            if (!customerData.name || !customerData.email) {
+              errors.push(`Row ${rowNum}: Missing required fields (name, email)`);
+              continue;
+            }
+            
+            // Check if customer already exists
+            const existingCustomers = await customerService.getAll();
+            const exists = existingCustomers.some(c => c.email.toLowerCase() === customerData.email.toLowerCase());
+            
+            if (exists) {
+              errors.push(`Row ${rowNum}: Customer with email ${customerData.email} already exists`);
+              continue;
+            }
+            
+            await customerService.create(customerData);
+            successCount++;
+          } catch (error: any) {
+            errors.push(`Row ${rowNum}: ${error.message}`);
+          }
+        }
+      } else if (type === 'deals') {
+        const requiredFields = ['title', 'customeremail', 'value'];
+        const missingFields = requiredFields.filter(field => !headers.includes(field));
+        
+        if (missingFields.length > 0) {
+          throw new Error(`Missing required fields: ${missingFields.join(', ')}`);
+        }
+        
+        // Get customers and stages for validation
+        const [customers, dealStages] = await Promise.all([
+          customerService.getAll(),
+          dealStageService.getAll()
+        ]);
+        
+        for (let i = 0; i < dataRows.length; i++) {
+          const row = dataRows[i];
+          const rowNum = i + 2;
+          
+          try {
+            const dealData: any = {};
+            headers.forEach((header, index) => {
+              const value = row[index]?.replace(/"/g, '').trim();
+              if (value) {
+                dealData[header] = value;
+              }
+            });
+            
+            if (!dealData.title || !dealData.customeremail || !dealData.value) {
+              errors.push(`Row ${rowNum}: Missing required fields (title, customerEmail, value)`);
+              continue;
+            }
+            
+            // Find customer by email
+            const customer = customers.find(c => c.email.toLowerCase() === dealData.customeremail.toLowerCase());
+            if (!customer) {
+              errors.push(`Row ${rowNum}: Customer with email ${dealData.customeremail} not found`);
+              continue;
+            }
+            
+            // Find stage by name or use first stage
+            let stageId = dealStages[0]?.id;
+            if (dealData.stage) {
+              const stage = dealStages.find(s => s.name.toLowerCase() === dealData.stage.toLowerCase());
+              if (stage) {
+                stageId = stage.id;
+              }
+            }
+            
+            const dealToCreate = {
+              title: dealData.title,
+              customerId: customer.id,
+              value: parseFloat(dealData.value) || 0,
+              stageId,
+              type: dealData.type || 'one-time',
+              description: dealData.description || '',
+              probability: parseFloat(dealData.probability) || 50, // Default to 50% if not provided
+            };
+            
+            await dealService.create(dealToCreate);
+            successCount++;
+          } catch (error: any) {
+            errors.push(`Row ${rowNum}: ${error.message}`);
+          }
+        }
+      }
+      
+      setImportResults({ success: successCount, errors, type });
+    } catch (error: any) {
+      setImportResults({ success: 0, errors: [error.message], type });
+    } finally {
+      setIsImporting(false);
+    }
+  };
+
   if (loading || !user) {
     return (
       <div className="min-h-screen flex items-center justify-center">
@@ -538,6 +742,194 @@ export default function SettingsPage() {
               </div>
             )}
           </div>
+          )}
+        </div>
+
+        {/* Data Import Section */}
+        <div className="bg-white shadow-sm rounded-lg border border-gray-200 mb-6">
+          <div 
+            className="px-6 py-4 border-b border-gray-200 cursor-pointer hover:bg-gray-50 transition-colors"
+            onClick={() => setIsDataImportCollapsed(!isDataImportCollapsed)}
+          >
+            <div className="flex items-center justify-between">
+              <div>
+                <h2 className="text-lg font-medium text-gray-900">Data Import</h2>
+                <p className="text-sm text-gray-900">Import customers and deals from CSV files</p>
+              </div>
+              {isDataImportCollapsed ? (
+                <ChevronDown className="w-5 h-5 text-gray-500" />
+              ) : (
+                <ChevronUp className="w-5 h-5 text-gray-500" />
+              )}
+            </div>
+          </div>
+
+          {!isDataImportCollapsed && (
+            <div className="p-6 space-y-6">
+              {/* Import Results */}
+              {importResults.type && (
+                <div className={`rounded-md p-4 ${
+                  importResults.errors.length > 0 ? 'bg-yellow-50 border border-yellow-200' : 'bg-green-50 border border-green-200'
+                }`}>
+                  <div className="flex">
+                    <div className="flex-shrink-0">
+                      {importResults.errors.length > 0 ? (
+                        <AlertCircle className="h-5 w-5 text-yellow-400" />
+                      ) : (
+                        <FileText className="h-5 w-5 text-green-400" />
+                      )}
+                    </div>
+                    <div className="ml-3">
+                      <h3 className={`text-sm font-medium ${
+                        importResults.errors.length > 0 ? 'text-yellow-800' : 'text-green-800'
+                      }`}>
+                        Import Results for {importResults.type}
+                      </h3>
+                      <div className={`mt-2 text-sm ${
+                        importResults.errors.length > 0 ? 'text-yellow-700' : 'text-green-700'
+                      }`}>
+                        <p>Successfully imported: {importResults.success} records</p>
+                        {importResults.errors.length > 0 && (
+                          <div className="mt-2">
+                            <p className="font-medium">Errors ({importResults.errors.length}):</p>
+                            <ul className="mt-1 list-disc list-inside space-y-1">
+                              {importResults.errors.slice(0, 10).map((error, index) => (
+                                <li key={index} className="text-xs">{error}</li>
+                              ))}
+                              {importResults.errors.length > 10 && (
+                                <li className="text-xs">... and {importResults.errors.length - 10} more errors</li>
+                              )}
+                            </ul>
+                          </div>
+                        )}
+                      </div>
+                    </div>
+                  </div>
+                </div>
+              )}
+
+              {/* Customer Import */}
+              <div className="border border-gray-200 rounded-lg p-4">
+                <h3 className="text-lg font-medium text-gray-900 mb-2">Import Customers</h3>
+                <p className="text-sm text-gray-600 mb-4">
+                  Import customer data from a CSV file. Required fields: name, email. Optional: phone, company, address.
+                </p>
+                
+                <div className="flex items-center space-x-4 mb-4">
+                  <button
+                    onClick={generateCustomerSample}
+                    className="inline-flex items-center px-3 py-2 border border-gray-300 shadow-sm text-sm leading-4 font-medium rounded-md text-gray-700 bg-white hover:bg-gray-50 focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-blue-500"
+                  >
+                    <Download className="w-4 h-4 mr-2" />
+                    Download Sample
+                  </button>
+                  
+                  <div className="relative">
+                    <input
+                      type="file"
+                      accept=".csv"
+                      onChange={(e) => {
+                        const file = e.target.files?.[0];
+                        if (file) {
+                          handleFileImport(file, 'customers');
+                        }
+                      }}
+                      className="absolute inset-0 w-full h-full opacity-0 cursor-pointer"
+                      disabled={isImporting}
+                    />
+                    <button
+                      disabled={isImporting}
+                      className="inline-flex items-center px-3 py-2 border border-transparent text-sm leading-4 font-medium rounded-md text-white bg-blue-600 hover:bg-blue-700 focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-blue-500 disabled:opacity-50"
+                    >
+                      {isImporting && importResults.type === 'customers' ? (
+                        <>
+                          <div className="w-4 h-4 border-2 border-white border-t-transparent rounded-full animate-spin mr-2" />
+                          Importing...
+                        </>
+                      ) : (
+                        <>
+                          <Upload className="w-4 h-4 mr-2" />
+                          Upload CSV
+                        </>
+                      )}
+                    </button>
+                  </div>
+                </div>
+
+                <div className="text-xs text-gray-500">
+                  <p><strong>CSV Format:</strong> name,email,phone,company,address</p>
+                  <p><strong>Required:</strong> name, email</p>
+                </div>
+              </div>
+
+              {/* Deal Import */}
+              <div className="border border-gray-200 rounded-lg p-4">
+                <h3 className="text-lg font-medium text-gray-900 mb-2">Import Deals</h3>
+                <p className="text-sm text-gray-600 mb-4">
+                  Import deal data from a CSV file. Required fields: title, customerEmail, value. Optional: probability, stage, type, description.
+                </p>
+                
+                <div className="flex items-center space-x-4 mb-4">
+                  <button
+                    onClick={generateDealSample}
+                    className="inline-flex items-center px-3 py-2 border border-gray-300 shadow-sm text-sm leading-4 font-medium rounded-md text-gray-700 bg-white hover:bg-gray-50 focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-blue-500"
+                  >
+                    <Download className="w-4 h-4 mr-2" />
+                    Download Sample
+                  </button>
+                  
+                  <div className="relative">
+                    <input
+                      type="file"
+                      accept=".csv"
+                      onChange={(e) => {
+                        const file = e.target.files?.[0];
+                        if (file) {
+                          handleFileImport(file, 'deals');
+                        }
+                      }}
+                      className="absolute inset-0 w-full h-full opacity-0 cursor-pointer"
+                      disabled={isImporting}
+                    />
+                    <button
+                      disabled={isImporting}
+                      className="inline-flex items-center px-3 py-2 border border-transparent text-sm leading-4 font-medium rounded-md text-white bg-blue-600 hover:bg-blue-700 focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-blue-500 disabled:opacity-50"
+                    >
+                      {isImporting && importResults.type === 'deals' ? (
+                        <>
+                          <div className="w-4 h-4 border-2 border-white border-t-transparent rounded-full animate-spin mr-2" />
+                          Importing...
+                        </>
+                      ) : (
+                        <>
+                          <Upload className="w-4 h-4 mr-2" />
+                          Upload CSV
+                        </>
+                      )}
+                    </button>
+                  </div>
+                </div>
+
+                <div className="text-xs text-gray-500">
+                  <p><strong>CSV Format:</strong> title,customerEmail,value,probability,stage,type,description</p>
+                  <p><strong>Required:</strong> title, customerEmail, value</p>
+                  <p><strong>Note:</strong> Customer must exist before importing deals</p>
+                </div>
+              </div>
+
+              {/* Import Guidelines */}
+              <div className="bg-blue-50 border border-blue-200 rounded-lg p-4">
+                <h4 className="text-sm font-medium text-blue-900 mb-2">Import Guidelines</h4>
+                <ul className="text-sm text-blue-800 space-y-1">
+                  <li>• CSV files should have headers in the first row</li>
+                  <li>• Use quotes around fields that contain commas</li>
+                  <li>• Email addresses must be unique for customers</li>
+                  <li>• Import customers before importing deals</li>
+                  <li>• Deal stages will default to the first stage if not specified</li>
+                  <li>• Deal types can be: one-time, subscription, service</li>
+                </ul>
+              </div>
+            </div>
           )}
         </div>
 

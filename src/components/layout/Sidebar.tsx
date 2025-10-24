@@ -14,14 +14,18 @@ import {
   Menu,
   X,
   BarChart3,
+  CheckSquare,
+  UserCheck,
 } from 'lucide-react';
 
 const navigation = [
   { name: 'Dashboard', href: '/dashboard', icon: BarChart3 },
   { name: 'Customers', href: '/customers', icon: Users },
+  { name: 'Contacts', href: '/contacts', icon: UserCheck },
   { name: 'Deals', href: '/deals', icon: TrendingUp },
   { name: 'Products', href: '/products', icon: Package },
   { name: 'Invoices', href: '/invoices', icon: FileText },
+  { name: 'Activities', href: '/activities', icon: CheckSquare },
   { name: 'Settings', href: '/settings', icon: Settings },
 ];
 
